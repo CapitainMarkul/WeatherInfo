@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3BBCD8</color>
+    <color name="colorPrimaryDark">#127A91</color>
+    <color name="colorAccent">#B2DFDB</color>
+
+    <color name="colorAppName">#B2DFDB</color>
+
+    <color name="colorGradientHot">#FFBA00</color>
+    <color name="colorGradientCold">#7FC7FF</color>
+    <color name="colorGradientRain">#2175DE</color>
+    <color name="colorGradientCloud">#708090</color>
+    <color name="colorGradientCloudSun">#D0C190</color>
+    <color name="colorGradientNight">#6C68C4</color>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_main_image_clear_size">20dp</dimen>
+    <dimen name="layout_progress_bar_size">50dp</dimen>
+    <dimen name="item_horizontal_recycler_weather_icon_size">40dp</dimen>
+    <dimen name="activity_favorite_toolbar_height">30dp</dimen>
+    <dimen name="activity_favorite_float_button_size">50dp</dimen>
+    <dimen name="item_card_full_info_weather_add_favorite_size">40dp</dimen>
+    <dimen name="item_card_full_info_weather_big_icon_size">80dp</dimen>
+    <dimen name="item_card_full_info_weather_recycler_view_height">150dp</dimen>
+</resources>

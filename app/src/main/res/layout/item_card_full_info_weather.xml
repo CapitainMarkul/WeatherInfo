@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_full_info"
+    style="@style/mCardViewWithoutHeight"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/rl_root_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_gradient_rain">
+
+        <LinearLayout
+            android:id="@+id/ln_container_city_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical"
+            android:paddingStart="20dp">
+            <!--tools:background="@android:color/holo_blue_bright">-->
+
+            <TextView
+                android:id="@+id/tv_city"
+                style="@style/mTvSingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                tools:text="Название города," />
+
+            <TextView
+                android:id="@+id/tv_time"
+                style="@style/mTvSingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textStyle="italic"
+                tools:text="4 августа, 9.20" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cb_add_to_favorite"
+            android:layout_width="@dimen/item_card_full_info_weather_add_favorite_size"
+            android:layout_height="@dimen/item_card_full_info_weather_add_favorite_size"
+            android:layout_alignBottom="@+id/ln_container_city_info"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignTop="@+id/ln_container_city_info"
+            android:layout_marginEnd="5dp"
+            android:button="@drawable/selector_checkbox" />
+        <!--END Line Top-->
+
+        <!--Second Line-->
+        <LinearLayout
+            android:id="@+id/ln_container_temperature_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ln_container_city_info"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_temperature"
+                    style="@style/mTvSingleLine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="75sp"
+                    android:textStyle="bold"
+                    tools:text="19" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingTop="11dp"
+                    android:text="O"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingTop="7dp"
+                    android:text="C"
+                    android:textSize="32sp" />
+
+                <ImageView
+                    android:id="@+id/iv_icon_weather"
+                    android:layout_width="@dimen/item_card_full_info_weather_big_icon_size"
+                    android:layout_height="@dimen/item_card_full_info_weather_big_icon_size"
+                    android:src="@drawable/test_image" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="35sp"
+                tools:text="Ясно" />
+
+            <!--</LinearLayout>-->
+        </LinearLayout>
+        <!--END Second Line-->
+
+        <!--Theed Line-->
+        <LinearLayout
+            android:id="@+id/ln_container_weather_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ln_container_temperature_info"
+            android:orientation="vertical"
+            android:paddingStart="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/activity_add_city_wind"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_wind_short"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    tools:text="ЮЗ" />
+
+                <Space
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/tv_wind_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    tools:text="5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/activity_add_city_wind_unit"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/activity_add_city_pressure"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_pressure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    tools:text="960" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/activity_add_city_pressure_unit"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+        <!--END Theed Line-->
+
+        <!--height = 150dp-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_weather_on_other_time"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_card_full_info_weather_recycler_view_height"
+            android:layout_below="@+id/ln_container_weather_info"
+            android:background="@android:color/transparent"
+            android:orientation="horizontal"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
