@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.Mappers;
+package com.tensor.dapavlov1.tensorfirststep.data.Mappers;
 
 import com.tensor.dapavlov1.tensorfirststep.TrimDateSingleton;
 import com.tensor.dapavlov1.tensorfirststep.data.DaoModels.DaoCity;

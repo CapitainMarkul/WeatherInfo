@@ -2,7 +2,6 @@ package com.tensor.dapavlov1.tensorfirststep;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tensor.dapavlov1.tensorfirststep.Mappers.MapperGsonToView;
 import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonCity;
 import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonPlace;
 import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonPlaces;
