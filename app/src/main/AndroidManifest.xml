@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Presentation.Activity.FavoriteActivity.view.activity.FavoriteActivity"
+            android:name=".presentation.activity.favorite.view.activity.FavoriteActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Presentation.Activity.AddCityActivity.view.activity.AddCityActivity"
+            android:name=".presentation.activity.addcity.view.activity.AddCityActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <!--<intent-filter>-->

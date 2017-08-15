@@ -2,9 +2,10 @@ package com.tensor.dapavlov1.tensorfirststep;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonCity;
-import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonPlace;
-import com.tensor.dapavlov1.tensorfirststep.data.GsonModels.GsonPlaces;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlace;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlaces;
+import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,7 @@ public class GsonFactory {
         List<GsonPlace> gsonPlaces = gsonReader.fromJson(responceJson, GsonPlaces.class).getGsonPlaces();
         for (GsonPlace item : gsonPlaces) {
             resultTitles.add(
-                    item.getTitlePlace()
-            );
+                    item.getTitlePlace());
         }
         return resultTitles;
     }

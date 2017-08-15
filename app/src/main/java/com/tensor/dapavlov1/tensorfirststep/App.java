@@ -3,13 +3,15 @@ package com.tensor.dapavlov1.tensorfirststep;
 import android.app.Application;
 import android.content.Context;
 
-import com.tensor.dapavlov1.tensorfirststep.data.DaoModels.DaoMaster;
-import com.tensor.dapavlov1.tensorfirststep.data.DaoModels.DaoSession;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 
 import org.greenrobot.greendao.database.Database;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -19,6 +21,7 @@ import java.util.concurrent.Executors;
 public class App extends Application {
     private static DaoSession daoSession;
     private static Context context;
+//    private OkHttpClient okHttpClient;
 
     static ExecutorService executorService = Executors.newFixedThreadPool(1);
 
@@ -30,7 +33,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = this;
-
+//        okHttpClient = new OkHttpClient();
         initSession();
     }
 
@@ -41,6 +44,10 @@ public class App extends Application {
     public static Context getContext() {
         return context;
     }
+
+//    public OkHttpClient getOkHttpClient(){
+//        return okHttpClient;
+//    }
 
     private void initSession(){
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "weathers");

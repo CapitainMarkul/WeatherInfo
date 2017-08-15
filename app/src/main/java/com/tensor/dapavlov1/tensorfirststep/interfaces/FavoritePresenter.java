@@ -1,7 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.interfaces;
 
 import com.arellomobile.mvp.MvpView;
-import com.tensor.dapavlov1.tensorfirststep.data.ViewModels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 
 import java.util.List;
 
