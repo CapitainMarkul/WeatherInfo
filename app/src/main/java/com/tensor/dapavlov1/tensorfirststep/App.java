@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep;
 
 import android.app.Application;
+import android.app.FragmentManager;
 import android.content.Context;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;

@@ -18,10 +18,11 @@ import java.util.List;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoritePresenter  {
+public class FavoritePresenter {
 
     private FavoriteActivity activity;
-    public FavoritePresenter(FavoriteActivity activity){
+
+    public void setActivity(FavoriteActivity activity) {
         this.activity = activity;
     }
 
@@ -45,6 +46,11 @@ public class FavoritePresenter  {
                                         //обновляем погоду
                                         @Override
                                         public void onSuccess(List<City> result) {
+                                            try {
+                                                Thread.sleep(3000);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
                                             hideViewLoading();
                                             refreshWeathers(result);
                                         }
@@ -68,13 +74,18 @@ public class FavoritePresenter  {
         });
     }
 
+    public void showAsyncResult(List<City> result) {
+        hideViewLoading();
+        refreshWeathers(result);
+    }
+
     private Router router;
 
-    public void setRouter(Router router){
+    public void setRouter(Router router) {
         this.router = router;
     }
 
-    public void changeActivity(Activity thisActivity, Class toActivity){
+    public void changeActivity(Activity thisActivity, Class toActivity) {
         router.goToNewActivity(thisActivity, toActivity);
     }
 

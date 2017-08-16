@@ -13,9 +13,9 @@
         android:id="@+id/root_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tool_bar"
-        android:paddingTop="10dp">
 
+        android:paddingTop="10dp">
+<!--android:layout_below="@id/tool_bar" Test-->
         <include
             android:id="@+id/cv_weather_city"
             layout="@layout/item_card_full_info_weather" />

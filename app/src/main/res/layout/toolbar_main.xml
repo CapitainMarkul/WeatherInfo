@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:gravity="center"
-                android:hint="@string/activity_add_city_text_hint" />
+                android:hint="@string/activity_add_city_text_hint"/>
         </android.support.design.widget.TextInputLayout>
 
         <ImageView

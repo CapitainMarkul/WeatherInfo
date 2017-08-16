@@ -9,6 +9,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -40,7 +42,10 @@ import butterknife.OnClick;
  */
 
 public class AddCityActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter {
+    private final static String PRESENTER = "presenter";
+    private static final String FIND_CITY = "city";
 
+    RetainedFragment retainedFragment;
     AddCityPresenter addCityPresenter;
 
     @BindInt(R.integer.weather_now) int WEATHER_NOW;
@@ -68,17 +73,59 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     @BindView(R.id.rv_weather_on_other_time) RecyclerView weatherOtherTime;
     AdapterHorizontalWeather adapterHorizontalWeather;
 
+    private City city;
+
+    public void setCity(City city){
+        this.city = city;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
-        addCityPresenter = new AddCityPresenter(this);
+        createRetainedFragment();
 
-        ButterKnife.bind(this);
+        ButterKnife.bind(this);getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        cityName.clearFocus();
+
+        addCityPresenter = (AddCityPresenter) retainedFragment.getDataFromMap(PRESENTER);
+        if(addCityPresenter == null) {
+            addCityPresenter = new AddCityPresenter();
+            addCityPresenter.setActivity(this);
+        } else {
+            addCityPresenter.setActivity(this);
+        }
 
         setupViews();
         setupRecyclerView();
         setupListeners();
+    }
+
+    private void createRetainedFragment() {
+        retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag("data");
+        if (retainedFragment == null) {
+            retainedFragment = new RetainedFragment();
+            getFragmentManager().beginTransaction().add(retainedFragment, "data").commit();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(city != null) {
+            retainedFragment.setDataInMap(FIND_CITY, city);
+        }
+        retainedFragment.setDataInMap(PRESENTER, addCityPresenter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        City c = (City) retainedFragment.getDataFromMap(FIND_CITY);
+        if(c != null) {
+            showInformation((City) retainedFragment.getDataFromMap(FIND_CITY));
+            cardInfo.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setupViews() {
@@ -93,6 +140,7 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 clearChecked();
+                retainedFragment.setDataInMap(FIND_CITY, null);
                 addCityPresenter.getWeatherInCity(cityName.getText().toString());
             }
         });
@@ -179,6 +227,12 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             @Override
             public void run() {
                 adapterHorizontalWeather.setItems(weathers);
+
+//                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
+//                if (parcelable != null) {
+//                    weatherOtherTime.getLayoutManager().onRestoreInstanceState(parcelable);
+//                }
+
                 adapterHorizontalWeather.notifyDataSetChanged();
             }
         });

@@ -2,6 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view
 
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -35,10 +36,12 @@ import butterknife.OnClick;
  */
 
 public class FavoriteActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter, RecyclerViewItemClickListener {
-
-    FavoritePresenter mPresenter;
+    private final static String PRESENTER = "favorite_presenter";
+    private final static String LIST_STATE_KEY = "recycler_list_state";
 
     private RetainedFragment retainedFragment;
+
+    FavoritePresenter mPresenter;
 
     @BindView(R.id.fb_add_new_city) FloatingActionButton addNewCity;
     @BindView(R.id.root_container) CoordinatorLayout rootContainer;
@@ -54,25 +57,52 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
-        mPresenter = new FavoritePresenter(this);
-
         //return InstanceState
-        FragmentManager fragmentManager = getFragmentManager();
-        retainedFragment = (RetainedFragment) fragmentManager.findFragmentByTag("data");
+        createRetainedFragment();
 
-        if(retainedFragment == null){
-            retainedFragment = new RetainedFragment();
-            fragmentManager.beginTransaction().add(retainedFragment, "data").commit();
-            retainedFragment.setData(savedInstanceState);
+        //ередаем новую активити презентеру
+        mPresenter = (FavoritePresenter) retainedFragment.getDataFromMap(PRESENTER);
+        if (mPresenter == null) {
+            mPresenter = new FavoritePresenter();
+            mPresenter.setActivity(this);
+        } else {
+            mPresenter.setActivity(this);
         }
 
         ButterKnife.bind(this);
         setupRouter();
         setupRecyclerView();
         setupListeners();
+
+
     }
 
-    private void setupRouter(){
+    private void createRetainedFragment() {
+        retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag("data");
+
+        if (retainedFragment == null) {
+            retainedFragment = new RetainedFragment();
+            getFragmentManager().beginTransaction().add(retainedFragment, "data").commit();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        retainedFragment.setParcelableData(
+                LIST_STATE_KEY,
+                recyclerViewFavorite.getLayoutManager().onSaveInstanceState());
+        retainedFragment.setDataInMap(PRESENTER, mPresenter);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.showFavoriteCard();
+    }
+
+    private void setupRouter() {
         routerToAddCity = new RouterToAddCity();
         mPresenter.setRouter(routerToAddCity);
     }
@@ -106,6 +136,11 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
             @Override
             public void run() {
                 adapterFavorite.setItems(weathers);
+                //restoreStateInstance
+                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
+                if (parcelable != null) {
+                    recyclerViewFavorite.getLayoutManager().onRestoreInstanceState(parcelable);
+                }
                 adapterFavorite.notifyDataSetChanged();
             }
         });
@@ -189,11 +224,11 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         super.onStart();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPresenter.showFavoriteCard();
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        mPresenter.showFavoriteCard();
+//    }
 
     @Override
     protected void onDestroy() {

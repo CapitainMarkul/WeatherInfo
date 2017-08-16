@@ -16,10 +16,9 @@ public class AddCityPresenter {
     //для возможности добавления в БД
     //переведено в SingleTone (TempCity)
 //    private ModelCityWeather modelCityWeather;
-
     private AddCityActivity addCityActivity;
 
-    public AddCityPresenter(AddCityActivity addCityActivity){
+    public void setActivity(AddCityActivity addCityActivity) {
         this.addCityActivity = addCityActivity;
     }
 
@@ -31,15 +30,18 @@ public class AddCityPresenter {
             public void onSuccess(City resultCity, boolean isFavorite) {
                 if (resultCity != null) {
                     showCityIsFavorite(isFavorite);
+//
+//                    try {
+//                        Thread.sleep(3000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
 
                     //Показываем результат пользователю
                     showCardWeatherInfo();
+                    addCityActivity.setCity(resultCity);
                     showInformation(resultCity);
                 }
-//                else {
-//                    //город не найден
-//                    showCardEmpty();
-//                }
                 hideViewLoading();
             }
 
@@ -51,47 +53,6 @@ public class AddCityPresenter {
             }
         }, fullCityName);
     }
-
-//    private class AsyncResponseWeather extends AsyncTask {
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            getViewState().showLoading();
-//        }
-//
-//        @Override
-//        protected Object doInBackground(Object[] objects) {
-////            Map<String, String> map = ApiFabric.getInstance().createMapForWeatherApi(objects[0].toString(),
-////                    BuildConfig.WEATHER_API_KEY,
-////                    BuildConfig.WEATHER_API_LANGUAGE,
-////                    BuildConfig.WEATHER_API_COUNT_DAY);
-//            try {
-////                gsonCity = GsonFactory.getInstance().createGsonCityModel(
-////                        ApiFabric.getInstance().getJsonFromApiWeather(map)
-////                );
-//                //Test
-//                modelCityWeather = MapperGsonToDb.getInstance().convertGsonModelToDaoModel(gsonCity);
-//                //End Test
-////                return MapperGsonToView.getInstance().convertGsonModelToViewModel(gsonCity);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object findCities) {
-//            super.onPostExecute(findCities);
-////
-////            if (findCities != null) {
-////                getViewState().showWeatherCardFullInfo();
-////                getViewState().showInformation((City) findCities);
-////            } else {
-////                getViewState().showWeatherCardNothingFind();
-////            }
-////            getViewState().hideLoading();
-////        }
-//        }
 
     public void addToFavorite() {
         DataProvider.getInstance().addCityToFavorite(
