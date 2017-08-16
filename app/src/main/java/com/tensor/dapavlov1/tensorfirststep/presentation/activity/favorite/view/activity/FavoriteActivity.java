@@ -1,19 +1,21 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity;
 
-import android.content.Intent;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -32,9 +34,11 @@ import butterknife.OnClick;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoriteActivity extends MvpAppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter, RecyclerViewItemClickListener {
-    @InjectPresenter
+public class FavoriteActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter, RecyclerViewItemClickListener {
+
     FavoritePresenter mPresenter;
+
+    private RetainedFragment retainedFragment;
 
     @BindView(R.id.fb_add_new_city) FloatingActionButton addNewCity;
     @BindView(R.id.root_container) CoordinatorLayout rootContainer;
@@ -49,6 +53,19 @@ public class FavoriteActivity extends MvpAppCompatActivity implements com.tensor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
+
+        mPresenter = new FavoritePresenter(this);
+
+        //return InstanceState
+        FragmentManager fragmentManager = getFragmentManager();
+        retainedFragment = (RetainedFragment) fragmentManager.findFragmentByTag("data");
+
+        if(retainedFragment == null){
+            retainedFragment = new RetainedFragment();
+            fragmentManager.beginTransaction().add(retainedFragment, "data").commit();
+            retainedFragment.setData(savedInstanceState);
+        }
+
         ButterKnife.bind(this);
         setupRouter();
         setupRecyclerView();
@@ -176,6 +193,12 @@ public class FavoriteActivity extends MvpAppCompatActivity implements com.tensor
     protected void onResume() {
         super.onResume();
         mPresenter.showFavoriteCard();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        retainedFragment.setData(this.get);
     }
 
     @Override

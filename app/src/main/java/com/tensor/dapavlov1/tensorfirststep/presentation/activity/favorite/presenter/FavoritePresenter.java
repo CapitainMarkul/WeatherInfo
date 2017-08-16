@@ -2,9 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.pres
 
 import android.app.Activity;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
@@ -18,8 +17,13 @@ import java.util.List;
 /**
  * Created by da.pavlov1 on 03.08.2017.
  */
-@InjectViewState
-public class FavoritePresenter extends MvpPresenter<com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter> {
+
+public class FavoritePresenter  {
+
+    private FavoriteActivity activity;
+    public FavoritePresenter(FavoriteActivity activity){
+        this.activity = activity;
+    }
 
     private boolean isOnline() {
         return CheckConnect.getInstance().isOnline(App.getContext());
@@ -79,22 +83,22 @@ public class FavoritePresenter extends MvpPresenter<com.tensor.dapavlov1.tensorf
     }
 
     private void showNothingCities() {
-        getViewState().showEmptyCard();
+        activity.showEmptyCard();
     }
 
     private void showMessage(int message) {
-        getViewState().showMessage(message);
+        activity.showMessage(message);
     }
 
     private void hideViewLoading() {
-        getViewState().hideLoading();
+        activity.hideLoading();
     }
 
     private void showViewLoading() {
-        getViewState().showLoading();
+        activity.showLoading();
     }
 
     private void refreshWeathers(List<City> cities) {
-        getViewState().refreshWeathers(cities);
+        activity.refreshWeathers(cities);
     }
 }

@@ -20,7 +20,6 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".presentation.activity.favorite.view.activity.FavoriteActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -29,7 +28,6 @@
         </activity>
         <activity
             android:name=".presentation.activity.addcity.view.activity.AddCityActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->

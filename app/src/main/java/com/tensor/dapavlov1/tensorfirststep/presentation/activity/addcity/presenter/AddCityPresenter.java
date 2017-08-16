@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
@@ -12,11 +11,17 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-@InjectViewState
-public class AddCityPresenter extends MvpPresenter<com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter> {
+
+public class AddCityPresenter {
     //для возможности добавления в БД
     //переведено в SingleTone (TempCity)
 //    private ModelCityWeather modelCityWeather;
+
+    private AddCityActivity addCityActivity;
+
+    public AddCityPresenter(AddCityActivity addCityActivity){
+        this.addCityActivity = addCityActivity;
+    }
 
     public void getWeatherInCity(String fullCityName) {
         showViewLoading();
@@ -101,30 +106,30 @@ public class AddCityPresenter extends MvpPresenter<com.tensor.dapavlov1.tensorfi
     }
 
     private void hideViewLoading() {
-        getViewState().hideLoading();
+        addCityActivity.hideLoading();
     }
 
     private void showViewLoading() {
-        getViewState().showLoading();
+        addCityActivity.showLoading();
     }
 
     private void showCardWeatherInfo() {
-        getViewState().showWeatherCardFullInfo();
+        addCityActivity.showWeatherCardFullInfo();
     }
 
     private void showCardEmpty() {
-        getViewState().showWeatherCardNothingFind();
+        addCityActivity.showWeatherCardNothingFind();
     }
 
     private void showInformation(City city) {
-        getViewState().showInformation(city);
+        addCityActivity.showInformation(city);
     }
 
     private void showMessage(int message) {
-        getViewState().showMessage(message);
+        addCityActivity.showMessage(message);
     }
 
     private void showCityIsFavorite(Boolean checked) {
-        getViewState().setChecked(checked);
+        addCityActivity.setChecked(checked);
     }
 }

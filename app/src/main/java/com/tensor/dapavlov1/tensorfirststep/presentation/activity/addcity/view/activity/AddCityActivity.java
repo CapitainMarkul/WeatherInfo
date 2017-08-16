@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,8 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.squareup.picasso.Picasso;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -40,8 +39,8 @@ import butterknife.OnClick;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class AddCityActivity extends MvpAppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter {
-    @InjectPresenter
+public class AddCityActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter {
+
     AddCityPresenter addCityPresenter;
 
     @BindInt(R.integer.weather_now) int WEATHER_NOW;
@@ -73,6 +72,8 @@ public class AddCityActivity extends MvpAppCompatActivity implements com.tensor.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
+        addCityPresenter = new AddCityPresenter(this);
+
         ButterKnife.bind(this);
 
         setupViews();

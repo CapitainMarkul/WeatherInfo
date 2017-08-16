@@ -89,11 +89,11 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
 //moxy
-    compile 'com.arello-mobile:moxy:1.5.3'
-    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
-    compile 'com.arello-mobile:moxy-app-compat:1.5.3'
-    compile 'com.arello-mobile:moxy-android:1.5.3'
-    compile 'com.android.support:appcompat-v7:$support_version'
+//    compile 'com.arello-mobile:moxy:1.5.3'
+//    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
+//    compile 'com.arello-mobile:moxy-app-compat:1.5.3'
+//    compile 'com.arello-mobile:moxy-android:1.5.3'
+//    compile 'com.android.support:appcompat-v7:$support_version'
 
 //OkHtml + Picasso
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
