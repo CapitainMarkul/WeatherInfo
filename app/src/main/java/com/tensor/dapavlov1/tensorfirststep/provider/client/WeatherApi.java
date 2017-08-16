@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

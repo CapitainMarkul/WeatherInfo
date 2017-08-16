@@ -5,7 +5,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCityDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.provider.WorkWithDataBase;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -17,11 +16,11 @@ import java.util.List;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class Dao {
+public class DaoClient {
     DaoCityDao cityDao;
     Query<DaoCity> query;
 
-    public Dao(DaoCityDao cityDao, Query<DaoCity> query) {
+    public DaoClient(DaoCityDao cityDao, Query<DaoCity> query) {
         this.cityDao = cityDao;
         this.query = query;
     }

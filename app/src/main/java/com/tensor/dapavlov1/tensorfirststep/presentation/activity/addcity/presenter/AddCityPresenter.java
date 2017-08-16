@@ -2,7 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.prese
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.tensor.dapavlov1.tensorfirststep.Callback;
+import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -56,13 +56,13 @@ public class AddCityPresenter extends MvpPresenter<com.tensor.dapavlov1.tensorfi
 //
 //        @Override
 //        protected Object doInBackground(Object[] objects) {
-////            Map<String, String> map = ApiFabrica.getInstance().createMapForWeatherApi(objects[0].toString(),
+////            Map<String, String> map = ApiFabric.getInstance().createMapForWeatherApi(objects[0].toString(),
 ////                    BuildConfig.WEATHER_API_KEY,
 ////                    BuildConfig.WEATHER_API_LANGUAGE,
 ////                    BuildConfig.WEATHER_API_COUNT_DAY);
 //            try {
 ////                gsonCity = GsonFactory.getInstance().createGsonCityModel(
-////                        ApiFabrica.getInstance().getJsonFromApiWeather(map)
+////                        ApiFabric.getInstance().getJsonFromApiWeather(map)
 ////                );
 //                //Test
 //                modelCityWeather = MapperGsonToDb.getInstance().convertGsonModelToDaoModel(gsonCity);
@@ -95,7 +95,7 @@ public class AddCityPresenter extends MvpPresenter<com.tensor.dapavlov1.tensorfi
     }
 
     public void deleteFromFavorite() {
-        DataProvider.getInstance().deleteCityFromDataBase(
+        DataProvider.getInstance().deleteCity(
                 TempCity.getInstance().getModelCityWeather());
         showMessage(R.string.activity_favorite_del_from_favorite);
     }

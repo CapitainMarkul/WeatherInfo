@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep;
+package com.tensor.dapavlov1.tensorfirststep.provider;
 
 /**
  * Created by da.pavlov1 on 15.08.2017.
@@ -13,9 +13,6 @@ public class Callback<T> {
 
     }
     public void onFail() {
-
-    }
-    public void onFailure(T result) {
 
     }
 }

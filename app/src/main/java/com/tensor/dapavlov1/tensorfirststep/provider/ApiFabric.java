@@ -3,30 +3,28 @@ package com.tensor.dapavlov1.tensorfirststep.provider;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.GoogleApi;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApi;
 
-import java.io.IOException;
-
 /**
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class ApiFabrica {
-    private static ApiFabrica instance;
+public class ApiFabric {
+    private static ApiFabric instance;
 
-    private ApiFabrica() {
+    private ApiFabric() {
     }
 
-    public static ApiFabrica getInstance() {
+    public static ApiFabric getInstance() {
         if (instance == null) {
-            instance = new ApiFabrica();
+            instance = new ApiFabric();
         }
         return instance;
     }
 
-    public WeatherApi createClientWeatherApi() {
+    WeatherApi createClientWeatherApi() {
         return new WeatherApi();
     }
 
-    public GoogleApi crateClientGoogleApi() {
+    GoogleApi crateClientGoogleApi() {
         return new GoogleApi();
     }
 

@@ -1,9 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
+import android.app.Activity;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.Callback;
+import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -59,6 +62,16 @@ public class FavoritePresenter extends MvpPresenter<com.tensor.dapavlov1.tensorf
                 }
             }
         });
+    }
+
+    private Router router;
+
+    public void setRouter(Router router){
+        this.router = router;
+    }
+
+    public void changeActivity(Activity thisActivity, Class toActivity){
+        router.goToNewActivity(thisActivity, toActivity);
     }
 
     public void deleteCity(int position) {

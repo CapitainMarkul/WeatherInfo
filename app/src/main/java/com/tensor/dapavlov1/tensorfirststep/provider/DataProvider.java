@@ -1,11 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.Callback;
+import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.invokers.RemoteControlDb;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.Dao;
-import com.tensor.dapavlov1.tensorfirststep.GsonFactory;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DaoClient;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
@@ -25,13 +26,14 @@ import java.util.List;
 
 public class DataProvider {
     private static DataProvider instance;
-    //todo: static ???
-    private Dao daoClient;
+
+    private DaoClient daoClient;
     private WeatherApi weatherClient;
     private GoogleApi googleClient;
+    private RemoteControlDb remoteControlDb;
 
     private DataProvider() {
-        initClients();
+        init();
     }
 
     public static DataProvider getInstance() {
@@ -41,9 +43,17 @@ public class DataProvider {
         return instance;
     }
 
-    private void initClients() {
-        daoClient = WorkWithDataBase.getInstance().createNewDaoClient();
-        weatherClient = ApiFabrica.getInstance().createClientWeatherApi();
+    private void init() {
+        daoClient = CreatorDaoClient.getInstance().createNewDaoClient();
+        weatherClient = ApiFabric.getInstance().createClientWeatherApi();
+        googleClient = ApiFabric.getInstance().crateClientGoogleApi();
+
+        remoteControlDb = new RemoteControlDb();
+    }
+
+    public List<String> getPlaces(String inputText) throws IOException {
+        return GsonFactory.getInstance().getPlacesName(
+                googleClient.getJsonFromGooglePlaceApi(inputText));
     }
 
     public void updateCityInfo(final Callback callBack, final List<City> cities) throws IOException {
@@ -80,7 +90,6 @@ public class DataProvider {
         });
     }
 
-
     public void getCitiesFromBd(final Callback<List<City>> callBack) {
         App.getExecutorService().execute(new Runnable() {
             @Override
@@ -103,10 +112,6 @@ public class DataProvider {
                     if (response != null && !response.equals("")) {
                         ModelCityWeather tempCity = MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
                                 GsonFactory.getInstance().createGsonCityModel(response));
-                        //Получаем новый город и информацию о погоде в нем
-//                        TempCity.getInstance().setModelCityWeather(
-//                                MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-//                                        GsonFactory.getInstance().createGsonCityModel(response)));
 
                         //проверяем, есть ли этот город в списке Favorite
                         DaoCity tempModel = daoClient.isAdd(tempCity.getDaoCity());
@@ -123,7 +128,7 @@ public class DataProvider {
                                             tempCity.getDaoCity(),
                                             tempCity.getWeathers()), false);
                         }
-                        
+
                         TempCity.getInstance().setModelCityWeather(tempCity);
                     } else {
                         callBack.onFail();
@@ -140,7 +145,9 @@ public class DataProvider {
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                daoClient.deleteCity(position);
+                remoteControlDb.setCommand(
+                        new DelCityByIndexCommand(daoClient, position));
+                remoteControlDb.execute();
             }
         });
     }
@@ -149,21 +156,22 @@ public class DataProvider {
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                daoClient.setInDataBase(
-                        modelCityWeather.getDaoCity(),
-                        modelCityWeather.getWeathers());
+                remoteControlDb.setCommand(
+                        new AddCityInDbCommand(daoClient, modelCityWeather));
+                remoteControlDb.execute();
             }
         });
     }
 
-    public void deleteCityFromDataBase(final ModelCityWeather modelCityWeather) {
+    public void deleteCity(final ModelCityWeather modelCityWeather) {
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                daoClient.deleteCity(modelCityWeather.getDaoCity());
+                remoteControlDb.setCommand(
+                        new AddCityInDbCommand(daoClient, modelCityWeather));
+                remoteControlDb.undo();
             }
         });
-//        daoClient.deleteCity(modelCityWeather.getDaoCity());
     }
 
     private boolean isOnline() {

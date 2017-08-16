@@ -5,9 +5,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
-import com.tensor.dapavlov1.tensorfirststep.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.provider.ApiFabrica;
+import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,10 +16,10 @@ import java.util.List;
 
 public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterable {
 
-    List<String> resultList;
+    private List<String> resultList;
 
-    Context mContext;
-    int mResource;
+    private Context mContext;
+    private int mResource;
 
     public PlacesAutoComplete(Context context, int resource) {
         super(context, resource);
@@ -50,8 +48,7 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
                 if (constraint != null) {
                     try {
                         resultList =
-                                GsonFactory.getInstance().getPlacesName(
-                                        ApiFabrica.getInstance().crateClientGoogleApi().getJsonFromGooglePlaceApi(constraint.toString()));
+                                DataProvider.getInstance().getPlaces(constraint.toString());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -59,7 +56,6 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
                     filterResults.values = resultList;
                     filterResults.count = resultList.size();
                 }
-
                 return filterResults;
             }
 

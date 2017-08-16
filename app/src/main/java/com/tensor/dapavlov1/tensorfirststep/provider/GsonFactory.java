@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep;
+package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

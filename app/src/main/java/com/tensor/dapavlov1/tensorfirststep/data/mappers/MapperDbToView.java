@@ -5,7 +5,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApi;
 
 import java.util.ArrayList;
 import java.util.List;

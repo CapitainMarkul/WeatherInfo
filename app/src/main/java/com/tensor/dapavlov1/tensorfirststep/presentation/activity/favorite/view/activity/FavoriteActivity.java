@@ -20,6 +20,7 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter.AdapterFavorite;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter.FavoritePresenter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
+import com.tensor.dapavlov1.tensorfirststep.presentation.routers.RouterToAddCity;
 
 import java.util.List;
 
@@ -42,22 +43,26 @@ public class FavoriteActivity extends MvpAppCompatActivity implements com.tensor
     @BindView(R.id.cv_default) CardView cardEmpty;
 
     AdapterFavorite adapterFavorite;
+    RouterToAddCity routerToAddCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
         ButterKnife.bind(this);
-
+        setupRouter();
         setupRecyclerView();
         setupListeners();
     }
 
+    private void setupRouter(){
+        routerToAddCity = new RouterToAddCity();
+        mPresenter.setRouter(routerToAddCity);
+    }
 
     @OnClick(R.id.fb_add_new_city)
     void intentAddCity() {
-        Intent intent = new Intent(this, AddCityActivity.class);
-        startActivity(intent);
+        mPresenter.changeActivity(this, AddCityActivity.class);
     }
 
     private void setupListeners() {
