@@ -23,7 +23,7 @@ public class App extends Application {
     private static Context context;
 //    private OkHttpClient okHttpClient;
 
-    static ExecutorService executorService = Executors.newFixedThreadPool(1);
+    static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public static ExecutorService getExecutorService(){
         return executorService;
