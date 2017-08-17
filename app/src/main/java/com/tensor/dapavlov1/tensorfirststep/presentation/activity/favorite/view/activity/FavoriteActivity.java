@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
-import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.R;

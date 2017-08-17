@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
-import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
