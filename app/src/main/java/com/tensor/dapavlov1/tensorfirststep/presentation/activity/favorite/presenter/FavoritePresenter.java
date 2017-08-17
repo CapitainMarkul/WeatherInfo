@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
@@ -16,9 +15,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 /**
