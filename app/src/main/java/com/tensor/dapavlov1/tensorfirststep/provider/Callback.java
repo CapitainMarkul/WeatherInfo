@@ -5,13 +5,16 @@ package com.tensor.dapavlov1.tensorfirststep.provider;
  */
 
 public class Callback<T> {
-    public void onSuccess(T result){
+    public void onSuccess(T result) {
     }
-    public void onSuccess(T result, boolean isFavorite){
+
+    public void onSuccess(T result, boolean isFavorite) {
     }
+
     public void onFail(String message) {
 
     }
+
     public void onFail() {
 
     }

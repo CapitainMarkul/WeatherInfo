@@ -30,8 +30,8 @@
             android:name=".presentation.activity.addcity.view.activity.AddCityActivity"
             android:theme="@style/AppTheme">
             <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
             <!--</intent-filter>-->
         </activity>
     </application>

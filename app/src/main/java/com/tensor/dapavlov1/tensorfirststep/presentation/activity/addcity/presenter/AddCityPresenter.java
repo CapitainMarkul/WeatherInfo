@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter;
 
+import com.tensor.dapavlov1.tensorfirststep.PresenterCallBack;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
@@ -7,52 +8,98 @@ import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Created by da.pavlov1 on 03.08.2017.
  */
 
 
 public class AddCityPresenter {
-    //для возможности добавления в БД
-    //переведено в SingleTone (TempCity)
-//    private ModelCityWeather modelCityWeather;
-    private AddCityActivity addCityActivity;
+    private AddCityActivity activity;
+    private City cachedCity;
+    private boolean isFavorite;
+    private boolean isRefresh = false;
 
-    public void setActivity(AddCityActivity addCityActivity) {
-        this.addCityActivity = addCityActivity;
+    ReentrantLock lock = new ReentrantLock();
+
+    private void cachedInfo(City city, boolean isFavorite) {
+        isRefresh = false;
+        cachedCity = city;
+        this.isFavorite = isFavorite;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public boolean isRefresh() {
+        return isRefresh;
+    }
+
+    public City getCachedCity() {
+        return cachedCity;
+    }
+
+    private PresenterCallBack presenterCallBack = new PresenterCallBack() {
+        @Override
+        public void onSuccess() {
+            lock.lock();
+            try {
+                showCityIsFavorite(isFavorite);
+//            Показываем результат пользователю
+                showCardWeatherInfo();
+//                activity.setCity(cachedCity);
+                showInformation(cachedCity);
+                hideViewLoading();
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        @Override
+        public void onNothingFind() {
+            lock.lock();
+            try {
+                showCardEmpty();
+                hideViewLoading();
+            } finally {
+                lock.unlock();
+            }
+        }
+    };
+
+    public void setActivity(AddCityActivity activity) {
+        this.activity = activity;
     }
 
     public void getWeatherInCity(String fullCityName) {
-        showViewLoading();
-
+        isRefresh = true;
         DataProvider.getInstance().getWeathers(new Callback<City>() {
             @Override
             public void onSuccess(City resultCity, boolean isFavorite) {
                 if (resultCity != null) {
-                    showCityIsFavorite(isFavorite);
-//
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-
-                    //Показываем результат пользователю
-                    showCardWeatherInfo();
-                    addCityActivity.setCity(resultCity);
-                    showInformation(resultCity);
+                    cachedInfo(resultCity, isFavorite);
+                    presenterCallBack.onSuccess();
                 }
-                hideViewLoading();
             }
 
             @Override
             public void onFail() {
-                //город не найден
-                showCardEmpty();
-                hideViewLoading();
+                presenterCallBack.onNothingFind();
             }
         }, fullCityName);
     }
+
+//    private void standByActivity() {
+//        while (activity == null) {
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public void addToFavorite() {
         DataProvider.getInstance().addCityToFavorite(
@@ -67,30 +114,30 @@ public class AddCityPresenter {
     }
 
     private void hideViewLoading() {
-        addCityActivity.hideLoading();
+        activity.hideLoading();
     }
 
     private void showViewLoading() {
-        addCityActivity.showLoading();
+        activity.showLoading();
     }
 
     private void showCardWeatherInfo() {
-        addCityActivity.showWeatherCardFullInfo();
+        activity.showWeatherCardFullInfo();
     }
 
     private void showCardEmpty() {
-        addCityActivity.showWeatherCardNothingFind();
+        activity.showWeatherCardNothingFind();
     }
 
     private void showInformation(City city) {
-        addCityActivity.showInformation(city);
+        activity.showInformation(city);
     }
 
     private void showMessage(int message) {
-        addCityActivity.showMessage(message);
+        activity.showMessage(message);
     }
 
     private void showCityIsFavorite(Boolean checked) {
-        addCityActivity.setChecked(checked);
+        activity.setChecked(checked);
     }
 }

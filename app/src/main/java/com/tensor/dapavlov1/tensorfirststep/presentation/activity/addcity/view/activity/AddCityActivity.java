@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -42,63 +43,58 @@ import butterknife.OnClick;
  */
 
 public class AddCityActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter {
-    private final static String PRESENTER = "presenter";
-    private static final String FIND_CITY = "city";
+    private final static String PRESENTER = "add_city_presenter";
+    private final static String LIST_STATE_KEY = "recycler_list_state_weather";
 
     RetainedFragment retainedFragment;
-    AddCityPresenter addCityPresenter;
+    AddCityPresenter mPresenter;
+    AdapterHorizontalWeather adapterHorizontalWeather;
 
     @BindInt(R.integer.weather_now) int WEATHER_NOW;
-
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     @BindView(R.id.rl_root_container) RelativeLayout rootContainer;
-    @BindView(R.id.tv_autocompleteText) AutoCompleteTextView cityName;
 
+    @BindView(R.id.tv_autocompleteText) AutoCompleteTextView cityName;
     @BindViews({R.id.cv_nothing_weather, R.id.cv_weather_city}) List<CardView> cardViews;
     @BindView(R.id.cv_nothing_weather) CardView cardNothing;
-    @BindView(R.id.cv_weather_city) CardView cardInfo;
 
+    @BindView(R.id.cv_weather_city) CardView cardInfo;
     @BindView(R.id.tv_city) TextView cityNameInCard;
     @BindView(R.id.tv_time) TextView time;
     @BindView(R.id.tv_temperature) TextView temperature;
     @BindView(R.id.tv_description) TextView description;
     @BindView(R.id.tv_wind_short) TextView windShortTitle;
     @BindView(R.id.tv_wind_speed) TextView windSpeed;
-    @BindView(R.id.tv_pressure) TextView pressure;
 
+    @BindView(R.id.tv_pressure) TextView pressure;
     @BindView(R.id.cb_add_to_favorite) CheckBox addToFavorite;
     @BindView(R.id.iv_icon_weather) ImageView iconWeather;
+
     @BindView(R.id.iv_clear) ImageView clearCityName;
-
     @BindView(R.id.rv_weather_on_other_time) RecyclerView weatherOtherTime;
-    AdapterHorizontalWeather adapterHorizontalWeather;
-
-    private City city;
-
-    public void setCity(City city){
-        this.city = city;
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
         createRetainedFragment();
-
-        ButterKnife.bind(this);getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        cityName.clearFocus();
-
-        addCityPresenter = (AddCityPresenter) retainedFragment.getDataFromMap(PRESENTER);
-        if(addCityPresenter == null) {
-            addCityPresenter = new AddCityPresenter();
-            addCityPresenter.setActivity(this);
-        } else {
-            addCityPresenter.setActivity(this);
-        }
+        ButterKnife.bind(this);
 
         setupViews();
         setupRecyclerView();
         setupListeners();
+        setupPresenter();
+    }
+
+    private void setupPresenter() {
+        mPresenter = (AddCityPresenter) retainedFragment.getDataFromMap(PRESENTER);
+        if (mPresenter == null) {
+            mPresenter = new AddCityPresenter();
+            mPresenter.setActivity(this);
+            retainedFragment.setDataInMap(PRESENTER, mPresenter);
+        } else {
+            mPresenter.setActivity(this);
+        }
     }
 
     private void createRetainedFragment() {
@@ -112,19 +108,32 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(city != null) {
-            retainedFragment.setDataInMap(FIND_CITY, city);
-        }
-        retainedFragment.setDataInMap(PRESENTER, addCityPresenter);
+
+        //detach favoriteActivity
+        mPresenter.setActivity(null);
+
+        retainedFragment.setParcelableData(
+                LIST_STATE_KEY,
+                weatherOtherTime.getLayoutManager().onSaveInstanceState());
+        retainedFragment.setDataInMap(PRESENTER, mPresenter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        City c = (City) retainedFragment.getDataFromMap(FIND_CITY);
-        if(c != null) {
-            showInformation((City) retainedFragment.getDataFromMap(FIND_CITY));
-            cardInfo.setVisibility(View.VISIBLE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        cityName.clearFocus();
+
+        mPresenter.setActivity(this);
+
+        if (mPresenter.isRefresh()){
+            showLoading();
+        } else {
+            hideLoading();
+            if(mPresenter.getCachedCity() != null) {
+                showInformation(mPresenter.getCachedCity());
+                showWeatherCardFullInfo();
+            }
         }
     }
 
@@ -140,8 +149,7 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 clearChecked();
-                retainedFragment.setDataInMap(FIND_CITY, null);
-                addCityPresenter.getWeatherInCity(cityName.getText().toString());
+                mPresenter.getWeatherInCity(cityName.getText().toString());
             }
         });
     }
@@ -157,9 +165,9 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             @Override
             public void run() {
                 if (addToFavorite.isChecked()) {
-                    addCityPresenter.addToFavorite();
+                    mPresenter.addToFavorite();
                 } else {
-                    addCityPresenter.deleteFromFavorite();
+                    mPresenter.deleteFromFavorite();
                 }
             }
         });
@@ -228,10 +236,10 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             public void run() {
                 adapterHorizontalWeather.setItems(weathers);
 
-//                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
-//                if (parcelable != null) {
-//                    weatherOtherTime.getLayoutManager().onRestoreInstanceState(parcelable);
-//                }
+                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
+                if (parcelable != null) {
+                    weatherOtherTime.getLayoutManager().onRestoreInstanceState(parcelable);
+                }
 
                 adapterHorizontalWeather.notifyDataSetChanged();
             }

@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class RouterToAddCity implements Router {
 //    @Override
-//    public void goToNewActivity(@NotNull Activity activity) {
-//        Intent intent = new Intent(activity, AddCityActivity.class);
-//        activity.startActivity(intent);
+//    public void goToNewActivity(@NotNull Activity favoriteActivity) {
+//        Intent intent = new Intent(favoriteActivity, AddCityActivity.class);
+//        favoriteActivity.startActivity(intent);
 //    }
 
     @Override

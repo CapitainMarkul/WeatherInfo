@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
@@ -14,7 +13,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
 
 import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
@@ -37,11 +35,13 @@ import butterknife.OnClick;
 
 public class FavoriteActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter, RecyclerViewItemClickListener {
     private final static String PRESENTER = "favorite_presenter";
-    private final static String LIST_STATE_KEY = "recycler_list_state";
+    private final static String LIST_STATE_KEY = "recycler_list_state_cities";
+    private final static String GOTO_OTHER_ACTIVITY = "goto";
 
     private RetainedFragment retainedFragment;
-
     FavoritePresenter mPresenter;
+    AdapterFavorite adapterFavorite;
+    RouterToAddCity routerToAddCity;
 
     @BindView(R.id.fb_add_new_city) FloatingActionButton addNewCity;
     @BindView(R.id.root_container) CoordinatorLayout rootContainer;
@@ -49,37 +49,40 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     @BindView(R.id.rv_main_favorite) RecyclerView recyclerViewFavorite;
     @BindView(R.id.cv_default) CardView cardEmpty;
 
-    AdapterFavorite adapterFavorite;
-    RouterToAddCity routerToAddCity;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
-
         //return InstanceState
         createRetainedFragment();
 
-        //ередаем новую активити презентеру
+        ButterKnife.bind(this);
+        setupRecyclerView();
+        setupListeners();
+        setupPresenter();
+        setupRouter();
+    }
+
+    private void setupPresenter() {
         mPresenter = (FavoritePresenter) retainedFragment.getDataFromMap(PRESENTER);
         if (mPresenter == null) {
             mPresenter = new FavoritePresenter();
             mPresenter.setActivity(this);
+            retainedFragment.setDataInMap(PRESENTER, mPresenter);
+
+            //updateWeather
+            mPresenter.updateWeathers();
+            setRefreshLayout(true);
         } else {
             mPresenter.setActivity(this);
         }
-
-        ButterKnife.bind(this);
-        setupRouter();
-        setupRecyclerView();
-        setupListeners();
-
-
+        if (mPresenter.getRefresh()) {
+            refreshWeathers(mPresenter.getCachedCities());
+        }
     }
 
     private void createRetainedFragment() {
         retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag("data");
-
         if (retainedFragment == null) {
             retainedFragment = new RetainedFragment();
             getFragmentManager().beginTransaction().add(retainedFragment, "data").commit();
@@ -89,6 +92,10 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        //detach favoriteActivity
+        mPresenter.setActivity(null);
+
         retainedFragment.setParcelableData(
                 LIST_STATE_KEY,
                 recyclerViewFavorite.getLayoutManager().onSaveInstanceState());
@@ -99,7 +106,20 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.showFavoriteCard();
+        mPresenter.setActivity(this);
+        //если пришли сюда с другого экрана
+        if (retainedFragment.getDataFromMap(GOTO_OTHER_ACTIVITY) == null
+                || (Boolean) retainedFragment.getDataFromMap(GOTO_OTHER_ACTIVITY)) {
+            retainedFragment.setDataInMap(GOTO_OTHER_ACTIVITY, false);
+            mPresenter.updateWeathers();
+        } else {
+            setRefreshLayout(mPresenter.getRefresh());
+
+            if (!mPresenter.getRefresh()) {
+                //кешированные данные
+                refreshWeathers(mPresenter.getCachedCities());
+            }
+        }
     }
 
     private void setupRouter() {
@@ -109,6 +129,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
 
     @OnClick(R.id.fb_add_new_city)
     void intentAddCity() {
+        retainedFragment.setDataInMap(GOTO_OTHER_ACTIVITY, true);
         mPresenter.changeActivity(this, AddCityActivity.class);
     }
 
@@ -116,7 +137,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.showFavoriteCard();
+                mPresenter.updateWeathers();
             }
         });
 
@@ -135,6 +156,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+//                hideLoading();
                 adapterFavorite.setItems(weathers);
                 //restoreStateInstance
                 Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
@@ -151,8 +173,9 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                retainedFragment.setDataInMap(REFRESH, false);
                 cardEmpty.setVisibility(View.VISIBLE);
-                stopRefreshLayout();
+                setRefreshLayout(false);
             }
         });
     }
@@ -172,28 +195,32 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                retainedFragment.setDataInMap(REFRESH, false);
                 recyclerViewFavorite.setVisibility(View.VISIBLE);
-                stopRefreshLayout();
+                setRefreshLayout(false);
             }
         });
     }
 
-    private void stopRefreshLayout() {
+    public void setRefreshLayout(final Boolean isRefresh) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(isRefresh);
             }
         });
     }
+
+    private static final String REFRESH = "status_refresh";
 
     @Override
     public void showLoading() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                retainedFragment.setDataInMap(REFRESH, true);
                 recyclerViewFavorite.setVisibility(View.INVISIBLE);
-//                stopRefreshLayout();
+                setRefreshLayout(true);
             }
         });
     }
@@ -227,13 +254,14 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
 //    @Override
 //    protected void onResume() {
 //        super.onResume();
-//        mPresenter.showFavoriteCard();
+//        mPresenter.updateWeathers();
 //    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        retainedFragment.setData(this.get);
+        // TODO: 17.08.2017 КОгда уничтожать презентер? Destroy вызывается и при пересоздании активити
+//        retainedFragment.setDataInMap(PRESENTER, null);
     }
 
     @Override

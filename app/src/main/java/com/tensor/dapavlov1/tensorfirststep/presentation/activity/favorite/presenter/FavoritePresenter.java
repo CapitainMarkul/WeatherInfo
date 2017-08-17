@@ -3,16 +3,19 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.pres
 import android.app.Activity;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.PresenterCallBack;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -22,6 +25,55 @@ public class FavoritePresenter {
 
     private FavoriteActivity activity;
 
+    private Router router;
+
+    private List<City> cachedCities = new ArrayList<>();
+    private boolean isRefresh = false;
+
+    ReentrantLock lock = new ReentrantLock();
+    private PresenterCallBack presenterCallBack = new PresenterCallBack() {
+        @Override
+        public void onSuccess() {
+//            standByActivity();
+            lock.lock();try {
+                activity.setRefreshLayout(getRefresh());
+                activity.refreshWeathers(getCachedCities());
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        @Override
+        public void onNothingFind() {
+//            standByActivity();
+            lock.lock();try {
+                activity.setRefreshLayout(getRefresh());
+                activity.showEmptyCard();
+            } finally {
+                lock.unlock();
+            }
+        }
+    };
+
+    private void cachedInfo(List<City> cities) {
+        isRefresh = false;
+
+        cachedCities.clear();
+        cachedCities.addAll(cities);
+    }
+
+    public boolean getRefresh() {
+        return isRefresh;
+    }
+
+    public List<City> getCachedCities() {
+        return cachedCities;
+    }
+
+    public void setRouter(Router router) {
+        this.router = router;
+    }
+
     public void setActivity(FavoriteActivity activity) {
         this.activity = activity;
     }
@@ -30,8 +82,8 @@ public class FavoritePresenter {
         return CheckConnect.getInstance().isOnline(App.getContext());
     }
 
-    public void showFavoriteCard() {
-        showViewLoading();
+    public void updateWeathers() {
+        isRefresh = true;
         DataProvider.getInstance().getCitiesFromBd(new Callback<List<City>>() {
             //Читаем из БД
             @Override
@@ -46,44 +98,50 @@ public class FavoritePresenter {
                                         //обновляем погоду
                                         @Override
                                         public void onSuccess(List<City> result) {
-                                            try {
-                                                Thread.sleep(3000);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            hideViewLoading();
-                                            refreshWeathers(result);
+                                            //кешируем результат
+                                            cachedInfo(result);
+                                            presenterCallBack.onSuccess();
                                         }
                                     }, result);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
-                        //Показываем устаревшую информацию из БД
-                        hideViewLoading();
-                        showMessage(R.string.str_error_connect_to_internet);
-//                                App.getContext().getResources().getString(
-//                                        R.string.str_error_connect_to_internet));
-                        refreshWeathers(result);
+                        //кешируем результат
+                        cachedInfo(result);
+                        presenterCallBack.onSuccess();
                     }
                 } else {
                     //если БД пуста, то показываем карточку с подсказкой!
-                    showNothingCities();
+                    cachedInfo(null);
+                    presenterCallBack.onNothingFind();
                 }
             }
         });
     }
 
-    public void showAsyncResult(List<City> result) {
-        hideViewLoading();
-        refreshWeathers(result);
-    }
 
-    private Router router;
+//    public boolean compareList(List<City> oldCities) {
+//        if (cachedCities != null) {
+//            if (oldCities.size() != cachedCities.size()) {
+//                return true;
+//            } else if (oldCities.containsAll(cachedCities) && cachedCities.containsAll(oldCities)) {
+//                return false;
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
 
-    public void setRouter(Router router) {
-        this.router = router;
-    }
+//    private void standByActivity() {
+//        while (this.activity == null) {
+//            try {
+//                Thread.sleep(200);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public void changeActivity(Activity thisActivity, Class toActivity) {
         router.goToNewActivity(thisActivity, toActivity);
@@ -91,25 +149,5 @@ public class FavoritePresenter {
 
     public void deleteCity(int position) {
         DataProvider.getInstance().deleteCity(position);
-    }
-
-    private void showNothingCities() {
-        activity.showEmptyCard();
-    }
-
-    private void showMessage(int message) {
-        activity.showMessage(message);
-    }
-
-    private void hideViewLoading() {
-        activity.hideLoading();
-    }
-
-    private void showViewLoading() {
-        activity.showLoading();
-    }
-
-    private void refreshWeathers(List<City> cities) {
-        activity.refreshWeathers(cities);
     }
 }
