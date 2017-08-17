@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
 import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -38,7 +39,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     private final static String LIST_STATE_KEY = "recycler_list_state_cities";
     private final static String GOTO_OTHER_ACTIVITY = "goto";
 
-    private RetainedFragment retainedFragment;
+    private ConfigSingleone configSingleone;
     FavoritePresenter mPresenter;
     AdapterFavorite adapterFavorite;
     RouterToAddCity routerToAddCity;
@@ -54,7 +55,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
         //return InstanceState
-        createRetainedFragment();
+        configSingleone = ConfigSingleone.getInstance();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -69,11 +70,11 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     }
 
     private void setupPresenter() {
-        mPresenter = (FavoritePresenter) retainedFragment.getDataFromMap(PRESENTER);
+        mPresenter = (FavoritePresenter) configSingleone.getData(PRESENTER);
         if (mPresenter == null) {
             mPresenter = new FavoritePresenter();
             mPresenter.setActivity(this);
-            retainedFragment.setDataInMap(PRESENTER, mPresenter);
+            configSingleone.setData(PRESENTER, mPresenter);
 
             //updateWeather
 //            mPresenter.updateWeathers();
@@ -86,22 +87,14 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         }
     }
 
-    private void createRetainedFragment() {
-        retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag("data");
-        if (retainedFragment == null) {
-            retainedFragment = new RetainedFragment();
-            getFragmentManager().beginTransaction().add(retainedFragment, "data").commit();
-        }
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        retainedFragment.setParcelableData(
+        configSingleone.setData(
                 LIST_STATE_KEY,
                 recyclerViewFavorite.getLayoutManager().onSaveInstanceState());
-        retainedFragment.setDataInMap(PRESENTER, mPresenter);
+        configSingleone.setData(PRESENTER, mPresenter);
     }
 
     @Override
@@ -109,9 +102,9 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         super.onResume();
         mPresenter.setActivity(this);
         //если пришли сюда с другого экрана
-        if (retainedFragment.getDataFromMap(GOTO_OTHER_ACTIVITY) == null
-                || (Boolean) retainedFragment.getDataFromMap(GOTO_OTHER_ACTIVITY)) {
-            retainedFragment.setDataInMap(GOTO_OTHER_ACTIVITY, false);
+        if (configSingleone.getData(GOTO_OTHER_ACTIVITY) == null
+                || (Boolean) configSingleone.getData(GOTO_OTHER_ACTIVITY)) {
+            configSingleone.setData(GOTO_OTHER_ACTIVITY, false);
             mPresenter.updateWeathers();
 
         } else {
@@ -130,7 +123,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
 
     @OnClick(R.id.fb_add_new_city)
     void intentAddCity() {
-        retainedFragment.setDataInMap(GOTO_OTHER_ACTIVITY, true);
+        configSingleone.setData(GOTO_OTHER_ACTIVITY, true);
         mPresenter.changeActivity(this, AddCityActivity.class);
     }
 
@@ -160,7 +153,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
 //                hideLoading();
                 adapterFavorite.setItems(weathers);
                 //restoreStateInstance
-                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
+                Parcelable parcelable = (Parcelable) configSingleone.getData(LIST_STATE_KEY);
                 if (parcelable != null) {
                     recyclerViewFavorite.getLayoutManager().onRestoreInstanceState(parcelable);
                 }
@@ -174,7 +167,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                retainedFragment.setDataInMap(REFRESH, false);
+                configSingleone.setData(REFRESH, false);
                 cardEmpty.setVisibility(View.VISIBLE);
                 setRefreshLayout(false);
             }
@@ -196,7 +189,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                retainedFragment.setDataInMap(REFRESH, false);
+                configSingleone.setData(REFRESH, false);
                 recyclerViewFavorite.setVisibility(View.VISIBLE);
                 setRefreshLayout(false);
             }
@@ -219,7 +212,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                retainedFragment.setDataInMap(REFRESH, true);
+                configSingleone.setData(REFRESH, true);
                 recyclerViewFavorite.setVisibility(View.INVISIBLE);
                 setRefreshLayout(true);
             }

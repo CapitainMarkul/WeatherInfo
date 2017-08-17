@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
 import com.tensor.dapavlov1.tensorfirststep.RetainedFragment;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -46,7 +47,7 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     private final static String PRESENTER = "add_city_presenter";
     private final static String LIST_STATE_KEY = "recycler_list_state_weather";
 
-    RetainedFragment retainedFragment;
+    ConfigSingleone configSingleone;
     AddCityPresenter mPresenter;
     AdapterHorizontalWeather adapterHorizontalWeather;
 
@@ -77,8 +78,8 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
-        createRetainedFragment();
         ButterKnife.bind(this);
+        configSingleone = ConfigSingleone.getInstance();
 
         setupViews();
         setupRecyclerView();
@@ -87,21 +88,13 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     }
 
     private void setupPresenter() {
-        mPresenter = (AddCityPresenter) retainedFragment.getDataFromMap(PRESENTER);
+        mPresenter = (AddCityPresenter) configSingleone.getData(PRESENTER);
         if (mPresenter == null) {
             mPresenter = new AddCityPresenter();
             mPresenter.setActivity(this);
-            retainedFragment.setDataInMap(PRESENTER, mPresenter);
+            configSingleone.setData(PRESENTER, mPresenter);
         } else {
             mPresenter.setActivity(this);
-        }
-    }
-
-    private void createRetainedFragment() {
-        retainedFragment = (RetainedFragment) getFragmentManager().findFragmentByTag("data");
-        if (retainedFragment == null) {
-            retainedFragment = new RetainedFragment();
-            getFragmentManager().beginTransaction().add(retainedFragment, "data").commit();
         }
     }
 
@@ -109,10 +102,10 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        retainedFragment.setParcelableData(
+        configSingleone.setData(
                 LIST_STATE_KEY,
                 weatherOtherTime.getLayoutManager().onSaveInstanceState());
-        retainedFragment.setDataInMap(PRESENTER, mPresenter);
+        configSingleone.setData(PRESENTER, mPresenter);
     }
 
     @Override
@@ -233,7 +226,7 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
             public void run() {
                 adapterHorizontalWeather.setItems(weathers);
 
-                Parcelable parcelable = (Parcelable) retainedFragment.getData(LIST_STATE_KEY);
+                Parcelable parcelable = (Parcelable) configSingleone.getData(LIST_STATE_KEY);
                 if (parcelable != null) {
                     weatherOtherTime.getLayoutManager().onRestoreInstanceState(parcelable);
                 }

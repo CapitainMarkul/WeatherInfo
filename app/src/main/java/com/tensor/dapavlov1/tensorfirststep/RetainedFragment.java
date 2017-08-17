@@ -13,33 +13,33 @@ import java.util.Map;
  */
 
 public class RetainedFragment extends Fragment {
-    private Bundle savedInstanceState = new Bundle();
-    private Map<String, Object> mapSavedState = new HashMap<>();
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    public void setDataInMap(String key, Object value) {
-        mapSavedState.put(key, value);
-    }
-
-    public Object getDataFromMap(String key) {
-        return mapSavedState.get(key);
-    }
-
-    public void setParcelableData(String key, Parcelable data) {
-        savedInstanceState.putParcelable(key, data);
-    }
-
-    public Object getData(String key) {
-        return savedInstanceState.get(key);
-    }
+//    private Bundle savedInstanceState = new Bundle();
+//    private Map<String, Object> mapSavedState = new HashMap<>();
+//
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setRetainInstance(true);
+//    }
+//
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//    }
+//
+//    public void setDataInMap(String key, Object value) {
+//        mapSavedState.put(key, value);
+//    }
+//
+//    public Object getDataFromMap(String key) {
+//        return mapSavedState.get(key);
+//    }
+//
+//    public void setParcelableData(String key, Parcelable data) {
+//        savedInstanceState.putParcelable(key, data);
+//    }
+//
+//    public Object getData(String key) {
+//        return savedInstanceState.get(key);
+//    }
 }
