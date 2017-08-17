@@ -1,6 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.PresenterCallBack;
@@ -14,7 +16,9 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 /**
@@ -30,30 +34,28 @@ public class FavoritePresenter {
     private List<City> cachedCities = new ArrayList<>();
     private boolean isRefresh = false;
 
-    ReentrantLock lock = new ReentrantLock();
     private PresenterCallBack presenterCallBack = new PresenterCallBack() {
         @Override
         public void onSuccess() {
-//            standByActivity();
-            lock.lock();try {
+            try {
                 activity.setRefreshLayout(getRefresh());
                 activity.refreshWeathers(getCachedCities());
-            } finally {
-                lock.unlock();
+            } catch (NullPointerException e) {
+                Toast.makeText(App.getContext(), "Возникла ошибка. Повторите попытку", Toast.LENGTH_SHORT);
+                return;
             }
         }
 
         @Override
         public void onNothingFind() {
-//            standByActivity();
-            lock.lock();try {
-                activity.setRefreshLayout(getRefresh());
-                activity.showEmptyCard();
-            } finally {
-                lock.unlock();
-            }
+            activity.setRefreshLayout(getRefresh());
+            activity.showEmptyCard();
         }
     };
+
+    public boolean isShowInfoNow() {
+        return isShowInfoNow();
+    }
 
     private void cachedInfo(List<City> cities) {
         isRefresh = false;
@@ -74,7 +76,7 @@ public class FavoritePresenter {
         this.router = router;
     }
 
-    public void setActivity(FavoriteActivity activity) {
+    public synchronized void setActivity(FavoriteActivity activity) {
         this.activity = activity;
     }
 
@@ -119,29 +121,6 @@ public class FavoritePresenter {
             }
         });
     }
-
-
-//    public boolean compareList(List<City> oldCities) {
-//        if (cachedCities != null) {
-//            if (oldCities.size() != cachedCities.size()) {
-//                return true;
-//            } else if (oldCities.containsAll(cachedCities) && cachedCities.containsAll(oldCities)) {
-//                return false;
-//            }
-//            return true;
-//        }
-//        return false;
-//    }
-
-//    private void standByActivity() {
-//        while (this.activity == null) {
-//            try {
-//                Thread.sleep(200);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public void changeActivity(Activity thisActivity, Class toActivity) {
         router.goToNewActivity(thisActivity, toActivity);

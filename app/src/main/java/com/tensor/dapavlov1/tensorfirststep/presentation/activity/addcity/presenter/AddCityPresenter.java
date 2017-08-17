@@ -21,8 +21,6 @@ public class AddCityPresenter {
     private boolean isFavorite;
     private boolean isRefresh = false;
 
-    ReentrantLock lock = new ReentrantLock();
-
     private void cachedInfo(City city, boolean isFavorite) {
         isRefresh = false;
         cachedCity = city;
@@ -44,28 +42,17 @@ public class AddCityPresenter {
     private PresenterCallBack presenterCallBack = new PresenterCallBack() {
         @Override
         public void onSuccess() {
-            lock.lock();
-            try {
-                showCityIsFavorite(isFavorite);
+            showCityIsFavorite(isFavorite);
 //            Показываем результат пользователю
-                showCardWeatherInfo();
-//                activity.setCity(cachedCity);
-                showInformation(cachedCity);
-                hideViewLoading();
-            } finally {
-                lock.unlock();
-            }
+            showCardWeatherInfo();
+            showInformation(cachedCity);
+            hideViewLoading();
         }
 
         @Override
         public void onNothingFind() {
-            lock.lock();
-            try {
-                showCardEmpty();
-                hideViewLoading();
-            } finally {
-                lock.unlock();
-            }
+            showCardEmpty();
+            hideViewLoading();
         }
     };
 
@@ -90,16 +77,6 @@ public class AddCityPresenter {
             }
         }, fullCityName);
     }
-
-//    private void standByActivity() {
-//        while (activity == null) {
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public void addToFavorite() {
         DataProvider.getInstance().addCityToFavorite(

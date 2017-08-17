@@ -55,6 +55,11 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         setContentView(R.layout.activity_favorite);
         //return InstanceState
         createRetainedFragment();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         ButterKnife.bind(this);
         setupRecyclerView();
@@ -71,7 +76,7 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
             retainedFragment.setDataInMap(PRESENTER, mPresenter);
 
             //updateWeather
-            mPresenter.updateWeathers();
+//            mPresenter.updateWeathers();
             setRefreshLayout(true);
         } else {
             mPresenter.setActivity(this);
@@ -93,15 +98,11 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //detach favoriteActivity
-        mPresenter.setActivity(null);
-
         retainedFragment.setParcelableData(
                 LIST_STATE_KEY,
                 recyclerViewFavorite.getLayoutManager().onSaveInstanceState());
         retainedFragment.setDataInMap(PRESENTER, mPresenter);
     }
-
 
     @Override
     protected void onResume() {
@@ -112,14 +113,14 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
                 || (Boolean) retainedFragment.getDataFromMap(GOTO_OTHER_ACTIVITY)) {
             retainedFragment.setDataInMap(GOTO_OTHER_ACTIVITY, false);
             mPresenter.updateWeathers();
-        } else {
-            setRefreshLayout(mPresenter.getRefresh());
 
+        } else {
             if (!mPresenter.getRefresh()) {
                 //кешированные данные
                 refreshWeathers(mPresenter.getCachedCities());
             }
         }
+        setRefreshLayout(mPresenter.getRefresh());
     }
 
     private void setupRouter() {
@@ -251,17 +252,9 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         super.onStart();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        mPresenter.updateWeathers();
-//    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // TODO: 17.08.2017 КОгда уничтожать презентер? Destroy вызывается и при пересоздании активити
-//        retainedFragment.setDataInMap(PRESENTER, null);
     }
 
     @Override

@@ -109,9 +109,6 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //detach favoriteActivity
-        mPresenter.setActivity(null);
-
         retainedFragment.setParcelableData(
                 LIST_STATE_KEY,
                 weatherOtherTime.getLayoutManager().onSaveInstanceState());
@@ -126,11 +123,11 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
 
         mPresenter.setActivity(this);
 
-        if (mPresenter.isRefresh()){
+        if (mPresenter.isRefresh()) {
             showLoading();
         } else {
             hideLoading();
-            if(mPresenter.getCachedCity() != null) {
+            if (mPresenter.getCachedCity() != null) {
                 showInformation(mPresenter.getCachedCity());
                 showWeatherCardFullInfo();
             }
