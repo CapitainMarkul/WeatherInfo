@@ -242,6 +242,12 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.setActivity(null);
+    }
+
+    @Override
     public Loader onCreateLoader(int id, Bundle args) {
         setupPresenter();
         setupRecyclerAdapter();
