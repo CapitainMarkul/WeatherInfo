@@ -1,24 +1,24 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.commands;
 
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DaoClient;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 
 /**
  * Created by da.pavlov1 on 16.08.2017.
  */
 
 public class DelCityByIndexCommand implements Command {
-    private DaoClient daoClient;
+    private DbClient dbClient;
     private int index;
 
-    public DelCityByIndexCommand(DaoClient daoClient, int index) {
-        this.daoClient = daoClient;
+    public DelCityByIndexCommand(DbClient dbClient, int index) {
+        this.dbClient = dbClient;
         this.index = index;
     }
 
     @Override
     public void execute() {
-        daoClient.deleteCity(index);
+        dbClient.deleteCity(index);
     }
 
     @Override

@@ -8,19 +8,19 @@ import java.util.List;
 
 //Класс обертка
 public class ModelCityWeather {
-    private DaoCity daoCity;
-    private List<DaoWeather> weathers;
+    private DbCity dbCity;
+    private List<DbWeather> weathers;
 
-    public ModelCityWeather(DaoCity daoCity, List<DaoWeather> weathers) {
-        this.daoCity = daoCity;
+    public ModelCityWeather(DbCity dbCity, List<DbWeather> weathers) {
+        this.dbCity = dbCity;
         this.weathers = weathers;
     }
 
-    public DaoCity getDaoCity() {
-        return daoCity;
+    public DbCity getDbCity() {
+        return dbCity;
     }
 
-    public List<DaoWeather> getWeathers() {
+    public List<DbWeather> getWeathers() {
         return weathers;
     }
 }

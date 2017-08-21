@@ -15,5 +15,5 @@ public interface AddCityPresenter extends Loading, ShowMessage {
 
     void showWeatherCardFullInfo();
 
-    void setChecked(Boolean checked);
+    void cityIsFavorite(Boolean checked);
 }

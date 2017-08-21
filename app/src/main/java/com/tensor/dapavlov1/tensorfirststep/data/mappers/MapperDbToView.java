@@ -1,7 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -26,7 +26,7 @@ public class MapperDbToView {
         return instance;
     }
 
-    public City convertDbModelToViewModel(DaoCity dbCity, List<DaoWeather> dbWeather) {
+    public City convertDbModelToViewModel(DbCity dbCity, List<DbWeather> dbWeather) {
         return new City(dbCity.getName(), dbCity.getLastTimeUpdate(), getWeathers(dbWeather));
     }
 
@@ -35,8 +35,8 @@ public class MapperDbToView {
         for (ModelCityWeather item : dbCity) {
             cityList.add(
                     convertDbModelToViewModel(
-                            item.getDaoCity().getName(),
-                            item.getDaoCity().getLastTimeUpdate(),
+                            item.getDbCity().getName(),
+                            item.getDbCity().getLastTimeUpdate(),
                             item.getWeathers()
                     )
             );
@@ -44,9 +44,9 @@ public class MapperDbToView {
         return cityList;
     }
 
-    public List<City> getCityViewModelsFromDao(List<DaoCity> dbCity) {
+    public List<City> getCityViewModelsFromDao(List<DbCity> dbCity) {
         List<City> cityList = new ArrayList<>();
-        for (DaoCity item : dbCity) {
+        for (DbCity item : dbCity) {
             cityList.add(
                     convertDbModelToViewModel(
                             item.getName(),
@@ -58,13 +58,13 @@ public class MapperDbToView {
         return cityList;
     }
 
-    private City convertDbModelToViewModel(String cityName, String lastTimeUpdate, List<DaoWeather> weathers) {
+    private City convertDbModelToViewModel(String cityName, String lastTimeUpdate, List<DbWeather> weathers) {
         return new City(cityName, lastTimeUpdate, getWeathers(weathers));
     }
 
-    private List<Weather> getWeathers(List<DaoWeather> dbWeather) {
+    private List<Weather> getWeathers(List<DbWeather> dbWeather) {
         List<Weather> weathers = new ArrayList<>();
-        for (DaoWeather itemBd : dbWeather) {
+        for (DbWeather itemBd : dbWeather) {
             weathers.add(new Weather(
                     itemBd.getWindShort(),
                     itemBd.getWindSpeed(),

@@ -1,8 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
+import android.support.annotation.Nullable;
+
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;

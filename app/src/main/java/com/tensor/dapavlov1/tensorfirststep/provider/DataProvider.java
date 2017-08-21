@@ -1,12 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexCommand;
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.RemoteControlDb;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DaoClient;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
@@ -27,7 +27,7 @@ import java.util.List;
 public class DataProvider {
     private static DataProvider instance;
 
-    private DaoClient daoClient;
+    private DbClient dbClient;
     private WeatherApi weatherClient;
     private GoogleApi googleClient;
     private RemoteControlDb remoteControlDb;
@@ -44,7 +44,7 @@ public class DataProvider {
     }
 
     private void init() {
-        daoClient = CreatorDaoClient.getInstance().createNewDaoClient();
+        dbClient = CreatorDaoClient.getInstance().createNewDaoClient();
         weatherClient = ApiFabric.getInstance().createClientWeatherApi();
         googleClient = ApiFabric.getInstance().crateClientGoogleApi();
 
@@ -56,7 +56,7 @@ public class DataProvider {
                 googleClient.getJsonFromGooglePlaceApi(inputText));
     }
 
-    public void updateCityInfo(final Callback callBack, final List<City> cities) throws IOException {
+    public void updateCityInfo(final List<City> cities, final Callback<List<City>> callBack) throws IOException {
 //        if (isOnline()) {
         //получаем обновленную информацию
         App.getExecutorService().execute(new Runnable() {
@@ -80,7 +80,7 @@ public class DataProvider {
                 App.getExecutorService().execute(new Runnable() {
                     @Override
                     public void run() {
-                        daoClient.updateAllCity(modelCityWeathers);
+                        dbClient.updateAllCity(modelCityWeathers);
                     }
                 });
 
@@ -96,12 +96,12 @@ public class DataProvider {
             public void run() {
                 callBack.onSuccess(
                         MapperDbToView.getInstance().getCityViewModelsFromDao(
-                                daoClient.loadListAllCity()));
+                                dbClient.loadListAllCity()));
             }
         });
     }
 
-    public void getWeathers(final Callback<City> callBack, final String cityName) {
+    public void getWeathers(final String cityName, final Callback<City> callBack) {
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
@@ -114,18 +114,18 @@ public class DataProvider {
                                 GsonFactory.getInstance().createGsonCityModel(response));
 
                         //проверяем, есть ли этот город в списке Favorite
-                        DaoCity tempModel = daoClient.isAdd(tempCity.getDaoCity());
+                        DbCity tempModel = dbClient.isAdd(tempCity.getDbCity());
 
                         if (tempModel != null) {
                             tempCity = new ModelCityWeather(tempModel, tempModel.getWeathers());
                             callBack.onSuccess(
                                     MapperDbToView.getInstance().convertDbModelToViewModel(
-                                            tempCity.getDaoCity(),
+                                            tempCity.getDbCity(),
                                             tempCity.getWeathers()), true);
                         } else {
                             callBack.onSuccess(
                                     MapperDbToView.getInstance().convertDbModelToViewModel(
-                                            tempCity.getDaoCity(),
+                                            tempCity.getDbCity(),
                                             tempCity.getWeathers()), false);
                         }
 
@@ -146,7 +146,7 @@ public class DataProvider {
             @Override
             public void run() {
                 remoteControlDb.setCommand(
-                        new DelCityByIndexCommand(daoClient, position));
+                        new DelCityByIndexCommand(dbClient, position));
                 remoteControlDb.execute();
             }
         });
@@ -157,7 +157,7 @@ public class DataProvider {
             @Override
             public void run() {
                 remoteControlDb.setCommand(
-                        new AddCityInDbCommand(daoClient, modelCityWeather));
+                        new AddCityInDbCommand(dbClient, modelCityWeather));
                 remoteControlDb.execute();
             }
         });
@@ -168,7 +168,7 @@ public class DataProvider {
             @Override
             public void run() {
                 remoteControlDb.setCommand(
-                        new AddCityInDbCommand(daoClient, modelCityWeather));
+                        new AddCityInDbCommand(dbClient, modelCityWeather));
                 remoteControlDb.undo();
             }
         });

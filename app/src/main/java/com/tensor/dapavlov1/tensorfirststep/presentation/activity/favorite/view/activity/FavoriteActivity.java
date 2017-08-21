@@ -1,12 +1,13 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -14,7 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
+import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -23,7 +24,9 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.prese
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.routers.RouterToAddCity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,12 +36,15 @@ import butterknife.OnClick;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoriteActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter, RecyclerViewItemClickListener {
-    private final static String PRESENTER = "favorite_presenter";
-    private final static String LIST_STATE_KEY = "recycler_list_state_cities";
-    private final static String GOTO_OTHER_ACTIVITY = "goto";
+public class FavoriteActivity extends AppCompatActivity
+        implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter,
+        RecyclerViewItemClickListener,
+        LoaderManager.LoaderCallbacks<Map<String, Object>> {
+    private final static String FAVORITE_PRESENTER = "favorite_presenter";
+    private final static String FAVORITE_ADAPTER = "favorite_adapter";
 
-    private ConfigSingleone configSingleone;
+    private final static int LOADER_FAVORITE_ID = 1;
+
     FavoritePresenter mPresenter;
     AdapterFavorite adapterFavorite;
     RouterToAddCity routerToAddCity;
@@ -53,66 +59,15 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
-        //return InstanceState
-        configSingleone = ConfigSingleone.getInstance();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         ButterKnife.bind(this);
-        setupRecyclerView();
+        setupLoaders();
         setupListeners();
-        setupPresenter();
-        setupRouter();
-    }
-
-    private void setupPresenter() {
-        mPresenter = (FavoritePresenter) configSingleone.getData(PRESENTER);
-        if (mPresenter == null) {
-            mPresenter = new FavoritePresenter();
-            mPresenter.setActivity(this);
-            configSingleone.setData(PRESENTER, mPresenter);
-
-            //updateWeather
-//            mPresenter.updateWeathers();
-            setRefreshLayout(true);
-        } else {
-            mPresenter.setActivity(this);
-        }
-        if (mPresenter.getRefresh()) {
-            refreshWeathers(mPresenter.getCachedCities());
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        configSingleone.setData(
-                LIST_STATE_KEY,
-                recyclerViewFavorite.getLayoutManager().onSaveInstanceState());
-        configSingleone.setData(PRESENTER, mPresenter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.setActivity(this);
-        //если пришли сюда с другого экрана
-        if (configSingleone.getData(GOTO_OTHER_ACTIVITY) == null
-                || (Boolean) configSingleone.getData(GOTO_OTHER_ACTIVITY)) {
-            configSingleone.setData(GOTO_OTHER_ACTIVITY, false);
-            mPresenter.updateWeathers();
-
-        } else {
-            if (!mPresenter.getRefresh()) {
-                //кешированные данные
-                refreshWeathers(mPresenter.getCachedCities());
-            }
-        }
-        setRefreshLayout(mPresenter.getRefresh());
+//        mPresenter.setActivity(this);
     }
 
     private void setupRouter() {
@@ -120,10 +75,19 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
         mPresenter.setRouter(routerToAddCity);
     }
 
+    private void setupPresenter() {
+        mPresenter = new FavoritePresenter();
+        mPresenter.setActivity(this);
+        setupRouter();
+    }
+
+    private void launchUpdateWeatherInfo() {
+        mPresenter.updateWeathers();
+    }
+
     @OnClick(R.id.fb_add_new_city)
     void intentAddCity() {
-        configSingleone.setData(GOTO_OTHER_ACTIVITY, true);
-        mPresenter.changeActivity(this, AddCityActivity.class);
+        mPresenter.switchActivity(this, AddCityActivity.class);
     }
 
     private void setupListeners() {
@@ -133,109 +97,58 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
                 mPresenter.updateWeathers();
             }
         });
-
-        adapterFavorite.setListener(FavoriteActivity.this);
-    }
-
-    private void setupRecyclerView() {
-        recyclerViewFavorite.setLayoutManager(new LinearLayoutManager(
-                this, LinearLayoutManager.VERTICAL, false));
-        adapterFavorite = new AdapterFavorite();
-        recyclerViewFavorite.setAdapter(adapterFavorite);
     }
 
     @Override
     public void refreshWeathers(final List<City> weathers) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-//                hideLoading();
-                adapterFavorite.setItems(weathers);
-                //restoreStateInstance
-                Parcelable parcelable = (Parcelable) configSingleone.getData(LIST_STATE_KEY);
-                if (parcelable != null) {
-                    recyclerViewFavorite.getLayoutManager().onRestoreInstanceState(parcelable);
-                }
-                adapterFavorite.notifyDataSetChanged();
-            }
-        });
+
+        adapterFavorite.setItems(weathers);
+        //restoreStateInstance
+        adapterFavorite.notifyDataSetChanged();
     }
 
     @Override
     public void showEmptyCard() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                configSingleone.setData(REFRESH, false);
-                cardEmpty.setVisibility(View.VISIBLE);
-                setRefreshLayout(false);
-            }
-        });
+        cardEmpty.setVisibility(View.VISIBLE);
+        runRefreshLayout(false);
     }
 
     @Override
     public void hideEmptyCard() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                cardEmpty.setVisibility(View.INVISIBLE);
-            }
-        });
+        cardEmpty.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void hideLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                configSingleone.setData(REFRESH, false);
-                recyclerViewFavorite.setVisibility(View.VISIBLE);
-                setRefreshLayout(false);
-            }
-        });
+        recyclerViewFavorite.setVisibility(View.VISIBLE);
+        runRefreshLayout(false);
     }
 
-    public void setRefreshLayout(final Boolean isRefresh) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(isRefresh);
-            }
-        });
+    public void runRefreshLayout(final Boolean isRefresh) {
+        swipeRefreshLayout.setRefreshing(isRefresh);
     }
-
-    private static final String REFRESH = "status_refresh";
 
     @Override
     public void showLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                configSingleone.setData(REFRESH, true);
-                recyclerViewFavorite.setVisibility(View.INVISIBLE);
-                setRefreshLayout(true);
-            }
-        });
+        recyclerViewFavorite.setVisibility(View.INVISIBLE);
+        runRefreshLayout(true);
     }
 
     @Override
     public void showMessage(@StringRes final int message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
-            }
-        });
+        Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void errorMessage(@StringRes final int message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
-            }
-        });
+        Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private Map<String, Object> createConfigMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put(FAVORITE_PRESENTER, mPresenter);
+        values.put(FAVORITE_ADAPTER, adapterFavorite);
+        return values;
     }
 
     //OTHER
@@ -247,10 +160,61 @@ public class FavoriteActivity extends AppCompatActivity implements com.tensor.da
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mPresenter.setActivity(null);
     }
 
     @Override
     public void onClickDelCityFromDb(int position) {
         mPresenter.deleteCity(position);
+    }
+
+
+    //Loaders
+
+    private void setupLoaders() {
+        getSupportLoaderManager().initLoader(LOADER_FAVORITE_ID, null, this);
+    }
+
+    private void setupRecyclerAdapter() {
+        adapterFavorite = new AdapterFavorite();
+        adapterFavorite.setListener(FavoriteActivity.this);
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        setupPresenter();
+        setupRecyclerAdapter();
+        setupRecyclerView();
+
+        launchUpdateWeatherInfo();
+        return new RootLoader(getBaseContext(), createConfigMap());
+    }
+
+    private void setupRecyclerView() {
+        recyclerViewFavorite.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerViewFavorite.setAdapter(adapterFavorite);
+        recyclerViewFavorite.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
+        mPresenter = (FavoritePresenter) dataMap.get(FAVORITE_PRESENTER);
+        runRefreshLayout(!mPresenter.getRefreshComplete());
+
+        //восстаансливаем прошлый адаптер
+        adapterFavorite = (AdapterFavorite) dataMap.get(FAVORITE_ADAPTER);
+        setupRecyclerView();
+
+        mPresenter.setActivity(this);
+        //если ответ от сервера уже пришел, то показываем результат
+        if (mPresenter.getRefreshComplete()) {
+            mPresenter.showCachedCities();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
     }
 }

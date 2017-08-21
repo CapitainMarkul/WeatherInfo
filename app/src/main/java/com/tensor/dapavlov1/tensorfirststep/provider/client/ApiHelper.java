@@ -1,6 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import okhttp3.HttpUrl;
  */
 
 abstract class ApiHelper {
-    String createUrl(String scheme, String host, String segment, @NotNull Map<String, String> map) {
+    String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
         HttpUrl.Builder builder = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(host)

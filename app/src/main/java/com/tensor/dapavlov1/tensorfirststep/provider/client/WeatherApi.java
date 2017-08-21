@@ -1,9 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
-import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class WeatherApi extends ApiHelper {
     }
 
     @Nullable
-    public String getJsonFromApiWeather(@NotNull String cityName) throws IOException {
+    public String getJsonFromApiWeather(@NonNull String cityName) throws IOException {
         Request request = new Request.Builder().url(
                 createUrl(
                         BuildConfig.WEATHER_API_SCHEME,

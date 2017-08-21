@@ -1,10 +1,13 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.PresenterCallBack;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.PresenterCallBack;
+import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
@@ -22,66 +25,62 @@ import java.util.List;
  */
 
 public class FavoritePresenter {
-
     private FavoriteActivity activity;
 
     private Router router;
 
     private List<City> cachedCities = new ArrayList<>();
-    private boolean isRefresh = false;
+    private boolean isRefreshComplete = false;
+
+    //для связи с UI
+    private Handler sendMessageToUi;
+
+    public FavoritePresenter() {
+        sendMessageToUi = new Handler(Looper.getMainLooper());
+    }
 
     private PresenterCallBack presenterCallBack = new PresenterCallBack() {
         @Override
         public void onSuccess() {
             try {
-                activity.setRefreshLayout(getRefresh());
-                activity.refreshWeathers(getCachedCities());
+                if (activity != null) {
+                    sendMessageToUi.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            activity.refreshWeathers(cachedCities);
+                            activity.runRefreshLayout(false);
+                        }
+                    });
+                }
             } catch (NullPointerException e) {
-                Toast.makeText(App.getContext(), "Возникла ошибка. Повторите попытку", Toast.LENGTH_SHORT);
-                return;
+                Toast.makeText(App.getContext(), App.getContext().getText(R.string.activity_favorite_unknown_error), Toast.LENGTH_SHORT).show();
             }
         }
 
         @Override
         public void onNothingFind() {
-            activity.setRefreshLayout(getRefresh());
-            activity.showEmptyCard();
+            sendMessageToUi.post(new Runnable() {
+                @Override
+                public void run() {
+                    activity.runRefreshLayout(getRefreshComplete());
+                    activity.showEmptyCard();
+                }
+            });
         }
     };
 
-    public boolean isShowInfoNow() {
-        return isShowInfoNow();
-    }
 
     private void cachedInfo(List<City> cities) {
-        isRefresh = false;
+        isRefreshComplete = true;
 
         cachedCities.clear();
         cachedCities.addAll(cities);
     }
 
-    public boolean getRefresh() {
-        return isRefresh;
-    }
-
-    public List<City> getCachedCities() {
-        return cachedCities;
-    }
-
-    public void setRouter(Router router) {
-        this.router = router;
-    }
-
-    public synchronized void setActivity(FavoriteActivity activity) {
-        this.activity = activity;
-    }
-
-    private boolean isOnline() {
-        return CheckConnect.getInstance().isOnline(App.getContext());
-    }
-
     public void updateWeathers() {
-        isRefresh = true;
+        isRefreshComplete = false;
+        activity.runRefreshLayout(true);
+
         DataProvider.getInstance().getCitiesFromBd(new Callback<List<City>>() {
             //Читаем из БД
             @Override
@@ -92,6 +91,7 @@ public class FavoritePresenter {
                         try {
                             //Обновляем информацию о погоде
                             DataProvider.getInstance().updateCityInfo(
+                                    result,
                                     new Callback<List<City>>() {
                                         //обновляем погоду
                                         @Override
@@ -100,7 +100,7 @@ public class FavoritePresenter {
                                             cachedInfo(result);
                                             presenterCallBack.onSuccess();
                                         }
-                                    }, result);
+                                    });
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -118,11 +118,31 @@ public class FavoritePresenter {
         });
     }
 
-    public void changeActivity(Activity thisActivity, Class toActivity) {
+    public void switchActivity(Activity thisActivity, Class toActivity) {
         router.goToNewActivity(thisActivity, toActivity);
     }
 
     public void deleteCity(int position) {
         DataProvider.getInstance().deleteCity(position);
+    }
+
+    public void showCachedCities() {
+        activity.refreshWeathers(cachedCities);
+    }
+
+    public boolean getRefreshComplete() {
+        return isRefreshComplete;
+    }
+
+    public void setRouter(Router router) {
+        this.router = router;
+    }
+
+    public void setActivity(FavoriteActivity activity) {
+        this.activity = activity;
+    }
+
+    private boolean isOnline() {
+        return CheckConnect.getInstance().isOnline(App.getContext());
     }
 }

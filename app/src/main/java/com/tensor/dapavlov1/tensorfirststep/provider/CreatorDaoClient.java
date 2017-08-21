@@ -1,9 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DaoClient;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCityDao;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -25,15 +25,15 @@ public class CreatorDaoClient {
         return instance;
     }
 
-    private DaoCityDao modelCityDao;
-    private Query<DaoCity> query;
+    private DbCityDao modelCityDao;
+    private Query<DbCity> query;
 
     private void initQuery() {
-        modelCityDao = App.getDaoSession().getDaoCityDao();
-        query = modelCityDao.queryBuilder().orderAsc(DaoCityDao.Properties.Name).build();
+        modelCityDao = App.getDaoSession().getDbCityDao();
+        query = modelCityDao.queryBuilder().orderAsc(DbCityDao.Properties.Name).build();
     }
 
-    DaoClient createNewDaoClient() {
-        return new DaoClient(modelCityDao, query);
+    DbClient createNewDaoClient() {
+        return new DbClient(modelCityDao, query);
     }
 }

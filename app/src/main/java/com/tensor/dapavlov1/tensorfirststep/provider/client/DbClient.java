@@ -1,9 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCityDao;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 
 import org.greenrobot.greendao.query.Query;
@@ -16,36 +16,36 @@ import java.util.List;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class DaoClient {
-    DaoCityDao cityDao;
-    Query<DaoCity> query;
+public class DbClient {
+    private DbCityDao cityDao;
+    private Query<DbCity> query;
 
-    public DaoClient(DaoCityDao cityDao, Query<DaoCity> query) {
+    public DbClient(DbCityDao cityDao, Query<DbCity> query) {
         this.cityDao = cityDao;
         this.query = query;
     }
 
-    public DaoCity getDaoCity(int index) {
+    private DbCity getDaoCity(int index) {
         return query.forCurrentThread().list().get(index);
     }
 
-    public List<DaoCity> loadListAllCity() {
+    public List<DbCity> loadListAllCity() {
         return query.forCurrentThread().list();
     }
 
     public void updateAllCity(List<ModelCityWeather> modelCityWeathers) {
         //выгружаем старую информацию о погоде
-        List<DaoCity> listCityOld = App.getDaoSession().getDaoCityDao().loadAll();
+        List<DbCity> listCityOld = App.getDaoSession().getDbCityDao().loadAll();
         List<ModelCityWeather> tempList = new ArrayList<>();
         tempList.addAll(modelCityWeathers);
 
-        for (DaoCity itemOld : listCityOld) {
+        for (DbCity itemOld : listCityOld) {
             Iterator<ModelCityWeather> iterator = tempList.iterator();
 
             while (iterator.hasNext()) {
                 ModelCityWeather itemRoot = iterator.next();
-                DaoCity itemNewCity = itemRoot.getDaoCity();
-                List<DaoWeather> listNewWeather = itemRoot.getWeathers();
+                DbCity itemNewCity = itemRoot.getDbCity();
+                List<DbWeather> listNewWeather = itemRoot.getWeathers();
 
                 if (itemOld.getName().equals(itemNewCity.getName())) {
                     //Update Time
@@ -57,7 +57,7 @@ public class DaoClient {
                     long idCity = itemOld.getWeathers().get(0).getCityId();
                     long counterId = 1;
                     itemOld.getWeathers().clear();
-                    for (DaoWeather item : listNewWeather) {
+                    for (DbWeather item : listNewWeather) {
                         item.setCityId(idCity);
                         item.setId(counterId);
                         itemOld.getWeathers().add(item);
@@ -74,12 +74,12 @@ public class DaoClient {
         }
     }
 
-    public DaoCity isAdd(DaoCity city) {
-        List<DaoCity> daoCityList = loadListAllCity();
+    public DbCity isAdd(DbCity city) {
+        List<DbCity> dbCityList = loadListAllCity();
         //ситуация с одинаковыми названиями городов - возможна,
         // (Города Кострома, Костромская обл и Кострома Самарская, обл. будут считаться за один город)
         // в случае необходимости можно поправить, если сохранять более полную информацию в БД
-        for (DaoCity item : daoCityList) {
+        for (DbCity item : dbCityList) {
             if (item.getName().equals(city.getName())) {
                 item.setLastTimeUpdate(city.getLastTimeUpdate());
                 item.update();
@@ -91,17 +91,17 @@ public class DaoClient {
 
     //Сначала в БД заносится город, узнаем его ID,  прикрепляем к нему Лист с погодой
     //на текущий момент сущности Weather существуют, но без привязки к городу
-    public void setInDataBase(DaoCity city, List<DaoWeather> weathers) {
-        long cityId = App.getDaoSession().getDaoCityDao().insert(city);
-        App.getDaoSession().getDaoWeatherDao().insertInTx(
+    public void setInDataBase(DbCity city, List<DbWeather> weathers) {
+        long cityId = App.getDaoSession().getDbCityDao().insert(city);
+        App.getDaoSession().getDbWeatherDao().insertInTx(
                 attachWeatherToCity(weathers, cityId));
     }
 
-    private List<DaoWeather> attachWeatherToCity(List<DaoWeather> daoWeathers, Long cityId) {
-        for (DaoWeather item : daoWeathers) {
+    private List<DbWeather> attachWeatherToCity(List<DbWeather> dbWeathers, Long cityId) {
+        for (DbWeather item : dbWeathers) {
             item.setCityId(cityId);
         }
-        return daoWeathers;
+        return dbWeathers;
     }
 
     public void deleteCity(final int position) {
@@ -113,12 +113,12 @@ public class DaoClient {
         });
     }
 
-    public void deleteCity(DaoCity daoCity) {
-                App.getDaoSession().getDaoWeatherDao().deleteInTx(daoCity.getWeathers());
-                daoCity.delete();
+    public void deleteCity(DbCity dbCity) {
+                App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
+                dbCity.delete();
     }
 
-//    public List<DaoCity> loadListAllCityForCurrentThread() {
+//    public List<DbCity> loadListAllCityForCurrentThread() {
 //    }
 //        return query.forCurrentThread().list();
 }

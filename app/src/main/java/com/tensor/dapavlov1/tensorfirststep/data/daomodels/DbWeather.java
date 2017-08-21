@@ -10,7 +10,7 @@ import org.greenrobot.greendao.annotation.Generated;
  */
 
 @Entity(nameInDb = "Weather")
-public class DaoWeather {
+public class DbWeather {
     @Id
     private Long id;
 
@@ -39,10 +39,10 @@ public class DaoWeather {
     @NotNull
     private Long cityId;
 
-    public DaoWeather(@NotNull String windShort, double windSpeed,
-                      double pressure, double temperature, @NotNull String date,
-                      @NotNull String time, @NotNull String iconUrl, @NotNull String iconCode,
-                      @NotNull String description) {
+    public DbWeather(@NotNull String windShort, double windSpeed,
+                     double pressure, double temperature, @NotNull String date,
+                     @NotNull String time, @NotNull String iconUrl, @NotNull String iconCode,
+                     @NotNull String description) {
         this.windShort = windShort;
         this.windSpeed = windSpeed;
         this.pressure = pressure;
@@ -54,8 +54,8 @@ public class DaoWeather {
         this.description = description;
     }
 
-    @Generated(hash = 2050171863)
-    public DaoWeather(Long id, @NotNull String windShort, double windSpeed, double pressure,
+    @Generated(hash = 1024540776)
+    public DbWeather(Long id, @NotNull String windShort, double windSpeed, double pressure,
             double temperature, @NotNull String date, @NotNull String time,
             @NotNull String iconUrl, @NotNull String iconCode, @NotNull String description,
             @NotNull Long cityId) {
@@ -72,8 +72,8 @@ public class DaoWeather {
         this.cityId = cityId;
     }
 
-    @Generated(hash = 47730305)
-    public DaoWeather() {
+    @Generated(hash = 245265253)
+    public DbWeather() {
     }
 
     public Long getId() {
@@ -163,4 +163,6 @@ public class DaoWeather {
     public void setCityId(Long cityId) {
         this.cityId = cityId;
     }
+
+
 }

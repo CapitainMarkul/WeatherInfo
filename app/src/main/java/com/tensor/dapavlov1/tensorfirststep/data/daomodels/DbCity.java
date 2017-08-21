@@ -15,7 +15,7 @@ import org.greenrobot.greendao.annotation.ToMany;
  */
 
 @Entity(active = true, nameInDb = "City")
-public class DaoCity {
+public class DbCity {
     @Id
     private Long id;
 
@@ -26,25 +26,25 @@ public class DaoCity {
     private String lastTimeUpdate;
 
     @ToMany(referencedJoinProperty = "cityId")
-    private List<DaoWeather> weathers;
+    private List<DbWeather> weathers;
 
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
 
     /** Used for active entity operations. */
-    @Generated(hash = 1852571856)
-    private transient DaoCityDao myDao;
+    @Generated(hash = 1507836013)
+    private transient DbCityDao myDao;
 
-    @Generated(hash = 759401344)
-    public DaoCity(Long id, @NotNull String name, @NotNull String lastTimeUpdate) {
+    @Generated(hash = 457832615)
+    public DbCity(Long id, @NotNull String name, @NotNull String lastTimeUpdate) {
         this.id = id;
         this.name = name;
         this.lastTimeUpdate = lastTimeUpdate;
     }
 
-    @Generated(hash = 66321531)
-    public DaoCity() {
+    @Generated(hash = 1720623914)
+    public DbCity() {
     }
 
     public Long getId() {
@@ -75,15 +75,15 @@ public class DaoCity {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 1993023366)
-    public List<DaoWeather> getWeathers() {
+    @Generated(hash = 1065597217)
+    public List<DbWeather> getWeathers() {
         if (weathers == null) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            DaoWeatherDao targetDao = daoSession.getDaoWeatherDao();
-            List<DaoWeather> weathersNew = targetDao._queryDaoCity_Weathers(id);
+            DbWeatherDao targetDao = daoSession.getDbWeatherDao();
+            List<DbWeather> weathersNew = targetDao._queryDbCity_Weathers(id);
             synchronized (this) {
                 if (weathers == null) {
                     weathers = weathersNew;
@@ -136,11 +136,10 @@ public class DaoCity {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1853926970)
+    @Generated(hash = 47395212)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getDaoCityDao() : null;
+        myDao = daoSession != null ? daoSession.getDbCityDao() : null;
     }
-
 
 }

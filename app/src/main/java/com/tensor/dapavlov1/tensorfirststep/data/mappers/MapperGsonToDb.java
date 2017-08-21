@@ -1,8 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonWeatherRoot;
@@ -31,15 +31,15 @@ public class MapperGsonToDb extends MapperHelp {
         return new ModelCityWeather(createDaoCity(gsonCity, gsonCity.getDateLastUpdate()), createDaoWeathers(gsonCity.getWeathers()));
     }
 
-    private DaoCity createDaoCity(GsonCity gsonCity, String dateLastUpdateInfo) {
-        return new DaoCity(null, gsonCity.getName(), dateLastUpdateInfo);
+    private DbCity createDaoCity(GsonCity gsonCity, String dateLastUpdateInfo) {
+        return new DbCity(null, gsonCity.getName(), dateLastUpdateInfo);
     }
 
-    private List<DaoWeather> createDaoWeathers(List<GsonWeatherRoot> gsonWeather) {
-        List<DaoWeather> weathers = new ArrayList<>();
+    private List<DbWeather> createDaoWeathers(List<GsonWeatherRoot> gsonWeather) {
+        List<DbWeather> weathers = new ArrayList<>();
         for (GsonWeatherRoot itemRoot : gsonWeather) {
             weathers.add(
-                    new DaoWeather(
+                    new DbWeather(
                             itemRoot.getWindShort(),
                             itemRoot.getWindSpeed(),
                             itemRoot.getPressure(),

@@ -1,10 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
 
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,7 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.tensor.dapavlov1.tensorfirststep.ConfigSingleone;
+import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -30,7 +32,9 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.Adapter
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindInt;
 import butterknife.BindView;
@@ -42,11 +46,14 @@ import butterknife.OnClick;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class AddCityActivity extends AppCompatActivity implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter {
-    private final static String PRESENTER = "add_city_presenter";
-    private final static String LIST_STATE_KEY = "recycler_list_state_weather";
+public class AddCityActivity extends AppCompatActivity
+        implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter,
+        LoaderManager.LoaderCallbacks<Map<String, Object>> {
+    private final static String NEW_CITY_PRESENTER = "new_city_presenter";
+    private final static String NEW_CITY_ADAPTER = "new_city_adapter";
 
-    ConfigSingleone configSingleone;
+    private final static int LOADER_NEW_CITY_ID = 2;
+
     AddCityPresenter mPresenter;
     AdapterHorizontalWeather adapterHorizontalWeather;
 
@@ -78,33 +85,21 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
         ButterKnife.bind(this);
-        configSingleone = ConfigSingleone.getInstance();
+        setupLoaders();
 
         setupViews();
-        setupRecyclerView();
+//        setupRecyclerView();
         setupListeners();
         setupPresenter();
     }
 
-    private void setupPresenter() {
-        mPresenter = (AddCityPresenter) configSingleone.getData(PRESENTER);
-        if (mPresenter == null) {
-            mPresenter = new AddCityPresenter();
-            mPresenter.setActivity(this);
-            configSingleone.setData(PRESENTER, mPresenter);
-        } else {
-            mPresenter.setActivity(this);
-        }
+    private void setupLoaders() {
+        getSupportLoaderManager().initLoader(LOADER_NEW_CITY_ID, null, this);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        configSingleone.setData(
-                LIST_STATE_KEY,
-                weatherOtherTime.getLayoutManager().onSaveInstanceState());
-        configSingleone.setData(PRESENTER, mPresenter);
+    private void setupPresenter() {
+        mPresenter = new AddCityPresenter();
+        mPresenter.setActivity(this);
     }
 
     @Override
@@ -114,16 +109,7 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
         cityName.clearFocus();
 
         mPresenter.setActivity(this);
-
-        if (mPresenter.isRefresh()) {
-            showLoading();
-        } else {
-            hideLoading();
-            if (mPresenter.getCachedCity() != null) {
-                showInformation(mPresenter.getCachedCity());
-                showWeatherCardFullInfo();
-            }
-        }
+        mPresenter.checkEndTask();
     }
 
     private void setupViews() {
@@ -150,40 +136,25 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
 
     @OnClick(R.id.cb_add_to_favorite)
     void addToFavorite() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (addToFavorite.isChecked()) {
-                    mPresenter.addToFavorite();
-                } else {
-                    mPresenter.deleteFromFavorite();
-                }
-            }
-        });
+        if (addToFavorite.isChecked()) {
+            mPresenter.addToFavorite();
+        } else {
+            mPresenter.deleteFromFavorite();
+        }
     }
 
     private void clearChecked() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                cardInfo.setVisibility(View.INVISIBLE);
-                addToFavorite.setChecked(false);
-            }
-        });
+        cardInfo.setVisibility(View.INVISIBLE);
+        addToFavorite.setChecked(false);
     }
 
     @Override
-    public void setChecked(final Boolean checked) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (checked) {
-                    addToFavorite.setChecked(true);
-                } else {
-                    addToFavorite.setChecked(false);
-                }
-            }
-        });
+    public void cityIsFavorite(final Boolean checked) {
+        if (checked) {
+            addToFavorite.setChecked(true);
+        } else {
+            addToFavorite.setChecked(false);
+        }
     }
 
     @Override
@@ -212,44 +183,22 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
         });
     }
 
-    private void setupRecyclerView() {
-        weatherOtherTime.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        adapterHorizontalWeather = new AdapterHorizontalWeather();
-        weatherOtherTime.setAdapter(adapterHorizontalWeather);
-    }
 
     public void refreshWeathers(final List<Weather> weathers) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapterHorizontalWeather.setItems(weathers);
-
-                Parcelable parcelable = (Parcelable) configSingleone.getData(LIST_STATE_KEY);
-                if (parcelable != null) {
-                    weatherOtherTime.getLayoutManager().onRestoreInstanceState(parcelable);
-                }
-
-                adapterHorizontalWeather.notifyDataSetChanged();
-            }
-        });
+        adapterHorizontalWeather.setItems(weathers);
+        adapterHorizontalWeather.notifyDataSetChanged();
     }
 
     static final ButterKnife.Action<View> INVISIBLE = new ButterKnife.Action<View>() {
         @Override
-        public void apply(View view, int index) {
+        public void apply(@NonNull View view, int index) {
             view.setVisibility(View.INVISIBLE);
         }
     };
 
     private void showCard(final CardView cardView) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ButterKnife.apply(cardViews, INVISIBLE);
-                cardView.setVisibility(View.VISIBLE);
-            }
-        });
+        ButterKnife.apply(cardViews, INVISIBLE);
+        cardView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -264,41 +213,59 @@ public class AddCityActivity extends AppCompatActivity implements com.tensor.dap
 
     @Override
     public void showMessage(@StringRes final int message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(rootContainer, message, Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        Snackbar.make(rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void errorMessage(@StringRes final int message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(rootContainer, message, Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        Snackbar.make(rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void hideLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.INVISIBLE);
-            }
-        });
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.VISIBLE);
-            }
-        });
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void setupRecyclerView() {
+        weatherOtherTime.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        weatherOtherTime.setAdapter(adapterHorizontalWeather);
+    }
+
+    private void setupRecyclerAdapter() {
+        adapterHorizontalWeather = new AdapterHorizontalWeather();
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        setupPresenter();
+        setupRecyclerAdapter();
+        setupRecyclerView();
+        return new RootLoader(getBaseContext(), createConfigMap());
+    }
+
+    private Map<String, Object> createConfigMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put(NEW_CITY_PRESENTER, mPresenter);
+        values.put(NEW_CITY_ADAPTER, adapterHorizontalWeather);
+        return values;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
+        mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
+
+        adapterHorizontalWeather = (AdapterHorizontalWeather) dataMap.get(NEW_CITY_ADAPTER);
+        setupRecyclerView();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Map<String, Object>> loader) {
+
     }
 }

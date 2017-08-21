@@ -2,30 +2,30 @@ package com.tensor.dapavlov1.tensorfirststep.provider.commands;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DaoClient;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 
 /**
  * Created by da.pavlov1 on 16.08.2017.
  */
 
 public class AddCityInDbCommand implements Command {
-    private DaoClient daoClient;
+    private DbClient dbClient;
     private ModelCityWeather modelCityWeather;
 
-    public AddCityInDbCommand(DaoClient daoClient, ModelCityWeather modelCityWeather) {
-        this.daoClient = daoClient;
+    public AddCityInDbCommand(DbClient dbClient, ModelCityWeather modelCityWeather) {
+        this.dbClient = dbClient;
         this.modelCityWeather = modelCityWeather;
     }
 
     @Override
     public void execute() {
-        daoClient.setInDataBase(
-                modelCityWeather.getDaoCity(),
+        dbClient.setInDataBase(
+                modelCityWeather.getDbCity(),
                 modelCityWeather.getWeathers());
     }
 
     @Override
     public void undo() {
-        daoClient.deleteCity(modelCityWeather.getDaoCity());
+        dbClient.deleteCity(modelCityWeather.getDbCity());
     }
 }
