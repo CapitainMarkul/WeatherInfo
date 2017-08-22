@@ -56,50 +56,81 @@ public class DataProvider {
                 googleClient.getJsonFromGooglePlaceApi(inputText));
     }
 
-    public void updateCityInfo(final List<City> cities, final Callback<List<City>> callBack) throws IOException {
-//        if (isOnline()) {
+//    public void updateCityInfo(final List<City> cities, final Callback<List<City>> callBack) throws IOException {
+////        if (isOnline()) {
+//        //получаем обновленную информацию
+//        App.getExecutorService().execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
+//                for (City item : cities) {
+//                    try {
+//                        modelCityWeathers.add(
+//                                MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
+//                                        GsonFactory.getInstance().createGsonCityModel(
+//                                                weatherClient.getJsonFromApiWeather(item.getName())
+//                                        )
+//                                )
+//                        );
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                //set Update in BD
+//                App.getExecutorService().execute(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        dbClient.updateAllCity(modelCityWeathers);
+//                    }
+//                });
+//
+//                callBack.onSuccess(
+//                        MapperDbToView.getInstance().getCityViewModels(modelCityWeathers));
+//            }
+//        });
+//    }
+
+    public List<City> updateCityInfo(final List<City> cities) throws IOException {
         //получаем обновленную информацию
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
-                for (City item : cities) {
-                    try {
-                        modelCityWeathers.add(
-                                MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-                                        GsonFactory.getInstance().createGsonCityModel(
-                                                weatherClient.getJsonFromApiWeather(item.getName())
-                                        )
+        final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
+        for (City item : cities) {
+            try {
+                modelCityWeathers.add(
+                        MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
+                                GsonFactory.getInstance().createGsonCityModel(
+                                        weatherClient.getJsonFromApiWeather(item.getName())
                                 )
-                        );
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //set Update in BD
-                App.getExecutorService().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        dbClient.updateAllCity(modelCityWeathers);
-                    }
-                });
-
-                callBack.onSuccess(
-                        MapperDbToView.getInstance().getCityViewModels(modelCityWeathers));
+                        )
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-    }
-
-    public void getCitiesFromBd(final Callback<List<City>> callBack) {
+        }
+        //set Update in BD
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                callBack.onSuccess(
-                        MapperDbToView.getInstance().getCityViewModelsFromDao(
-                                dbClient.loadListAllCity()));
+                dbClient.updateAllCity(modelCityWeathers);
             }
         });
+
+        return MapperDbToView.getInstance().getCityViewModels(modelCityWeathers);
     }
+
+    public List<City> getCitiesFromBd() {
+        return MapperDbToView.getInstance().getCityViewModelsFromDao(dbClient.loadListAllCity());
+    }
+
+//    public void getCitiesFromBd(final Callback<List<City>> callBack) {
+//        App.getExecutorService().execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                callBack.onSuccess(
+//                        MapperDbToView.getInstance().getCityViewModelsFromDao(
+//                                dbClient.loadListAllCity()));
+//            }
+//        });
+//    }
 
     public void getWeathers(final String cityName, final Callback<City> callBack) {
         App.getExecutorService().execute(new Runnable() {

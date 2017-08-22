@@ -83,42 +83,43 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         isRefreshComplete = false;
         activity.runRefreshLayout(true);
 
-        DataProvider.getInstance().getCitiesFromBd(new Callback<List<City>>() {
-            //Читаем из БД
-            @Override
-            public void onSuccess(List<City> result) {
-                //Проверяем результат чтения
-                if (result != null && result.size() > 0) {
-                    if (isOnline()) {
-                        try {
-                            //Обновляем информацию о погоде
-                            DataProvider.getInstance().updateCityInfo(
-                                    result,
-                                    new Callback<List<City>>() {
-                                        //обновляем погоду
-                                        @Override
-                                        public void onSuccess(List<City> result) {
-                                            //кешируем результат
-                                            cachedInfo(result);
-                                            presenterCallBack.onSuccess();
-                                        }
-                                    });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        //кешируем результат
-                        cachedInfo(result);
-                        presenterCallBack.onSuccess();
-                    }
-                } else {
-                    //если БД пуста, то показываем карточку с подсказкой!
-
-                    isRefreshComplete = true;
-                    presenterCallBack.onNothingFind();
-                }
-            }
-        });
+// TODO: 22.08.2017 Здесь будет CallBack для возвращения результата
+//        DataProvider.getInstance().getCitiesFromBd(new Callback<List<City>>() {
+//            //Читаем из БД
+//            @Override
+//            public void onSuccess(List<City> result) {
+//                //Проверяем результат чтения
+//                if (result != null && result.size() > 0) {
+//                    if (isOnline()) {
+////                        try {
+////                            //Обновляем информацию о погоде
+////                            DataProvider.getInstance().updateCityInfo(
+////                                    result,
+////                                    new Callback<List<City>>() {
+////                                        //обновляем погоду
+////                                        @Override
+////                                        public void onSuccess(List<City> result) {
+////                                            //кешируем результат
+////                                            cachedInfo(result);
+////                                            presenterCallBack.onSuccess();
+////                                        }
+////                                    });
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                        }
+//                    } else {
+//                        //кешируем результат
+//                        cachedInfo(result);
+//                        presenterCallBack.onSuccess();
+//                    }
+//                } else {
+//                    //если БД пуста, то показываем карточку с подсказкой!
+//
+//                    isRefreshComplete = true;
+//                    presenterCallBack.onNothingFind();
+//                }
+//            }
+//        });
     }
 
     public void switchActivity(Activity thisActivity, Class toActivity) {
@@ -141,7 +142,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         this.router = router;
     }
 
-    private boolean isOnline() {
-        return CheckConnect.getInstance().isOnline(App.getContext());
-    }
+//    private boolean isOnline() {
+//        return CheckConnect.getInstance().isOnline(App.getContext());
+//    }
 }

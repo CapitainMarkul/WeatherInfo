@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 
 import java.util.List;
 
@@ -9,6 +10,9 @@ import java.util.List;
  */
 
 public class WeatherDataRepository implements WeatherRepository {
+    //// TODO: 22.08.2017 Здесь DataProvider, который будет решать, что и как предоставлять
+
+    private DataProvider dataProvider;
 
 
     @Override
@@ -18,6 +22,7 @@ public class WeatherDataRepository implements WeatherRepository {
 
     @Override
     public List<City> cities() {
+
         return null;
     }
 }
