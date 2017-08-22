@@ -15,6 +15,7 @@ import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
 import com.tensor.dapavlov1.tensorfirststep.R;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
@@ -33,9 +34,14 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
 
     private List<City> cityWeathers;
     private RecyclerViewItemClickListener listener;
+    private RecyclerEmptyListener emptyListener;
 
     public void setListener(RecyclerViewItemClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setEmptyListener(RecyclerEmptyListener listener) {
+        emptyListener = listener;
     }
 
     public void setItems(List<City> cityWeathers) {
@@ -125,6 +131,9 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
             cityWeathers.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(getAdapterPosition(), cityWeathers.size());
+            if(emptyListener != null && cityWeathers.isEmpty()){
+                emptyListener.onEmpty();
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -39,11 +40,10 @@ import butterknife.OnClick;
 
 public class FavoriteActivity extends AppCompatActivity
         implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter,
-        RecyclerViewItemClickListener,
+        RecyclerViewItemClickListener, RecyclerEmptyListener,
         LoaderManager.LoaderCallbacks<Map<String, Object>> {
     private final static String FAVORITE_PRESENTER = "favorite_presenter";
     private final static String FAVORITE_ADAPTER = "favorite_adapter";
-    private final static String IS_UPDATE_INFO_IN_OTHER_SCREEN = "update_other";
 
     private final static int LOADER_FAVORITE_ID = 1;
 
@@ -180,9 +180,7 @@ public class FavoriteActivity extends AppCompatActivity
         mPresenter.deleteCity(position);
     }
 
-
     //Loaders
-
     private void setupLoaders() {
         getSupportLoaderManager().initLoader(LOADER_FAVORITE_ID, null, this);
     }
@@ -190,6 +188,7 @@ public class FavoriteActivity extends AppCompatActivity
     private void setupRecyclerAdapter() {
         adapterFavorite = new AdapterFavorite();
         adapterFavorite.setListener(FavoriteActivity.this);
+        adapterFavorite.setEmptyListener(FavoriteActivity.this);
     }
 
     @Override
@@ -231,5 +230,10 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    @Override
+    public void onEmpty() {
+        showEmptyCard();
     }
 }
