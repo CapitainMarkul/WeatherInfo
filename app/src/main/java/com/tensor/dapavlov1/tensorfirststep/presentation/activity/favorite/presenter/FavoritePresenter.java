@@ -112,7 +112,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                     }
                 } else {
                     //если БД пуста, то показываем карточку с подсказкой!
-                    cachedInfo(null);
+
+                    isRefreshComplete = true;
                     presenterCallBack.onNothingFind();
                 }
             }
@@ -138,10 +139,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     public void setRouter(Router router) {
         this.router = router;
     }
-
-//    public void setActivity(FavoriteActivity activity) {
-//        this.activity = activity;
-//    }
 
     private boolean isOnline() {
         return CheckConnect.getInstance().isOnline(App.getContext());

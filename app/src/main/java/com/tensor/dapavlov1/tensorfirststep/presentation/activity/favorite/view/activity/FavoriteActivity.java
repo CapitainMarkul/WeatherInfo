@@ -42,6 +42,7 @@ public class FavoriteActivity extends AppCompatActivity
         LoaderManager.LoaderCallbacks<Map<String, Object>> {
     private final static String FAVORITE_PRESENTER = "favorite_presenter";
     private final static String FAVORITE_ADAPTER = "favorite_adapter";
+    private final static String IS_UPDATE_INFO_IN_OTHER_SCREEN = "update_other";
 
     private final static int LOADER_FAVORITE_ID = 1;
 
@@ -209,10 +210,14 @@ public class FavoriteActivity extends AppCompatActivity
 
         mPresenter.attachActivity(this);
 //        mPresenter.setActivity(this);
+
+        //если были обновления на другом экране
+//        if (!mPresenter.checkUpdateInOtherScreen()) {
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getRefreshComplete()) {
             mPresenter.showCachedCities();
         }
+//        }
     }
 
     @Override

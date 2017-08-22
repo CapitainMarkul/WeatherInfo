@@ -140,6 +140,7 @@ public class AddCityActivity extends AppCompatActivity
     void addToFavorite() {
         if (addToFavorite.isChecked()) {
             mPresenter.addToFavorite();
+
         } else {
             mPresenter.deleteFromFavorite();
         }
@@ -184,7 +185,6 @@ public class AddCityActivity extends AppCompatActivity
             }
         });
     }
-
 
     public void refreshWeathers(final List<Weather> weathers) {
         adapterHorizontalWeather.setItems(weathers);
