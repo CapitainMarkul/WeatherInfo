@@ -11,16 +11,16 @@ import org.greenrobot.greendao.query.Query;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-public class CreatorDaoClient {
-    private static CreatorDaoClient instance;
+public class CreatorDbClient {
+    private static CreatorDbClient instance;
 
-    private CreatorDaoClient() {
+    private CreatorDbClient() {
         initQuery();
     }
 
-    public static CreatorDaoClient getInstance() {
+    public static CreatorDbClient getInstance() {
         if (instance == null) {
-            instance = new CreatorDaoClient();
+            instance = new CreatorDbClient();
         }
         return instance;
     }

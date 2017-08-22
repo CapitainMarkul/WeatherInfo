@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 public class DbClient {
-    private DbCityDao cityDao;
+    DbCityDao cityDao;
     private Query<DbCity> query;
 
     public DbClient(DbCityDao cityDao, Query<DbCity> query) {

@@ -44,7 +44,7 @@ public class DataProvider {
     }
 
     private void init() {
-        dbClient = CreatorDaoClient.getInstance().createNewDaoClient();
+        dbClient = CreatorDbClient.getInstance().createNewDaoClient();
         weatherClient = ApiFabric.getInstance().createClientWeatherApi();
         googleClient = ApiFabric.getInstance().crateClientGoogleApi();
 
