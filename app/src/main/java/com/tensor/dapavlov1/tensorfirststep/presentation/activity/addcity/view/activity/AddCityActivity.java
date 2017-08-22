@@ -99,7 +99,8 @@ public class AddCityActivity extends AppCompatActivity
 
     private void setupPresenter() {
         mPresenter = new AddCityPresenter();
-        mPresenter.setActivity(this);
+        mPresenter.attachActivity(this);
+//        mPresenter.setActivity(this);
     }
 
     @Override
@@ -108,7 +109,8 @@ public class AddCityActivity extends AppCompatActivity
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         cityName.clearFocus();
 
-        mPresenter.setActivity(this);
+        mPresenter.attachActivity(this);
+//        mPresenter.setActivity(this);
         mPresenter.checkEndTask();
     }
 
@@ -244,7 +246,8 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.setActivity(null);
+        mPresenter.detachActivity();
+//        mPresenter.setActivity(null);
     }
 
     @Override

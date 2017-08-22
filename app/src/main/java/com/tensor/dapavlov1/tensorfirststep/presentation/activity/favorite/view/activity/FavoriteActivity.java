@@ -77,7 +77,8 @@ public class FavoriteActivity extends AppCompatActivity
 
     private void setupPresenter() {
         mPresenter = new FavoritePresenter();
-        mPresenter.setActivity(this);
+        mPresenter.attachActivity(this);
+//        mPresenter.setActivity(this);
         setupRouter();
     }
 
@@ -160,7 +161,7 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.setActivity(null);
+        mPresenter.detachActivity();
     }
 
     @Override
@@ -206,7 +207,8 @@ public class FavoriteActivity extends AppCompatActivity
         adapterFavorite = (AdapterFavorite) dataMap.get(FAVORITE_ADAPTER);
         setupRecyclerView();
 
-        mPresenter.setActivity(this);
+        mPresenter.attachActivity(this);
+//        mPresenter.setActivity(this);
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getRefreshComplete()) {
             mPresenter.showCachedCities();

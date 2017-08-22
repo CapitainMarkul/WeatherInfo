@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.prese
 import android.os.Handler;
 import android.os.Looper;
 
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.PresenterCallBack;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
@@ -16,8 +17,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
  */
 
 
-public class AddCityPresenter {
-    private AddCityActivity activity;
+public class AddCityPresenter extends BasePresenter<AddCityActivity> {
+//    private AddCityActivity activity;
     private City cachedCity;
     private boolean isFavorite;
     private boolean isRefresh = false;
@@ -62,9 +63,9 @@ public class AddCityPresenter {
         this.isFavorite = isFavorite;
     }
 
-    public void setActivity(AddCityActivity activity) {
-        this.activity = activity;
-    }
+//    public void setActivity(AddCityActivity activity) {
+//        this.activity = activity;
+//    }
 
     public void getWeatherInCity(String fullCityName) {
         isRefresh = true;

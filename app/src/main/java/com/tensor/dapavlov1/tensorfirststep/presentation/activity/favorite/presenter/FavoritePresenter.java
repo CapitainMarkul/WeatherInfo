@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.PresenterCallBack;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
@@ -24,8 +25,8 @@ import java.util.List;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoritePresenter {
-    private FavoriteActivity activity;
+public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
+//    private FavoriteActivity activity;
 
     private Router router;
 
@@ -138,9 +139,9 @@ public class FavoritePresenter {
         this.router = router;
     }
 
-    public void setActivity(FavoriteActivity activity) {
-        this.activity = activity;
-    }
+//    public void setActivity(FavoriteActivity activity) {
+//        this.activity = activity;
+//    }
 
     private boolean isOnline() {
         return CheckConnect.getInstance().isOnline(App.getContext());
