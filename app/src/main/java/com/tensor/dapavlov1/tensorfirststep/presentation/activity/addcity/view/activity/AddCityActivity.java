@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -96,7 +97,7 @@ public class AddCityActivity extends AppCompatActivity
         setupSingleton();
     }
 
-    private void setupSingleton(){
+    private void setupSingleton() {
         checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
     }
 
@@ -132,10 +133,33 @@ public class AddCityActivity extends AppCompatActivity
         cityName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                clearChecked();
-                mPresenter.getWeatherInCity(cityName.getText().toString());
+                runSearch();
             }
         });
+
+        cityName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN)
+                {
+                    switch (keyCode)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            runSearch();
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    private void runSearch(){
+        clearChecked();
+        mPresenter.getWeatherInCity(cityName.getText().toString());
     }
 
     @OnClick(R.id.iv_clear)
