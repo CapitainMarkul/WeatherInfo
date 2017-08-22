@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -65,10 +66,17 @@ public class FavoriteActivity extends AppCompatActivity
         setupListeners();
     }
 
+    private void chechUpdateInOtherActivity() {
+        if (CheckUpdateInOtherActivity.getInstance().isUpdate()) {
+            mPresenter.updateWeathers();
+            CheckUpdateInOtherActivity.getInstance().setUpdate(false);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-//        mPresenter.setActivity(this);
+        chechUpdateInOtherActivity();
     }
 
     private void setupRouter() {
@@ -103,7 +111,7 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void refreshWeathers(final List<City> weathers) {
-
+        recyclerViewFavorite.setVisibility(View.VISIBLE);
         adapterFavorite.setItems(weathers);
         //restoreStateInstance
         adapterFavorite.notifyDataSetChanged();
@@ -111,7 +119,9 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void showEmptyCard() {
+        recyclerViewFavorite.setVisibility(View.INVISIBLE);
         cardEmpty.setVisibility(View.VISIBLE);
+
         runRefreshLayout(false);
     }
 
@@ -209,15 +219,13 @@ public class FavoriteActivity extends AppCompatActivity
         setupRecyclerView();
 
         mPresenter.attachActivity(this);
-//        mPresenter.setActivity(this);
 
         //если были обновления на другом экране
-//        if (!mPresenter.checkUpdateInOtherScreen()) {
+
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getRefreshComplete()) {
             mPresenter.showCachedCities();
         }
-//        }
     }
 
     @Override

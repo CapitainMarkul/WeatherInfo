@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -57,6 +58,8 @@ public class AddCityActivity extends AppCompatActivity
     AddCityPresenter mPresenter;
     AdapterHorizontalWeather adapterHorizontalWeather;
 
+    private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
+
     @BindInt(R.integer.weather_now) int WEATHER_NOW;
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     @BindView(R.id.rl_root_container) RelativeLayout rootContainer;
@@ -88,9 +91,13 @@ public class AddCityActivity extends AppCompatActivity
         setupLoaders();
 
         setupViews();
-//        setupRecyclerView();
         setupListeners();
         setupPresenter();
+        setupSingleton();
+    }
+
+    private void setupSingleton(){
+        checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
     }
 
     private void setupLoaders() {
@@ -140,10 +147,10 @@ public class AddCityActivity extends AppCompatActivity
     void addToFavorite() {
         if (addToFavorite.isChecked()) {
             mPresenter.addToFavorite();
-
         } else {
             mPresenter.deleteFromFavorite();
         }
+        checkUpdateInOtherActivity.setUpdate(true);
     }
 
     private void clearChecked() {

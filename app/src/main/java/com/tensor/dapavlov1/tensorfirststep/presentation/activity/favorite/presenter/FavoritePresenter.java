@@ -48,6 +48,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                     sendMessageToUi.post(new Runnable() {
                         @Override
                         public void run() {
+                            activity.hideEmptyCard();
                             activity.refreshWeathers(cachedCities);
                             activity.runRefreshLayout(false);
                         }
