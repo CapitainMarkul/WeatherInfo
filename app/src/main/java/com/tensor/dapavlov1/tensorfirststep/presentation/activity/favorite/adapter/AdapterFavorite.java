@@ -131,7 +131,7 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
             cityWeathers.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(getAdapterPosition(), cityWeathers.size());
-            if(emptyListener != null && cityWeathers.isEmpty()){
+            if (emptyListener != null && cityWeathers.isEmpty()) {
                 emptyListener.onEmpty();
             }
         }
