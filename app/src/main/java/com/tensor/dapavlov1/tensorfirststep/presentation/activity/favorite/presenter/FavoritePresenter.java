@@ -12,9 +12,11 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
+import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.CitiesDataStoreFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,16 +42,18 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         sendMessageToUi = new Handler(Looper.getMainLooper());
     }
 
-    private PresenterCallBack presenterCallBack = new PresenterCallBack() {
+    private CallbackCities<List<City>> callbackCities = new CallbackCities<List<City>>() {
         @Override
-        public void onSuccess() {
+        public void onUpdate(final List<City> result) {
             try {
                 if (activity != null) {
                     sendMessageToUi.post(new Runnable() {
                         @Override
                         public void run() {
+                            cachedInfo(result);
+                            showCachedCities();
+
                             activity.hideEmptyCard();
-                            activity.refreshWeathers(cachedCities);
                             activity.runRefreshLayout(false);
                         }
                     });
@@ -60,7 +64,21 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         }
 
         @Override
-        public void onNothingFind() {
+        public void onOldFromDb(final List<City> result) {
+            sendMessageToUi.post(new Runnable() {
+                @Override
+                public void run() {
+                    cachedInfo(result);
+                    showCachedCities();
+
+                    activity.hideEmptyCard();
+                    activity.runRefreshLayout(false);
+                }
+            });
+        }
+
+        @Override
+        public void isEmpty() {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
@@ -70,7 +88,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
             });
         }
     };
-
 
     private void cachedInfo(List<City> cities) {
         isRefreshComplete = true;
@@ -83,43 +100,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         isRefreshComplete = false;
         activity.runRefreshLayout(true);
 
-// TODO: 22.08.2017 Здесь будет CallBack для возвращения результата
-//        DataProvider.getInstance().getCitiesFromBd(new Callback<List<City>>() {
-//            //Читаем из БД
-//            @Override
-//            public void onSuccess(List<City> result) {
-//                //Проверяем результат чтения
-//                if (result != null && result.size() > 0) {
-//                    if (isOnline()) {
-////                        try {
-////                            //Обновляем информацию о погоде
-////                            DataProvider.getInstance().updateCityInfo(
-////                                    result,
-////                                    new Callback<List<City>>() {
-////                                        //обновляем погоду
-////                                        @Override
-////                                        public void onSuccess(List<City> result) {
-////                                            //кешируем результат
-////                                            cachedInfo(result);
-////                                            presenterCallBack.onSuccess();
-////                                        }
-////                                    });
-////                        } catch (IOException e) {
-////                            e.printStackTrace();
-////                        }
-//                    } else {
-//                        //кешируем результат
-//                        cachedInfo(result);
-//                        presenterCallBack.onSuccess();
-//                    }
-//                } else {
-//                    //если БД пуста, то показываем карточку с подсказкой!
-//
-//                    isRefreshComplete = true;
-//                    presenterCallBack.onNothingFind();
-//                }
-//            }
-//        });
+            App.getExecutorService().execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        CitiesDataStoreFactory.getInstance().getCities(callbackCities);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
     }
 
     public void switchActivity(Activity thisActivity, Class toActivity) {

@@ -7,6 +7,7 @@ import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public class CitiesDataStoreFactory {
 
     private DataProvider dataProvider;
 
-    public void getCities(CallbackCities<List<City>> callbackResult) {
+    public void getCities(CallbackCities<List<City>> callbackResult) throws IOException {
         // TODO: 22.08.2017 Здесь обращение к внешнему Api + Запуск дествия в пуле потоков + не забыть про кеширование в Презентере
         //1. Начинаем читать БД
         //2.1. Если пусто, то возвращаем null
@@ -37,7 +38,8 @@ public class CitiesDataStoreFactory {
             callbackResult.isEmpty();
         } else {
             if (isOnline()) {
-
+                callbackResult.onUpdate(
+                        dataProvider.updateCityInfo(citiesFromDb));
             } else {
                 callbackResult.onOldFromDb(citiesFromDb);
             }
