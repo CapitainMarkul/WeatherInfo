@@ -18,7 +18,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity> {
-//    private AddCityActivity activity;
+    //    private AddCityActivity activity;
     private City cachedCity;
     private boolean isFavorite;
     private boolean isRefresh = false;
@@ -62,10 +62,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         cachedCity = city;
         this.isFavorite = isFavorite;
     }
-
-//    public void setActivity(AddCityActivity activity) {
-//        this.activity = activity;
-//    }
 
     public void getWeatherInCity(String fullCityName) {
         isRefresh = true;

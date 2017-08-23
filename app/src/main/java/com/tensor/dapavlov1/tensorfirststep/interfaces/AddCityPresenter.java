@@ -11,7 +11,7 @@ public interface AddCityPresenter extends Loading, ShowMessage {
 
     void showWeatherCardNothingFind();
 
-//    void showInformation(City cities, String dateTimeNow);
+//    void showInformation(City getCities, String dateTimeNow);
 
     void showWeatherCardFullInfo();
 

@@ -33,7 +33,7 @@ public class CreatorDbClient {
         query = modelCityDao.queryBuilder().orderAsc(DbCityDao.Properties.Name).build();
     }
 
-    DbClient createNewDaoClient() {
+    public DbClient createNewDaoClient() {
         return new DbClient(modelCityDao, query);
     }
 }

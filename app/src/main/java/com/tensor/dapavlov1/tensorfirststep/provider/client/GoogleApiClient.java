@@ -17,10 +17,10 @@ import okhttp3.Response;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class GoogleApi extends ApiHelper {
+public class GoogleApiClient extends ApiHelper {
     private OkHttpClient okHttpClient;
 
-    public GoogleApi() {
+    public GoogleApiClient() {
         okHttpClient = new OkHttpClient();
     }
 

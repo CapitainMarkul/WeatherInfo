@@ -52,9 +52,10 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-                    filterResults.values = resultList;
-                    filterResults.count = resultList.size();
+                    if (resultList != null) {
+                        filterResults.values = resultList;
+                        filterResults.count = resultList.size();
+                    }
                 }
                 return filterResults;
             }

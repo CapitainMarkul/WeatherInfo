@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ import java.util.List;
 public interface WeatherRepository {
     City city();
 
-    List<City> cities();
+    void getCities(CallbackCities<List<City>> callbackCities);
 }

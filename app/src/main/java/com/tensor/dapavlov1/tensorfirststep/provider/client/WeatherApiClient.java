@@ -17,10 +17,10 @@ import okhttp3.Response;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class WeatherApi extends ApiHelper {
+public class WeatherApiClient extends ApiHelper {
     private OkHttpClient okHttpClient;
 
-    public WeatherApi() {
+    public WeatherApiClient() {
         okHttpClient = new OkHttpClient();
     }
 

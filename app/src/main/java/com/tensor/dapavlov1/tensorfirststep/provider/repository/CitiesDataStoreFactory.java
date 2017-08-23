@@ -1,14 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
-import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by da.pavlov1 on 22.08.2017.
@@ -22,27 +15,18 @@ public class CitiesDataStoreFactory {
     }
 
     private CitiesDataStoreFactory() {
-        dataProvider = DataProvider.getInstance();
     }
 
-    private DataProvider dataProvider;
-
-    public void getCities(CallbackCities<List<City>> callbackResult) throws IOException {
-        // TODO: 22.08.2017 Здесь обращение к внешнему Api + Запуск дествия в пуле потоков + не забыть про кеширование в Презентере
+    public CitiesDataStore create() {
         //1. Начинаем читать БД
         //2.1. Если пусто, то возвращаем null
         //2.2. Если не пусто, начинаем проверять интернет, и возвращаем либо старое, либо обновленное
-        List<City> citiesFromDb = dataProvider.getCitiesFromBd();
 
-        if (citiesFromDb.isEmpty()) {
-            callbackResult.isEmpty();
+        //Решаем откуда будем брать информацию
+        if (isOnline()) {
+            return new CloudCitiesDataStore();
         } else {
-            if (isOnline()) {
-                callbackResult.onUpdate(
-                        dataProvider.updateCityInfo(citiesFromDb));
-            } else {
-                callbackResult.onOldFromDb(citiesFromDb);
-            }
+            return new DbCitiesDataStore();
         }
     }
 

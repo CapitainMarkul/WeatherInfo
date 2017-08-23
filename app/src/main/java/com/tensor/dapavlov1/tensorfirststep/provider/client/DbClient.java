@@ -5,6 +5,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.EmptyDbException;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -29,8 +30,12 @@ public class DbClient {
         return query.forCurrentThread().list().get(index);
     }
 
-    public List<DbCity> loadListAllCity() {
-        return query.forCurrentThread().list();
+    public List<DbCity> loadListAllCity() throws EmptyDbException {
+        List<DbCity> resultList = query.forCurrentThread().list();
+        if(resultList.isEmpty()){
+            throw new EmptyDbException();
+        }
+        return resultList;
     }
 
     public void updateAllCity(List<ModelCityWeather> modelCityWeathers) {
@@ -74,7 +79,7 @@ public class DbClient {
         }
     }
 
-    public DbCity isAdd(DbCity city) {
+    public DbCity isAdd(DbCity city) throws EmptyDbException {
         List<DbCity> dbCityList = loadListAllCity();
         //ситуация с одинаковыми названиями городов - возможна,
         // (Города Кострома, Костромская обл и Кострома Самарская, обл. будут считаться за один город)

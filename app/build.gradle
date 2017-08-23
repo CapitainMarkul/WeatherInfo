@@ -29,7 +29,7 @@ android {
             buildConfigField "String", "WEATHER_API_SEGMENTS", '"v1.0/forecast/3hourly"'
             buildConfigField "int",    "WEATHER_API_COUNT_DAY", '5'
 
-            buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCnpjSiv6cx8UTBfP2L4tvOtCInp4hwoSo"'
+            buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCaQ5TuJyjacKKXkEalIg_jqGQk_6H4Hms"'
             buildConfigField "String", "GOOGLE_API_TYPES", '"(cities)"'
             buildConfigField "String", "GOOGLE_API_SCHEME", '"https"'
             buildConfigField "String", "GOOGLE_API_HOST", '"maps.googleapis.com"'
@@ -45,7 +45,7 @@ android {
             buildConfigField "String", "WEATHER_API_SEGMENTS", '"v1.0/forecast/3hourly"'
             buildConfigField "int",    "WEATHER_API_COUNT_DAY", '10'
 
-            buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCnpjSiv6cx8UTBfP2L4tvOtCInp4hwoSo"'
+            buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCaQ5TuJyjacKKXkEalIg_jqGQk_6H4Hms"'
             buildConfigField "String", "GOOGLE_API_TYPES", '"(cities)"'
             buildConfigField "String", "GOOGLE_API_SCHEME", '"https"'
             buildConfigField "String", "GOOGLE_API_HOST", '"maps.googleapis.com"'

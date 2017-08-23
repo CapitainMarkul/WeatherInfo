@@ -1,7 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
+import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.NetworkConnectionException;
 
 import java.util.List;
 
@@ -10,10 +12,11 @@ import java.util.List;
  */
 
 public class WeatherDataRepository implements WeatherRepository {
-    //// TODO: 22.08.2017 Здесь DataProvider, который будет решать, что и как предоставлять
+    private CitiesDataStoreFactory citiesDataStoreFactory;
 
-    private DataProvider dataProvider;
-
+    public WeatherDataRepository() {
+        citiesDataStoreFactory = CitiesDataStoreFactory.getInstance();
+    }
 
     @Override
     public City city() {
@@ -21,8 +24,23 @@ public class WeatherDataRepository implements WeatherRepository {
     }
 
     @Override
-    public List<City> cities() {
+    public void getCities(CallbackCities<List<City>> callbackCities) {
+        //определяем откуда тянуть информацию/ Из бд или из сети
+        CitiesDataStore citiesDataStore = citiesDataStoreFactory.create();
 
-        return null;
+        //Для удобства обработки CallBack'ов были
+        // введены собственные исключения
+        try {
+            //Данные обновлены успешно
+            callbackCities.onUpdate(
+                    citiesDataStore.getCities());
+        } catch (EmptyDbException e) {
+            //отсутствуют данные для обновления, или прочие ошибки
+            // (В идеале уведомления с подробностями)
+            callbackCities.isEmpty();
+        } catch (NetworkConnectionException e) {
+            //Отображаем не обновленные данные
+            callbackCities.onOldFromDb(e.getOldCitiesInfo());
+        }
     }
 }

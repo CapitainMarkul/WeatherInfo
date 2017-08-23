@@ -7,18 +7,14 @@ import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
-import com.tensor.dapavlov1.tensorfirststep.presentation.common.PresenterCallBack;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
-import com.tensor.dapavlov1.tensorfirststep.provider.Callback;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.CitiesDataStoreFactory;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.WeatherDataRepository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +24,6 @@ import java.util.List;
  */
 
 public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
-//    private FavoriteActivity activity;
-
     private Router router;
 
     private List<City> cachedCities = new ArrayList<>();
@@ -55,6 +49,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
                             activity.hideEmptyCard();
                             activity.runRefreshLayout(false);
+
+                            activity.showMessage(R.string.activity_favorite_update_success);
                         }
                     });
                 }
@@ -73,6 +69,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
                     activity.hideEmptyCard();
                     activity.runRefreshLayout(false);
+
+                    activity.showMessage(R.string.str_error_connect_to_internet);
                 }
             });
         }
@@ -100,16 +98,12 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         isRefreshComplete = false;
         activity.runRefreshLayout(true);
 
-            App.getExecutorService().execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        CitiesDataStoreFactory.getInstance().getCities(callbackCities);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+        App.getExecutorService().execute(new Runnable() {
+            @Override
+            public void run() {
+                new WeatherDataRepository().getCities(callbackCities);
+            }
+        });
     }
 
     public void switchActivity(Activity thisActivity, Class toActivity) {
@@ -131,8 +125,4 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     public void setRouter(Router router) {
         this.router = router;
     }
-
-//    private boolean isOnline() {
-//        return CheckConnect.getInstance().isOnline(App.getContext());
-//    }
 }

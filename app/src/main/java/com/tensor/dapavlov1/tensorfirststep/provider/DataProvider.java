@@ -2,6 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexCommand;
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.RemoteControlDb;
@@ -11,13 +12,12 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.GoogleApi;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApi;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.GoogleApiClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimCityInfo;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.EmptyDbException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +28,9 @@ public class DataProvider {
     private static DataProvider instance;
 
     private DbClient dbClient;
-    private WeatherApi weatherClient;
-    private GoogleApi googleClient;
+    private WeatherApiClient weatherClient;
+//    weatherClient = ApiFabric.getInstance().createClientWeatherApi();
+    private GoogleApiClient googleClient;
     private RemoteControlDb remoteControlDb;
 
     private DataProvider() {
@@ -56,80 +57,35 @@ public class DataProvider {
                 googleClient.getJsonFromGooglePlaceApi(inputText));
     }
 
-//    public void updateCityInfo(final List<City> cities, final Callback<List<City>> callBack) throws IOException {
-////        if (isOnline()) {
+//    public List<City> updateCityInfo(final List<City> getCities) throws IOException {
 //        //получаем обновленную информацию
+//        final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
+//        for (City item : getCities) {
+//            try {
+//                modelCityWeathers.add(
+//                        MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
+//                                GsonFactory.getInstance().createGsonCityModel(
+//                                        weatherClient.getJsonFromApiWeather(item.getName())
+//                                )
+//                        )
+//                );
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        //set Update in BD
 //        App.getExecutorService().execute(new Runnable() {
 //            @Override
 //            public void run() {
-//                final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
-//                for (City item : cities) {
-//                    try {
-//                        modelCityWeathers.add(
-//                                MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-//                                        GsonFactory.getInstance().createGsonCityModel(
-//                                                weatherClient.getJsonFromApiWeather(item.getName())
-//                                        )
-//                                )
-//                        );
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                //set Update in BD
-//                App.getExecutorService().execute(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        dbClient.updateAllCity(modelCityWeathers);
-//                    }
-//                });
-//
-//                callBack.onSuccess(
-//                        MapperDbToView.getInstance().getCityViewModels(modelCityWeathers));
+//                dbClient.updateAllCity(modelCityWeathers);
 //            }
 //        });
+//
+//        return MapperDbToView.getInstance().getCityViewModels(modelCityWeathers);
 //    }
 
-    public List<City> updateCityInfo(final List<City> cities) throws IOException {
-        //получаем обновленную информацию
-        final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
-        for (City item : cities) {
-            try {
-                modelCityWeathers.add(
-                        MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-                                GsonFactory.getInstance().createGsonCityModel(
-                                        weatherClient.getJsonFromApiWeather(item.getName())
-                                )
-                        )
-                );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //set Update in BD
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                dbClient.updateAllCity(modelCityWeathers);
-            }
-        });
-
-        return MapperDbToView.getInstance().getCityViewModels(modelCityWeathers);
-    }
-
-    public List<City> getCitiesFromBd() {
-        return MapperDbToView.getInstance().getCityViewModelsFromDao(dbClient.loadListAllCity());
-    }
-
-//    public void getCitiesFromBd(final Callback<List<City>> callBack) {
-//        App.getExecutorService().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                callBack.onSuccess(
-//                        MapperDbToView.getInstance().getCityViewModelsFromDao(
-//                                dbClient.loadListAllCity()));
-//            }
-//        });
+//    public List<City> getCitiesFromBd() {
+//        return MapperDbToView.getInstance().getCityViewModelsFromDao(dbClient.loadListAllCity());
 //    }
 
     public void getWeathers(final String cityName, final Callback<City> callBack) {
@@ -145,7 +101,12 @@ public class DataProvider {
                                 GsonFactory.getInstance().createGsonCityModel(response));
 
                         //проверяем, есть ли этот город в списке Favorite
-                        DbCity tempModel = dbClient.isAdd(tempCity.getDbCity());
+                        DbCity tempModel = null;
+                        try {
+                            tempModel = dbClient.isAdd(tempCity.getDbCity());
+                        } catch (EmptyDbException e) {
+                            e.printStackTrace();
+                        }
 
                         if (tempModel != null) {
                             tempCity = new ModelCityWeather(tempModel, tempModel.getWeathers());
