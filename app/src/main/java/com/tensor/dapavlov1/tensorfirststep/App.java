@@ -31,6 +31,13 @@ public class App extends Application {
     }
 
     @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+    }
+
+
+    @Override
     public void onCreate() {
         super.onCreate();
         context = this;

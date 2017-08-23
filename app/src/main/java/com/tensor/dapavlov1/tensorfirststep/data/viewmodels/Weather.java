@@ -1,10 +1,13 @@
 package com.tensor.dapavlov1.tensorfirststep.data.viewmodels;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class Weather {
+public class Weather implements Parcelable{
     private String windShort;
     private double windSpeed;
     private double pressure;
@@ -26,6 +29,30 @@ public class Weather {
         this.iconCode = iconCode;
         this.description = description;
     }
+
+    protected Weather(Parcel in) {
+        windShort = in.readString();
+        windSpeed = in.readDouble();
+        pressure = in.readDouble();
+        temperature = in.readDouble();
+        date = in.readString();
+        time = in.readString();
+        iconUrl = in.readString();
+        iconCode = in.readString();
+        description = in.readString();
+    }
+
+    public static final Creator<Weather> CREATOR = new Creator<Weather>() {
+        @Override
+        public Weather createFromParcel(Parcel in) {
+            return new Weather(in);
+        }
+
+        @Override
+        public Weather[] newArray(int size) {
+            return new Weather[size];
+        }
+    };
 
     public String getWindShort() {
         return windShort;
@@ -61,5 +88,23 @@ public class Weather {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(windShort);
+        parcel.writeDouble(windSpeed);
+        parcel.writeDouble(pressure);
+        parcel.writeDouble(temperature);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(iconUrl);
+        parcel.writeString(iconCode);
+        parcel.writeString(description);
     }
 }
