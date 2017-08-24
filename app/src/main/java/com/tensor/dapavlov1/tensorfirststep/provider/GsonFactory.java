@@ -1,7 +1,11 @@
 package com.tensor.dapavlov1.tensorfirststep.provider;
 
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlace;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlaces;

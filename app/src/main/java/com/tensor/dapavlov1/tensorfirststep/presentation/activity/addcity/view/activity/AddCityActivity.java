@@ -84,6 +84,8 @@ public class AddCityActivity extends AppCompatActivity
     @BindView(R.id.iv_clear) ImageView clearCityName;
     @BindView(R.id.rv_weather_on_other_time) RecyclerView weatherOtherTime;
 
+    private Bundle saveBundle;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,14 +95,10 @@ public class AddCityActivity extends AppCompatActivity
 
         setupViews();
         setupListeners();
-        setupPresenter();
+        createPresenter();
         setupSingleton();
 
-        setupRecyclerAdapter();
-        setupRecyclerView();
-        if (savedInstanceState != null) {
-            mPresenter.resumePresenter(savedInstanceState);
-        }
+        saveBundle = savedInstanceState;
     }
 
     @Override
@@ -122,9 +120,9 @@ public class AddCityActivity extends AppCompatActivity
         getSupportLoaderManager().initLoader(LOADER_NEW_CITY_ID, null, this);
     }
 
-    private void setupPresenter() {
+    private void createPresenter() {
         mPresenter = new AddCityPresenter();
-        mPresenter.attachActivity(this);
+//        mPresenter.attachActivity(this);
     }
 
     @Override
@@ -291,7 +289,7 @@ public class AddCityActivity extends AppCompatActivity
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        setupPresenter();
+        createPresenter();
         setupRecyclerAdapter();
         setupRecyclerView();
         return new RootLoader(getBaseContext(), createConfigMap());
@@ -307,16 +305,14 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
         mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
-
         adapterHorizontalWeather = (AdapterHorizontalWeather) dataMap.get(NEW_CITY_ADAPTER);
-        setupRecyclerView();
-        showCityAfterTerminateApp((City) dataMap.get(mPresenter.CITY_VIEW_MODEL));
-    }
+        mPresenter.attachActivity(this);
 
-    private void showCityAfterTerminateApp(City cachedCity) {
-        if (cachedCity != null) {
-            mPresenter.showInformation(cachedCity);
+        if (saveBundle != null) {
+            mPresenter.resumePresenter(saveBundle);
         }
+
+        setupRecyclerView();
     }
 
     @Override

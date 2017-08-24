@@ -24,20 +24,27 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private boolean isRefresh = false;
     public final static String CITY_VIEW_MODEL = "city_view_model";
     public final static String CITY_TEMP_DB_MODEL = "city_db_model";
+
     //для связи с UI
     private Handler sendMessageToUi;
 
     public void resumePresenter(Bundle saveDataBundle) {
         cachedCity = (City) saveDataBundle.get(CITY_VIEW_MODEL);
-        if(cachedCity != null) {
-            TempCity.getInstance().setModelCityWeather((ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
+        if (cachedCity != null) {
+            TempCity.getInstance().setModelCityWeather(
+                    (ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
             showInformation(cachedCity);
+        } else {
+            activity.showWeatherCardNothingFind();
         }
     }
 
-    public Bundle saveData(Bundle outState){
+    public Bundle saveData(Bundle outState) {
         //объект для отображения
-        outState.putParcelable(CITY_VIEW_MODEL, cachedCity);
+        //ситуация с TerminateApp, презентер пересоздается, и не имеет кешированной информации
+        if (cachedCity != null) {
+            outState.putParcelable(CITY_VIEW_MODEL, cachedCity);
+        }
         //объект для работы с Бд (Удаления/Добавления)
         outState.putParcelable(CITY_TEMP_DB_MODEL, TempCity.getInstance().getModelCityWeather());
         return outState;
@@ -91,6 +98,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
+                    isRefresh = false;
                     activity.showWeatherCardNothingFind();
                     hideViewLoading();
                 }

@@ -1,5 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
+import android.support.annotation.Nullable;
+
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
@@ -54,19 +56,23 @@ public class DbClient {
                             itemNewCity.getLastTimeUpdate());
 
 
-                    //Update Weather Info
-                    long idCity = itemOld.getWeathers().get(0).getCityId();
-                    long counterId = 1;
-                    itemOld.getWeathers().clear();
-                    for (DbWeather item : listNewWeather) {
-                        item.setCityId(idCity);
-                        item.setId(counterId);
-                        itemOld.getWeathers().add(item);
-                        counterId++;
+                    //если возникнут ошибки при обновлении информации в БД
+                    try {
+                        //Update Weather Info
+                        long idCity = itemOld.getWeathers().get(0).getCityId();
+                        long counterId = 1;
+                        itemOld.getWeathers().clear();
+                        for (DbWeather item : listNewWeather) {
+                            item.setCityId(idCity);
+                            item.setId(counterId);
+                            itemOld.getWeathers().add(item);
+                            counterId++;
+                        }
+
+                        itemOld.update();
+                    } catch (Exception e) {
+                        continue;
                     }
-
-                    itemOld.update();
-
                     //  удаляем элемент из временного списка
                     tempList.remove(itemNewCity);
                     iterator.remove();
@@ -106,7 +112,11 @@ public class DbClient {
     }
 
     private DbCity getDaoCity(int index) {
-        return query.forCurrentThread().list().get(index);
+        try {
+            return query.forCurrentThread().list().get(index);
+        } catch (IndexOutOfBoundsException e){
+            return null;
+        }
     }
 
     public void deleteCity(final int position) {
@@ -118,8 +128,17 @@ public class DbClient {
         });
     }
 
-    public void deleteCity(DbCity dbCity) {
-        App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
-        dbCity.delete();
+    public void deleteCity(@Nullable DbCity dbCity) {
+        if(dbCity != null) {
+            //Информация о сессии с БД, не переживает Terminate (приходится вот так восстанавливать)
+            if (dbCity.getId() == null) {
+                try {
+                    dbCity = isAdd(dbCity);
+                } catch (EmptyDbException e) {
+                }
+            }
+            App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
+            dbCity.delete();
+        }
     }
 }

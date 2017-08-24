@@ -79,6 +79,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
+                    isRefreshComplete = true;
                     activity.runRefreshLayout(getRefreshComplete());
                     activity.showEmptyCard();
                 }
@@ -115,7 +116,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     }
 
     public void showCachedCities() {
-        activity.refreshWeathers(cachedCities);
+        if(cachedCities!= null && !cachedCities.isEmpty()) {
+            activity.refreshWeathers(cachedCities);
+        } else {
+            activity.showEmptyCard();
+        }
     }
 
     public boolean getRefreshComplete() {
