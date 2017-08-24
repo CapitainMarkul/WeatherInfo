@@ -5,9 +5,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 
-import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -18,14 +17,11 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
 
     private List<String> resultList;
 
-    private Context mContext;
-    private int mResource;
-
+    //    private Context mContext;
+//    private int mResource;
+//
     public PlacesAutoComplete(Context context, int resource) {
         super(context, resource);
-
-        mContext = context;
-        mResource = resource;
     }
 
     @Override
@@ -46,12 +42,8 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    try {
-                        resultList =
-                                DataProvider.getInstance().getPlaces(constraint.toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    resultList = PlacesDataRepository.getInstance().getPlaces(constraint.toString());
+
                     if (resultList != null) {
                         filterResults.values = resultList;
                         filterResults.count = resultList.size();

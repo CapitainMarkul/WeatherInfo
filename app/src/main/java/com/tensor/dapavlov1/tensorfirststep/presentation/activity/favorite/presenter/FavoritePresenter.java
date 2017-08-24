@@ -11,9 +11,8 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.DataProvider;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.WeatherDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +100,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         App.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                new WeatherDataRepository().getCities(callbackCities);
+                new CitiesDataRepository().getCities(callbackCities);
             }
         });
     }
@@ -111,7 +110,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     }
 
     public void deleteCity(int position) {
-        DataProvider.getInstance().deleteCity(position);
+        new CitiesDataRepository().delete(position);
+//        DataProvider.getInstance().deleteCity();
     }
 
     public void showCachedCities() {

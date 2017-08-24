@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.provider.repository;
+package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
@@ -10,8 +10,9 @@ import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.NetworkConnectionException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class CloudCitiesDataStore implements CitiesDataStore {
     private WeatherApiClient weatherClient = ApiFabric.getInstance().createClientWeatherApi();
 
     @Override
-    public List<City> getCities() throws NetworkConnectionException, EmptyDbException {
+    public List<City> getCities() throws NetworkConnectException, EmptyDbException {
         try {
             return updateCityInfo(
                     MapperDbToView.getInstance().getCityViewModelsFromDao(dbClient.loadListAllCity()));

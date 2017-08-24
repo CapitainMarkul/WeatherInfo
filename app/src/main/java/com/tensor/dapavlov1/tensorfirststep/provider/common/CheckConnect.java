@@ -8,19 +8,7 @@ import android.net.NetworkInfo;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class CheckConnect {
-    private static CheckConnect instance;
-
-    public static CheckConnect getInstance() {
-        if (instance == null) {
-            instance = new CheckConnect();
-        }
-        return instance;
-    }
-
-    private CheckConnect() {
-    }
-
+public abstract class CheckConnect {
     public boolean isOnline(final Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

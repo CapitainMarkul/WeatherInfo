@@ -5,7 +5,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class DbClient {
-    DbCityDao cityDao;
+    private DbCityDao cityDao;
     private Query<DbCity> query;
 
     public DbClient(DbCityDao cityDao, Query<DbCity> query) {
@@ -26,13 +26,9 @@ public class DbClient {
         this.query = query;
     }
 
-    private DbCity getDaoCity(int index) {
-        return query.forCurrentThread().list().get(index);
-    }
-
     public List<DbCity> loadListAllCity() throws EmptyDbException {
         List<DbCity> resultList = query.forCurrentThread().list();
-        if(resultList.isEmpty()){
+        if (resultList.isEmpty()) {
             throw new EmptyDbException();
         }
         return resultList;
@@ -109,6 +105,10 @@ public class DbClient {
         return dbWeathers;
     }
 
+    private DbCity getDaoCity(int index) {
+        return query.forCurrentThread().list().get(index);
+    }
+
     public void deleteCity(final int position) {
         App.getExecutorService().execute(new Runnable() {
             @Override
@@ -119,11 +119,7 @@ public class DbClient {
     }
 
     public void deleteCity(DbCity dbCity) {
-                App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
-                dbCity.delete();
+        App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
+        dbCity.delete();
     }
-
-//    public List<DbCity> loadListAllCityForCurrentThread() {
-//    }
-//        return query.forCurrentThread().list();
 }

@@ -24,7 +24,7 @@ public class ApiFabric {
         return new WeatherApiClient();
     }
 
-    GoogleApiClient crateClientGoogleApi() {
+    public GoogleApiClient crateClientGoogleApi() {
         return new GoogleApiClient();
     }
 }
