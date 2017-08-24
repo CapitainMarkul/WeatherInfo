@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
@@ -28,11 +29,13 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     public void resumePresenter(Bundle saveDataBundle) {
         cachedCity = (City) saveDataBundle.get(CITY_VIEW_MODEL);
-        TempCity.getInstance().setModelCityWeather((ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
-        showInformation(cachedCity);
+        if(cachedCity != null) {
+            TempCity.getInstance().setModelCityWeather((ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
+            showInformation(cachedCity);
+        }
     }
 
-    public Bundle saveDate(Bundle outState){
+    public Bundle saveData(Bundle outState){
         //объект для отображения
         outState.putParcelable(CITY_VIEW_MODEL, cachedCity);
         //объект для работы с Бд (Удаления/Добавления)
@@ -40,23 +43,19 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         return outState;
     }
 
-
-
-
     public AddCityPresenter() {
         sendMessageToUi = new Handler(Looper.getMainLooper());
     }
 
     private CallbackCity<City> cityCallback = new CallbackCity<City>() {
-        // TODO: 23.08.2017 Добавить кеширование результата
         @Override
         public void isFavoriteCity(final City result) {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
                     activity.cityIsFavorite(true);
-                    showCardWeatherInfo();
-                    showInformation(result);
+                    cachedInfo(result);
+                    showInformation(cachedCity);
                     hideViewLoading();
                 }
             });
@@ -68,7 +67,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                 @Override
                 public void run() {
                     activity.cityIsFavorite(false);
-                    showCardWeatherInfo();
+                    cachedInfo(result);
                     showInformation(result);
                     hideViewLoading();
                 }
@@ -99,7 +98,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         }
     };
 
-    private void cachedInfo(City city, boolean isFavorite) {
+    private void cachedInfo(City city) {
         isRefresh = false;
         cachedCity = city;
     }

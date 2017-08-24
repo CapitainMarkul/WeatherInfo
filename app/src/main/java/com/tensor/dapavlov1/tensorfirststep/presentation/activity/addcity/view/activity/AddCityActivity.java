@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -26,7 +25,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -98,6 +96,8 @@ public class AddCityActivity extends AppCompatActivity
         setupPresenter();
         setupSingleton();
 
+        setupRecyclerAdapter();
+        setupRecyclerView();
         if (savedInstanceState != null) {
             mPresenter.resumePresenter(savedInstanceState);
         }
@@ -105,7 +105,7 @@ public class AddCityActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(mPresenter.saveDate(outState));
+        super.onSaveInstanceState(mPresenter.saveData(outState));
     }
 
     @Override
@@ -207,7 +207,6 @@ public class AddCityActivity extends AppCompatActivity
 
     @Override
     public void showInformation(final City city) {
-//        tempCity = city;
         cityNameInCard.setText(city.getName());
         time.setText(city.getLastTimeUpdate());
 
@@ -302,9 +301,6 @@ public class AddCityActivity extends AppCompatActivity
         Map<String, Object> values = new HashMap<>();
         values.put(NEW_CITY_PRESENTER, mPresenter);
         values.put(NEW_CITY_ADAPTER, adapterHorizontalWeather);
-//        if (tempCity != null) {
-//            values.put(mPresenter.CITY_VIEW_MODEL, tempCity);
-//        }
         return values;
     }
 

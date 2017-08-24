@@ -40,7 +40,7 @@ public class CitiesDataRepository implements CitiesRepository {
             try {
                 cityDataStore.getCity(fullCityName);
             } catch (EmptyResponseException e) {
-                callbackCity.onErrorConnect();
+                callbackCity.isEmpty();
             } catch (CityNotFoundException obj) {
                 callbackCity.isNotFavoriteCity(obj.getCity());
             } catch (CityFoundException obj) {
@@ -71,6 +71,4 @@ public class CitiesDataRepository implements CitiesRepository {
             callbackCities.onOldFromDb(e.getOldCitiesInfo());
         }
     }
-
-
 }
