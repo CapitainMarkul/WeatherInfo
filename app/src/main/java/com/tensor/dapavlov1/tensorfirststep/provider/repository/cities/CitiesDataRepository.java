@@ -20,11 +20,7 @@ import java.util.List;
  */
 
 public class CitiesDataRepository implements CitiesRepository {
-    private CitiesDataStoreFactory citiesDataStoreFactory;
-
-    public CitiesDataRepository() {
-        citiesDataStoreFactory = CitiesDataStoreFactory.getInstance();
-    }
+    private CitiesDataStoreFactory citiesDataStoreFactory = CitiesDataStoreFactory.getInstance();
 
     @Override
     public void add(ModelCityWeather city) {
