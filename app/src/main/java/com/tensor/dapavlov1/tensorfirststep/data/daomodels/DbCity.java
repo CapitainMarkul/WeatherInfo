@@ -1,9 +1,13 @@
 package com.tensor.dapavlov1.tensorfirststep.data.daomodels;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.greenrobot.greendao.annotation.Generated;
@@ -15,7 +19,7 @@ import org.greenrobot.greendao.annotation.ToMany;
  */
 
 @Entity(active = true, nameInDb = "City")
-public class DbCity {
+public class DbCity implements Parcelable {
     @Id
     private Long id;
 
@@ -28,11 +32,47 @@ public class DbCity {
     @ToMany(referencedJoinProperty = "cityId")
     private List<DbWeather> weathers;
 
-    /** Used to resolve relations */
+
+    protected DbCity(Parcel in) {
+        name = in.readString();
+        lastTimeUpdate = in.readString();
+        weathers = in.createTypedArrayList(DbWeather.CREATOR);
+    }
+
+    public static final Creator<DbCity> CREATOR = new Creator<DbCity>() {
+        @Override
+        public DbCity createFromParcel(Parcel in) {
+            return new DbCity(in);
+        }
+
+        @Override
+        public DbCity[] newArray(int size) {
+            return new DbCity[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeLong(id);
+        parcel.writeString(name);
+        parcel.writeString(lastTimeUpdate);
+        parcel.writeTypedList(weathers);
+    }
+
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
 
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 1507836013)
     private transient DbCityDao myDao;
 
@@ -93,7 +133,9 @@ public class DbCity {
         return weathers;
     }
 
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    /**
+     * Resets a to-many relationship, making the next get call to query for a fresh result.
+     */
     @Generated(hash = 883555496)
     public synchronized void resetWeathers() {
         weathers = null;
@@ -135,11 +177,12 @@ public class DbCity {
         myDao.update(this);
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 47395212)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getDbCityDao() : null;
     }
-
 }

@@ -28,7 +28,8 @@
         </activity>
         <activity
             android:name=".presentation.activity.addcity.view.activity.AddCityActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN"/>-->
                 <!--<category android:name="android.intent.category.LAUNCHER"/>-->

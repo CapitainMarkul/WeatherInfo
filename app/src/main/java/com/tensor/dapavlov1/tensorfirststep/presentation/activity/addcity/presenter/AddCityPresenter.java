@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -18,13 +19,29 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDat
 
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity> {
-    //    private AddCityActivity activity;
     private City cachedCity;
-    //    private boolean isFavorite;
     private boolean isRefresh = false;
-
+    public final static String CITY_VIEW_MODEL = "city_view_model";
+    public final static String CITY_TEMP_DB_MODEL = "city_db_model";
     //для связи с UI
     private Handler sendMessageToUi;
+
+    public void resumePresenter(Bundle saveDataBundle) {
+        cachedCity = (City) saveDataBundle.get(CITY_VIEW_MODEL);
+        TempCity.getInstance().setModelCityWeather((ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
+        showInformation(cachedCity);
+    }
+
+    public Bundle saveDate(Bundle outState){
+        //объект для отображения
+        outState.putParcelable(CITY_VIEW_MODEL, cachedCity);
+        //объект для работы с Бд (Удаления/Добавления)
+        outState.putParcelable(CITY_TEMP_DB_MODEL, TempCity.getInstance().getModelCityWeather());
+        return outState;
+    }
+
+
+
 
     public AddCityPresenter() {
         sendMessageToUi = new Handler(Looper.getMainLooper());
@@ -118,7 +135,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             hideViewLoading();
             if (cachedCity != null) {
                 showInformation(cachedCity);
-                showCardWeatherInfo();
             }
         }
     }
@@ -131,11 +147,8 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         activity.showLoading();
     }
 
-    private void showCardWeatherInfo() {
+    public void showInformation(City city) {
         activity.showWeatherCardFullInfo();
-    }
-
-    private void showInformation(City city) {
         activity.showInformation(city);
     }
 

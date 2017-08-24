@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -94,9 +97,24 @@ public class AddCityActivity extends AppCompatActivity
         setupListeners();
         setupPresenter();
         setupSingleton();
+
+        if (savedInstanceState != null) {
+            mPresenter.resumePresenter(savedInstanceState);
+        }
     }
 
-    private void setupSingleton(){
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(mPresenter.saveDate(outState));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupLoaders();
+    }
+
+    private void setupSingleton() {
         checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
     }
 
@@ -107,7 +125,6 @@ public class AddCityActivity extends AppCompatActivity
     private void setupPresenter() {
         mPresenter = new AddCityPresenter();
         mPresenter.attachActivity(this);
-//        mPresenter.setActivity(this);
     }
 
     @Override
@@ -132,10 +149,31 @@ public class AddCityActivity extends AppCompatActivity
         cityName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                clearChecked();
-                mPresenter.getWeatherInCity(cityName.getText().toString());
+                runSearch();
             }
         });
+
+        cityName.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                        case KeyEvent.KEYCODE_ENTER:
+                            runSearch();
+                            return true;
+                        default:
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    private void runSearch() {
+        clearChecked();
+        mPresenter.getWeatherInCity(cityName.getText().toString());
     }
 
     @OnClick(R.id.iv_clear)
@@ -169,28 +207,24 @@ public class AddCityActivity extends AppCompatActivity
 
     @Override
     public void showInformation(final City city) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                cityNameInCard.setText(city.getName());
-                time.setText(city.getLastTimeUpdate());
+//        tempCity = city;
+        cityNameInCard.setText(city.getName());
+        time.setText(city.getLastTimeUpdate());
 
-                Weather weatherNow = city.getWeathers().get(WEATHER_NOW);
-                temperature.setText(String.valueOf(weatherNow.getTemperature()));
-                description.setText(weatherNow.getDescription());
-                windShortTitle.setText(weatherNow.getWindShort());
-                windSpeed.setText(String.valueOf(weatherNow.getWindSpeed()));
-                pressure.setText(String.valueOf(weatherNow.getPressure()));
-                rootContainer.setBackground(
-                        SwitchGradient.getInstance().getBackgroung(weatherNow.getIconCode()));
-                // ??
-                Picasso.with(getApplicationContext())
-                        .load(weatherNow.getIconUrl())
-                        .into(iconWeather);
+        Weather weatherNow = city.getWeathers().get(WEATHER_NOW);
+        temperature.setText(String.valueOf(weatherNow.getTemperature()));
+        description.setText(weatherNow.getDescription());
+        windShortTitle.setText(weatherNow.getWindShort());
+        windSpeed.setText(String.valueOf(weatherNow.getWindSpeed()));
+        pressure.setText(String.valueOf(weatherNow.getPressure()));
+        rootContainer.setBackground(
+                SwitchGradient.getInstance().getBackgroung(weatherNow.getIconCode()));
+        // ??
+        Picasso.with(getApplicationContext())
+                .load(weatherNow.getIconUrl())
+                .into(iconWeather);
 
-                refreshWeathers(city.getWeathers());
-            }
-        });
+        refreshWeathers(city.getWeathers());
     }
 
     public void refreshWeathers(final List<Weather> weathers) {
@@ -254,7 +288,6 @@ public class AddCityActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.detachActivity();
-//        mPresenter.setActivity(null);
     }
 
     @Override
@@ -269,6 +302,9 @@ public class AddCityActivity extends AppCompatActivity
         Map<String, Object> values = new HashMap<>();
         values.put(NEW_CITY_PRESENTER, mPresenter);
         values.put(NEW_CITY_ADAPTER, adapterHorizontalWeather);
+//        if (tempCity != null) {
+//            values.put(mPresenter.CITY_VIEW_MODEL, tempCity);
+//        }
         return values;
     }
 
@@ -278,6 +314,13 @@ public class AddCityActivity extends AppCompatActivity
 
         adapterHorizontalWeather = (AdapterHorizontalWeather) dataMap.get(NEW_CITY_ADAPTER);
         setupRecyclerView();
+        showCityAfterTerminateApp((City) dataMap.get(mPresenter.CITY_VIEW_MODEL));
+    }
+
+    private void showCityAfterTerminateApp(City cachedCity) {
+        if (cachedCity != null) {
+            mPresenter.showInformation(cachedCity);
+        }
     }
 
     @Override

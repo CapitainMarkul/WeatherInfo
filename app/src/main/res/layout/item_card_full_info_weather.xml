@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_full_info"
     style="@style/mCardViewWithoutHeight"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
 
     <RelativeLayout
         android:id="@+id/rl_root_container"
@@ -29,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
                 android:textStyle="bold"
-                tools:text="Название города," />
+                tools:text="Название города,"/>
 
             <TextView
                 android:id="@+id/tv_time"
@@ -38,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="17sp"
                 android:textStyle="italic"
-                tools:text="4 августа, 9.20" />
+                tools:text="4 августа, 9.20"/>
         </LinearLayout>
 
         <CheckBox
@@ -50,7 +52,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignTop="@+id/ln_container_city_info"
             android:layout_marginEnd="5dp"
-            android:button="@drawable/selector_checkbox" />
+            android:button="@drawable/selector_checkbox"/>
         <!--END Line Top-->
 
         <!--Second Line-->
@@ -74,27 +76,27 @@
                     android:layout_height="wrap_content"
                     android:textSize="75sp"
                     android:textStyle="bold"
-                    tools:text="19" />
+                    tools:text="19"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:paddingTop="11dp"
                     android:text="O"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:paddingTop="7dp"
                     android:text="C"
-                    android:textSize="32sp" />
+                    android:textSize="32sp"/>
 
                 <ImageView
                     android:id="@+id/iv_icon_weather"
                     android:layout_width="@dimen/item_card_full_info_weather_big_icon_size"
                     android:layout_height="@dimen/item_card_full_info_weather_big_icon_size"
-                    android:src="@drawable/test_image" />
+                    android:src="@drawable/test_image"/>
             </LinearLayout>
 
             <TextView
@@ -103,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="35sp"
-                tools:text="Ясно" />
+                tools:text="Ясно"/>
 
             <!--</LinearLayout>-->
         </LinearLayout>
@@ -127,31 +129,31 @@
                     android:layout_height="wrap_content"
                     android:text="@string/activity_add_city_wind"
                     android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_wind_short"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    tools:text="ЮЗ" />
+                    tools:text="ЮЗ"/>
 
                 <Space
                     android:layout_width="5dp"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"/>
 
                 <TextView
                     android:id="@+id/tv_wind_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    tools:text="5" />
+                    tools:text="5"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/activity_add_city_wind_unit"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -163,20 +165,20 @@
                     android:layout_height="wrap_content"
                     android:text="@string/activity_add_city_pressure"
                     android:textSize="15sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tv_pressure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    tools:text="960" />
+                    tools:text="960"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/activity_add_city_pressure_unit"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"/>
             </LinearLayout>
         </LinearLayout>
         <!--END Theed Line-->
@@ -189,6 +191,6 @@
             android:layout_below="@+id/ln_container_weather_info"
             android:background="@android:color/transparent"
             android:orientation="horizontal"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -1,5 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.data.daomodels;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
@@ -10,7 +13,7 @@ import org.greenrobot.greendao.annotation.Generated;
  */
 
 @Entity(nameInDb = "Weather")
-public class DbWeather {
+public class DbWeather implements Parcelable {
     @Id
     private Long id;
 
@@ -56,9 +59,9 @@ public class DbWeather {
 
     @Generated(hash = 1024540776)
     public DbWeather(Long id, @NotNull String windShort, double windSpeed, double pressure,
-            double temperature, @NotNull String date, @NotNull String time,
-            @NotNull String iconUrl, @NotNull String iconCode, @NotNull String description,
-            @NotNull Long cityId) {
+                     double temperature, @NotNull String date, @NotNull String time,
+                     @NotNull String iconUrl, @NotNull String iconCode, @NotNull String description,
+                     @NotNull Long cityId) {
         this.id = id;
         this.windShort = windShort;
         this.windSpeed = windSpeed;
@@ -165,4 +168,48 @@ public class DbWeather {
     }
 
 
+    protected DbWeather(Parcel in) {
+        windShort = in.readString();
+        windSpeed = in.readDouble();
+        pressure = in.readDouble();
+        temperature = in.readDouble();
+        date = in.readString();
+        time = in.readString();
+        iconUrl = in.readString();
+        iconCode = in.readString();
+        description = in.readString();
+    }
+
+    public static final Creator<DbWeather> CREATOR = new Creator<DbWeather>() {
+        @Override
+        public DbWeather createFromParcel(Parcel in) {
+            return new DbWeather(in);
+        }
+
+        @Override
+        public DbWeather[] newArray(int size) {
+            return new DbWeather[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeLong(id);
+        parcel.writeString(windShort);
+        parcel.writeDouble(windSpeed);
+        parcel.writeDouble(pressure);
+        parcel.writeDouble(temperature);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(iconUrl);
+        parcel.writeString(iconCode);
+        parcel.writeString(description);
+//        parcel.writeLong(cityId);
+
+    }
 }
