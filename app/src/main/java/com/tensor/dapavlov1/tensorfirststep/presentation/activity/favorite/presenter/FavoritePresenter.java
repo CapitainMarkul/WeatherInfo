@@ -10,7 +10,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
-import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 

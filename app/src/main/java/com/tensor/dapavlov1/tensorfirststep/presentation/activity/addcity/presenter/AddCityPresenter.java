@@ -9,7 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCity;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;

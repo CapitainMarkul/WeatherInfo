@@ -2,8 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.CallbackCity;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
