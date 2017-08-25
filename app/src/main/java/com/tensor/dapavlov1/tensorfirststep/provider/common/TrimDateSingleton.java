@@ -11,18 +11,17 @@ import java.util.Locale;
  */
 
 public class TrimDateSingleton {
-    private static TrimDateSingleton instance;
+    public static TrimDateSingleton getInstance() {
+        return TrimDateSingletonLoader.INSTANCE;
+    }
+
+    private static final class TrimDateSingletonLoader {
+        private static final TrimDateSingleton INSTANCE = new TrimDateSingleton();
+    }
 
     private TrimDateSingleton() {
-
     }
 
-    public static TrimDateSingleton getInstance() {
-        if (instance == null) {
-            instance = new TrimDateSingleton();
-        }
-        return instance;
-    }
 
     public String trimTime(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");

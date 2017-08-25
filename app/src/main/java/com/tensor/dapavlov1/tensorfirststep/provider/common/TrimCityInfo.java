@@ -5,17 +5,15 @@ package com.tensor.dapavlov1.tensorfirststep.provider.common;
  */
 
 public class TrimCityInfo {
-    private static TrimCityInfo instance;
-
-    private TrimCityInfo() {
-
+    public static TrimCityInfo getInstance() {
+        return TrimCityInfoLoader.INSTANCE;
     }
 
-    public static TrimCityInfo getInstance() {
-        if (instance == null) {
-            instance = new TrimCityInfo();
-        }
-        return instance;
+    private static final class TrimCityInfoLoader {
+        private static final TrimCityInfo INSTANCE = new TrimCityInfo();
+    }
+
+    private TrimCityInfo() {
     }
     
     public String trimCityName(String fullCityName) {

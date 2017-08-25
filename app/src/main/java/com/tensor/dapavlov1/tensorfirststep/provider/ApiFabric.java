@@ -8,17 +8,32 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
  */
 
 public class ApiFabric {
-    private static ApiFabric instance;
+    public static ApiFabric getInstance() {
+        return ApiFabricLoader.INSTANCE;
+    }
+
+    private static final class ApiFabricLoader {
+        private static final ApiFabric INSTANCE = new ApiFabric();
+    }
 
     private ApiFabric() {
     }
-
-    public static ApiFabric getInstance() {
-        if (instance == null) {
-            instance = new ApiFabric();
-        }
-        return instance;
-    }
+//    private volatile ApiFabric instance;
+//
+    //
+//    public ApiFabric getInstance() {
+//        ApiFabric localInstance = instance;
+//        if (localInstance == null) {
+//            synchronized (this) {
+//                localInstance = instance;
+//                if (localInstance == null) {
+//                    instance = localInstance = new ApiFabric();
+//                }
+//                return instance;
+//            }
+//        }
+//        return localInstance;
+//    }
 
     public WeatherApiClient createClientWeatherApi() {
         return new WeatherApiClient();

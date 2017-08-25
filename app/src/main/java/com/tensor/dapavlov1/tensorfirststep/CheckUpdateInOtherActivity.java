@@ -8,10 +8,12 @@ import android.support.annotation.Nullable;
  */
 
 public class CheckUpdateInOtherActivity {
-    private static final CheckUpdateInOtherActivity ourInstance = new CheckUpdateInOtherActivity();
-
     public static CheckUpdateInOtherActivity getInstance() {
-        return ourInstance;
+        return CheckUpdateInOtherActivityLoader.INSTANCE;
+    }
+
+    private static final class CheckUpdateInOtherActivityLoader {
+        private static final CheckUpdateInOtherActivity INSTANCE = new CheckUpdateInOtherActivity();
     }
 
     private CheckUpdateInOtherActivity() {

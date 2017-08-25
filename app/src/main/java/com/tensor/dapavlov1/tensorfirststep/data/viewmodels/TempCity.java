@@ -7,16 +7,18 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
  */
 
 public class TempCity {
-    private static TempCity instance;
-    private TempCity(){
+    public static TempCity getInstance() {
+        return TempCityLoader.INSTANCE;
+    }
 
+    private static final class TempCityLoader{
+        private static final TempCity INSTANCE = new TempCity();
     }
-    public static TempCity getInstance(){
-        if(instance == null){
-            instance = new TempCity();
-        }
-        return instance;
+
+    private TempCity() {
     }
+
+
     private ModelCityWeather modelCityWeather;
 
     public void setModelCityWeather(ModelCityWeather modelCityWeather) {

@@ -14,16 +14,15 @@ import java.util.List;
  */
 
 public class MapperDbToView {
-    private static MapperDbToView instance;
-
-    private MapperDbToView() {
+    public static MapperDbToView getInstance() {
+        return MapperDbToViewLoader.INSTANCE;
     }
 
-    public static MapperDbToView getInstance() {
-        if (instance == null) {
-            instance = new MapperDbToView();
-        }
-        return instance;
+    private static final class MapperDbToViewLoader {
+        private static final MapperDbToView INSTANCE = new MapperDbToView();
+    }
+
+    private MapperDbToView() {
     }
 
     public City convertDbModelToViewModel(DbCity dbCity, List<DbWeather> dbWeather) {

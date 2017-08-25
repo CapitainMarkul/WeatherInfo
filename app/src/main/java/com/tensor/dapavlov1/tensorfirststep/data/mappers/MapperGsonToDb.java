@@ -15,16 +15,15 @@ import java.util.List;
  */
 
 public class MapperGsonToDb extends MapperHelp {
-    private static MapperGsonToDb instance;
-
-    private MapperGsonToDb() {
+    public static MapperGsonToDb getInstance() {
+        return MapperGsonToDbLoader.INSTANCE;
     }
 
-    public static MapperGsonToDb getInstance() {
-        if (instance == null) {
-            instance = new MapperGsonToDb();
-        }
-        return instance;
+    private static final class MapperGsonToDbLoader {
+        private static final MapperGsonToDb INSTANCE = new MapperGsonToDb();
+    }
+
+    private MapperGsonToDb() {
     }
 
     public ModelCityWeather convertGsonModelToDaoModel(GsonCity gsonCity) {

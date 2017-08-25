@@ -15,10 +15,12 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.
  */
 
 public class CitiesDataStoreFactory extends CheckConnect {
-    private static final CitiesDataStoreFactory ourInstance = new CitiesDataStoreFactory();
-
     public static CitiesDataStoreFactory getInstance() {
-        return ourInstance;
+        return CitiesDataStoreFactoryLoader.INSTANCE;
+    }
+
+    private static final class CitiesDataStoreFactoryLoader {
+        private static final CitiesDataStoreFactory INSTANCE = new CitiesDataStoreFactory();
     }
 
     private CitiesDataStoreFactory() {

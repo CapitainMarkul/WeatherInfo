@@ -1,11 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider;
 
-import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlace;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlaces;
@@ -19,16 +15,15 @@ import java.util.List;
  */
 
 public class GsonFactory {
-    private static GsonFactory instance;
-
-    private GsonFactory() {
+    public static GsonFactory getInstance() {
+        return GsonFactoryLoader.INSTANCE;
     }
 
-    public static GsonFactory getInstance() {
-        if (instance == null) {
-            instance = new GsonFactory();
-        }
-        return instance;
+    private static final class GsonFactoryLoader {
+        private static final GsonFactory INSTANCE = new GsonFactory();
+    }
+
+    private GsonFactory() {
     }
 
     private GsonBuilder gsonBuilder;

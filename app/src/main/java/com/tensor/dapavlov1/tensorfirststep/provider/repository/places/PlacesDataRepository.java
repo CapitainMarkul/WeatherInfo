@@ -12,10 +12,12 @@ import java.util.List;
  */
 
 public class PlacesDataRepository implements PlacesRepository {
-    private static final PlacesDataRepository ourInstance = new PlacesDataRepository();
-
     public static PlacesDataRepository getInstance() {
-        return ourInstance;
+        return PlacesDataRepositoryLoader.INSTANCE;
+    }
+
+    private static final class PlacesDataRepositoryLoader {
+        private static final PlacesDataRepository INSTANCE = new PlacesDataRepository();
     }
 
     private PlacesDataRepository() {

@@ -10,17 +10,15 @@ import com.tensor.dapavlov1.tensorfirststep.R;
  */
 
 public class SwitchGradient {
-    private static SwitchGradient instance;
-
-    private SwitchGradient() {
-
+    public static SwitchGradient getInstance() {
+        return SwitchGradientLoader.INSTANCE;
     }
 
-    public static SwitchGradient getInstance() {
-        if (instance == null) {
-            instance = new SwitchGradient();
-        }
-        return instance;
+    private static final class SwitchGradientLoader {
+        private static final SwitchGradient INSTANCE = new SwitchGradient();
+    }
+
+    private SwitchGradient() {
     }
 
     public Drawable getBackgroung(String iconCode) {

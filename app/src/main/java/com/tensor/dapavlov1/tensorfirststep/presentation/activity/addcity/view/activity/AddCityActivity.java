@@ -32,6 +32,7 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
+import com.tensor.dapavlov1.tensorfirststep.provider.ApiFabric;
 
 
 import java.util.HashMap;

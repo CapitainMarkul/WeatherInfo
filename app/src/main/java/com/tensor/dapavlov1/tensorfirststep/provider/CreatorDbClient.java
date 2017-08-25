@@ -12,17 +12,16 @@ import org.greenrobot.greendao.query.Query;
  */
 
 public class CreatorDbClient {
-    private static CreatorDbClient instance;
+    public static CreatorDbClient getInstance() {
+        return CreatorDbClientLoader.INSTANCE;
+    }
+
+    private static final class CreatorDbClientLoader {
+        private static final CreatorDbClient INSTANCE = new CreatorDbClient();
+    }
 
     private CreatorDbClient() {
         initQuery();
-    }
-
-    public static CreatorDbClient getInstance() {
-        if (instance == null) {
-            instance = new CreatorDbClient();
-        }
-        return instance;
     }
 
     private DbCityDao modelCityDao;

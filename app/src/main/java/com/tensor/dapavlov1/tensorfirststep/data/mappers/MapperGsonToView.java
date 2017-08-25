@@ -14,16 +14,15 @@ import java.util.List;
  */
 
 public class MapperGsonToView extends MapperHelp {
-    private static MapperGsonToView instance;
-
-    private MapperGsonToView() {
+    public static MapperGsonToView getInstance() {
+        return MapperGsonToViewLoader.INSTANCE;
     }
 
-    public static MapperGsonToView getInstance() {
-        if (instance == null) {
-            instance = new MapperGsonToView();
-        }
-        return instance;
+    private static final class MapperGsonToViewLoader{
+        private static final MapperGsonToView INSTANCE = new MapperGsonToView();
+    }
+
+    private MapperGsonToView() {
     }
 
     public City convertGsonModelToViewModel(GsonCity gsonCity) {

@@ -11,10 +11,12 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.interface
  */
 
 public class PlacesDataStoreFactory extends CheckConnect {
-    private static final PlacesDataStoreFactory ourInstance = new PlacesDataStoreFactory();
-
     public static PlacesDataStoreFactory getInstance() {
-        return ourInstance;
+        return PlacesDataStoreFactoryLoader.INSTANCE;
+    }
+
+    private static final class PlacesDataStoreFactoryLoader {
+        private static final PlacesDataStoreFactory INSTANCE = new PlacesDataStoreFactory();
     }
 
     private PlacesDataStoreFactory() {
