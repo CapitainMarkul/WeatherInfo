@@ -1,22 +1,20 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
+import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -30,9 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -51,17 +46,20 @@ public class FavoriteActivity extends AppCompatActivity
     AdapterFavorite adapterFavorite;
     RouterToAddCity routerToAddCity;
 
-    @BindView(R.id.fb_add_new_city) FloatingActionButton addNewCity;
-    @BindView(R.id.root_container) CoordinatorLayout rootContainer;
-    @BindView(R.id.sr_refresh) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.rv_main_favorite) RecyclerView recyclerViewFavorite;
-    @BindView(R.id.cv_default) CardView cardEmpty;
+//    @BindView(R.id.fb_add_new_city) FloatingActionButton addNewCity;
+//    @BindView(R.id.root_container) CoordinatorLayout rootContainer;
+//    @BindView(R.id.sr_refresh) SwipeRefreshLayout swipeRefreshLayout;
+//    @BindView(R.id.rv_main_favorite) RecyclerView recyclerViewFavorite;
+//    @BindView(R.id.cv_default) CardView cardEmpty;
+
+    private ActivityFavoriteBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favorite);
-        ButterKnife.bind(this);
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
+
         setupLoaders();
         setupListeners();
     }
@@ -95,13 +93,8 @@ public class FavoriteActivity extends AppCompatActivity
         mPresenter.updateWeathers();
     }
 
-    @OnClick(R.id.fb_add_new_city)
-    void intentAddCity() {
-        mPresenter.switchActivity(this, AddCityActivity.class);
-    }
-
     private void setupListeners() {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        binding.srRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mPresenter.updateWeathers();
@@ -111,7 +104,7 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void refreshWeathers(final List<City> weathers) {
-        recyclerViewFavorite.setVisibility(View.VISIBLE);
+        binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
         adapterFavorite.setItems(weathers);
         //restoreStateInstance
         adapterFavorite.notifyDataSetChanged();
@@ -119,41 +112,42 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void showEmptyCard() {
-        recyclerViewFavorite.setVisibility(View.INVISIBLE);
-        cardEmpty.setVisibility(View.VISIBLE);
+        binding.recyclerViewFavorite.setVisibility(View.INVISIBLE);
+        binding.cardWeatherDefault.cvDefault.setVisibility(View.VISIBLE);
+//        cardEmpty.setVisibility(View.VISIBLE);
 
         runRefreshLayout(false);
     }
 
     @Override
     public void hideEmptyCard() {
-        cardEmpty.setVisibility(View.INVISIBLE);
+        binding.cardWeatherDefault.cvDefault.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void hideLoading() {
-        recyclerViewFavorite.setVisibility(View.VISIBLE);
+        binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
         runRefreshLayout(false);
     }
 
     public void runRefreshLayout(final Boolean isRefresh) {
-        swipeRefreshLayout.setRefreshing(isRefresh);
+        binding.srRefresh.setRefreshing(isRefresh);
     }
 
     @Override
     public void showLoading() {
-        recyclerViewFavorite.setVisibility(View.INVISIBLE);
+        binding.recyclerViewFavorite.setVisibility(View.INVISIBLE);
         runRefreshLayout(true);
     }
 
     @Override
     public void showMessage(@StringRes final int message) {
-        Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void errorMessage(@StringRes final int message) {
-        Snackbar.make(rootContainer, message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_LONG).show();
     }
 
     private Map<String, Object> createConfigMap() {
@@ -202,15 +196,18 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void setupRecyclerView() {
-        recyclerViewFavorite.setLayoutManager(
+        binding.recyclerViewFavorite.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerViewFavorite.setAdapter(adapterFavorite);
-        recyclerViewFavorite.setVisibility(View.VISIBLE);
+        binding.recyclerViewFavorite.setAdapter(adapterFavorite);
+        binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
         mPresenter = (FavoritePresenter) dataMap.get(FAVORITE_PRESENTER);
+
+        binding.setMPresenter(mPresenter);
+
         runRefreshLayout(!mPresenter.getRefreshComplete());
 
         //восстаансливаем прошлый адаптер

@@ -1,11 +1,14 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
 import android.app.Activity;
+import android.databinding.ObservableBoolean;
+import android.databinding.ObservableInt;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
@@ -106,8 +109,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         });
     }
 
-    public void switchActivity(Activity thisActivity, Class toActivity) {
-        router.goToNewActivity(thisActivity, toActivity);
+    public void switchActivity() {
+        router.goToNewActivity(activity, AddCityActivity.class);
     }
 
     public void deleteCity(int position) {
@@ -115,8 +118,13 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 //        DataProvider.getInstance().deleteCity();
     }
 
+    public void onSaveClick(String s) {
+        int i = 0;
+        i++;
+    }
+
     public void showCachedCities() {
-        if(cachedCities!= null && !cachedCities.isEmpty()) {
+        if (cachedCities != null && !cachedCities.isEmpty()) {
             activity.refreshWeathers(cachedCities);
         } else {
             activity.showEmptyCard();

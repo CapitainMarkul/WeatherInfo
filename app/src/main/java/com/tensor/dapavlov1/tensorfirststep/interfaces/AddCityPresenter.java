@@ -1,5 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.interfaces;
 
+import android.support.annotation.IntegerRes;
+
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 
 /**

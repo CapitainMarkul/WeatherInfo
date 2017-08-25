@@ -1,35 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/gradient_toolbar">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <data>
+
+        <variable
+            name="activity"
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity"/>
+
+        <variable
+            name="mPresenter"
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter"/>
+    </data>
+
+    <Toolbar
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@drawable/gradient_toolbar">
 
-        <android.support.design.widget.TextInputLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/iv_clear">
+            android:layout_height="match_parent">
 
-            <AutoCompleteTextView
-                android:id="@+id/tv_autocompleteText"
-                style="@style/mAutoCompleteView"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:hint="@string/activity_add_city_text_hint"/>
-        </android.support.design.widget.TextInputLayout>
+                android:layout_toStartOf="@+id/iv_clear">
 
-        <ImageView
-            android:id="@+id/iv_clear"
-            android:layout_width="@dimen/toolbar_main_image_clear_size"
-            android:layout_height="@dimen/toolbar_main_image_clear_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_clear_text_view" />
-    </RelativeLayout>
-</Toolbar>
+                <AutoCompleteTextView
+                    android:id="@+id/tv_autocompleteText"
+                    style="@style/mAutoCompleteView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:hint="@string/activity_add_city_text_hint"/>
+
+                <!--bind:onKeyListener="@{activity.setOnKeyListener}"-->
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/iv_clear"
+                android:layout_width="@dimen/toolbar_main_image_clear_size"
+                android:layout_height="@dimen/toolbar_main_image_clear_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:onClick="@{() -> mPresenter.clearInputText()}"
+                android:src="@drawable/ic_clear_text_view"/>
+        </RelativeLayout>
+    </Toolbar>
+</layout>

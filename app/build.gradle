@@ -1,11 +1,14 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'android-apt'
 apply plugin: 'org.greenrobot.greendao'
-
 
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
+
+    dataBinding {
+        enabled = true;
+    }
+
     defaultConfig {
         applicationId "com.tensor.dapavlov1.tensorfirststep"
         minSdkVersion 21
@@ -27,7 +30,7 @@ android {
             buildConfigField "String", "WEATHER_API_SCHEME", '"https"'
             buildConfigField "String", "WEATHER_API_HOST", '"api.weatherbit.io"'
             buildConfigField "String", "WEATHER_API_SEGMENTS", '"v1.0/forecast/3hourly"'
-            buildConfigField "int",    "WEATHER_API_COUNT_DAY", '5'
+            buildConfigField "int", "WEATHER_API_COUNT_DAY", '5'
 
             buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCaQ5TuJyjacKKXkEalIg_jqGQk_6H4Hms"'
             buildConfigField "String", "GOOGLE_API_TYPES", '"(cities)"'
@@ -43,7 +46,7 @@ android {
             buildConfigField "String", "WEATHER_API_SCHEME", '"https"'
             buildConfigField "String", "WEATHER_API_HOST", '"api.weatherbit.io"'
             buildConfigField "String", "WEATHER_API_SEGMENTS", '"v1.0/forecast/3hourly"'
-            buildConfigField "int",    "WEATHER_API_COUNT_DAY", '10'
+            buildConfigField "int", "WEATHER_API_COUNT_DAY", '10'
 
             buildConfigField "String", "GOOGLE_API_KEY", '"AIzaSyCaQ5TuJyjacKKXkEalIg_jqGQk_6H4Hms"'
             buildConfigField "String", "GOOGLE_API_TYPES", '"(cities)"'

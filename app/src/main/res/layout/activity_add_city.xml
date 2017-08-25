@@ -1,43 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ScrollView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <!--MainWeather-->
-        <FrameLayout
-            android:id="@+id/root_container"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:id="@+id/ScrollView"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <!--MainWeather-->
+            <FrameLayout
+                android:id="@+id/root_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="55dp">
+
+                <include
+                    android:id="@+id/cv_nothing_weather"
+                    layout="@layout/card_weather_nothing_find"/>
+
+                <include
+                    android:id="@+id/cv_weather_city"
+                    layout="@layout/item_card_full_info_weather"/>
+
+            </FrameLayout>
+        </ScrollView>
+
+        <include
+            android:id="@+id/tool_bar"
+            layout="@layout/toolbar_main"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="55dp">
+            android:layout_centerInParent="true">
 
             <include
-                android:id="@+id/cv_nothing_weather"
-                layout="@layout/card_weather_nothing_find"/>
-
-            <include
-                android:id="@+id/cv_weather_city"
-                layout="@layout/item_card_full_info_weather"/>
-
-        </FrameLayout>
-    </ScrollView>
-
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/toolbar_main"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
-
-        <include layout="@layout/layout_progress_bar"/>
-    </LinearLayout>
-</RelativeLayout>
+                android:id="@+id/layout_progress_bar"
+                layout="@layout/layout_progress_bar"/>
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

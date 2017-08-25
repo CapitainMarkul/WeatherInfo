@@ -106,6 +106,10 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         }
     };
 
+    public void clearInputText(){
+        activity.clearInputText();
+    }
+
     private void cachedInfo(City city) {
         isRefresh = false;
         cachedCity = city;
@@ -123,13 +127,21 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         });
     }
 
-    public void addToFavorite() {
+    public void onClickToFavorite(){
+        if(activity.isCheckedNow()){
+            deleteFromFavorite();
+        } else {
+            addToFavorite();
+        }
+    }
+
+    private void addToFavorite() {
         new CitiesDataRepository().add(
                 TempCity.getInstance().getModelCityWeather());
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
-    public void deleteFromFavorite() {
+    private void deleteFromFavorite() {
         new CitiesDataRepository().delete(
                 TempCity.getInstance().getModelCityWeather());
         showMessage(R.string.activity_favorite_del_from_favorite);

@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cv_default"
-    style="@style/mCardView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="visible">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_default"
+        style="@style/mCardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="3dp">
+        android:visibility="visible">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/activity_favorite_welcome_text"
-            android:textAlignment="center"
-            android:textSize="20sp"/>
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/activity_favorite_welcome_text"
+                android:textAlignment="center"
+                android:textSize="20sp"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</layout>
