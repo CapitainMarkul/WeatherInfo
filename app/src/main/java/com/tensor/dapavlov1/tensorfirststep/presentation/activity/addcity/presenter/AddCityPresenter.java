@@ -3,10 +3,11 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.prese
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
@@ -22,12 +23,18 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDat
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private City cachedCity;
-    private boolean isRefresh = false;
+    //для созранения состояния при ConfigChange
+    private boolean isLoading = false;
+
     public final static String CITY_VIEW_MODEL = "city_view_model";
     public final static String CITY_TEMP_DB_MODEL = "city_db_model";
 
     //для связи с UI
     private Handler sendMessageToUi;
+
+    private void cityIsFavorite(boolean isFavorite){
+        cachedCity.isFavorite = isFavorite;
+    }
 
     public void resumePresenter(Bundle saveDataBundle) {
         cachedCity = (City) saveDataBundle.get(CITY_VIEW_MODEL);
@@ -62,6 +69,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                     activity.cityIsFavorite(true);
                     cachedInfo(result);
                     showInformation(cachedCity);
+                    stopAnimation();
                 }
             });
         }
@@ -74,6 +82,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                     activity.cityIsFavorite(false);
                     cachedInfo(result);
                     showInformation(cachedCity);
+                    stopAnimation();
                 }
             });
         }
@@ -85,6 +94,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                 public void run() {
                     activity.showMessage(R.string.str_error_connect_to_internet);
                     activity.getBinding().setIsLoading(false);
+                    stopAnimation();
                 }
             });
         }
@@ -94,9 +104,10 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
-                    isRefresh = false;
+                    isLoading = false;
                     showInformation(null);
                     activity.getBinding().setIsLoading(false);
+                    stopAnimation();
                 }
             });
         }
@@ -107,13 +118,24 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     }
 
     private void cachedInfo(City city) {
-        isRefresh = false;
+        isLoading = false;
         cachedCity = city;
     }
 
+    private void startAnimation() {
+        Animation anim = AnimationUtils.loadAnimation(App.getContext(), R.anim.alpha);
+        activity.getBinding().cvSearching.tvSearching.startAnimation(anim);
+
+    }
+
+    private void stopAnimation() {
+        activity.getBinding().cvSearching.tvSearching.clearAnimation();
+    }
+
     public void getWeatherInCity(final String fullCityName) {
-        isRefresh = true;
+        isLoading = true;
         activity.getBinding().setIsLoading(true);
+        startAnimation();
 
         App.getExecutorService().execute(new Runnable() {
             @Override
@@ -126,17 +148,19 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private void addToFavorite() {
         new CitiesDataRepository().add(
                 TempCity.getInstance().getModelCityWeather());
+        cityIsFavorite(true);
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
     private void deleteFromFavorite() {
         new CitiesDataRepository().delete(
                 TempCity.getInstance().getModelCityWeather());
+        cityIsFavorite(false);
         showMessage(R.string.activity_favorite_del_from_favorite);
     }
 
     public void checkEndTask() {
-        if (isRefresh) {
+        if (isLoading) {
             activity.getBinding().setIsLoading(true);
         } else {
 //            hideViewLoading();

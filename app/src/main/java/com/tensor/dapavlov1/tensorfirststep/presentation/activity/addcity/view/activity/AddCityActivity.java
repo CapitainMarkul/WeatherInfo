@@ -15,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -26,6 +25,7 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +47,6 @@ public class AddCityActivity extends AppCompatActivity
     private AddCityPresenter mPresenter;
     private AdapterHorizontalWeather adapterHorizontalWeather;
 
-    private int WEATHER_NOW = 10;
-
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
 
     private List<CardView> cardViews = new ArrayList<>();
@@ -61,9 +59,7 @@ public class AddCityActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.cvWeatherCity.setEvents(this);
-
-        //@IntegerRes - не смог заставить работать
-        WEATHER_NOW = getResources().getInteger(R.integer.weather_now);
+        binding.cvWeatherCity.setSwitchGradient(SwitchGradient.getInstance());
 
         createCardViewList();
         setupLoaders();
@@ -119,11 +115,6 @@ public class AddCityActivity extends AppCompatActivity
         binding.toolBar.tvAutocompleteText.setAdapter(new PlacesAutoComplete(this, R.layout.item_auto_complete));
     }
 
-    @BindingAdapter({"bind:onKeyListener"})
-    public static void setOnKeyListener(AutoCompleteTextView view, View.OnKeyListener onKeyListener) {
-        view.setOnKeyListener(onKeyListener);
-    }
-
     private void setupListeners() {
         //@OnItemClick не поддерживает виджет AutoCompleteTextView # 483
         //https://github.com/JakeWharton/butterknife/issues/102
@@ -152,8 +143,8 @@ public class AddCityActivity extends AppCompatActivity
         });
     }
 
-    private void runSearch() {
-        clearChecked();
+    public void runSearch() {
+        binding.cvWeatherCity.setCity(null);
         mPresenter.getWeatherInCity(binding.toolBar.tvAutocompleteText.getText().toString());
     }
 
@@ -161,24 +152,9 @@ public class AddCityActivity extends AppCompatActivity
         binding.toolBar.tvAutocompleteText.setText("");
     }
 
-//    @OnClick(R.id.cb_add_to_favorite)
-//    void addToFavorite() {
-//        if (binding.cvWeatherCity.cbAddToFavorite.isChecked()) {
-//            mPresenter.addToFavorite();
-//        } else {
-//            mPresenter.deleteFromFavorite();
-//        }
-//        checkUpdateInOtherActivity.setUpdate(true);
-//    }
-
     public boolean isCheckedNow() {
         checkUpdateInOtherActivity.setUpdate(true);
         return binding.cvWeatherCity.cbAddToFavorite.isChecked();
-    }
-
-    private void clearChecked() {
-        binding.cvWeatherCity.cardFullInfo.setVisibility(View.INVISIBLE);
-        binding.cvWeatherCity.cbAddToFavorite.setChecked(false);
     }
 
     @Override

@@ -17,5 +17,6 @@
     <string name="activity_add_city_pressure_unit">\u0020Мбар</string>
     <string name="activity_add_city_wind">Ветер:\u0020</string>
     <string name="activity_add_city_wind_unit">\u0020М/с</string>
+    <string name="activity_add_city_searching">В поисках города…</string>
 
 </resources>

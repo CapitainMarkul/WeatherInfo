@@ -15,10 +15,9 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 
 import java.util.List;
-
-import butterknife.OnClick;
 
 /**
  * Created by da.pavlov1 on 07.08.2017.
@@ -68,6 +67,7 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
             binding.setEvents(this);
+            binding.setSwitchGradient(SwitchGradient.getInstance());
             setupViews();
         }
 
