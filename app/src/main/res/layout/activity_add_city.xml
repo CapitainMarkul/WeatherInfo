@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import
+            alias="v"
+            type="android.view.View"/>
+
+        <import type="java.util.List"/>
+
+        <variable
+            name="city"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City"/>
+
+        <variable
+            name="isLoading"
+            type="boolean"/>
+    </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,11 +37,14 @@
 
                 <include
                     android:id="@+id/cv_nothing_weather"
-                    layout="@layout/card_weather_nothing_find"/>
+                    layout="@layout/card_weather_nothing_find"
+                    android:visibility="@{city != null ? v.INVISIBLE : v.VISIBLE}"/>
 
                 <include
                     android:id="@+id/cv_weather_city"
-                    layout="@layout/item_card_full_info_weather"/>
+                    layout="@layout/item_card_full_info_weather"
+                    android:visibility="@{city != null ? v.VISIBLE : v.INVISIBLE}"
+                    app:city="@{city}"/>
 
             </FrameLayout>
         </ScrollView>
@@ -39,7 +60,8 @@
 
             <include
                 android:id="@+id/layout_progress_bar"
-                layout="@layout/layout_progress_bar"/>
+                layout="@layout/layout_progress_bar"
+                android:visibility="@{isLoading ? v.VISIBLE : v.INVISIBLE}"/>
         </LinearLayout>
     </RelativeLayout>
 </layout>

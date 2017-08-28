@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="weather"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather"/>
+    </data>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,6 +29,7 @@
                 style="@style/mTvSingleLine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{Double.toString(weather.temperature)}"
                 android:textSize="35sp"
                 android:textStyle="bold"
                 tools:text="19"/>
@@ -52,6 +60,7 @@
             style="@style/mTvSingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{weather.time}"
             android:textSize="17sp"
             android:textStyle="italic"
             tools:text="15.00"/>
@@ -61,6 +70,7 @@
             style="@style/mTvSingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{weather.date}"
             android:textSize="17sp"
             android:textStyle="italic"
             tools:text="04 августа"/>

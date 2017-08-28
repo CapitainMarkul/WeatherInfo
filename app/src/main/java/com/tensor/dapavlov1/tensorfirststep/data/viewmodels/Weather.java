@@ -1,22 +1,27 @@
 package com.tensor.dapavlov1.tensorfirststep.data.viewmodels;
 
+import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class Weather implements Parcelable{
-    private String windShort;
-    private double windSpeed;
-    private double pressure;
-    private double temperature;
-    private String date;
-    private String time;
-    private String iconUrl;
-    private String iconCode;
-    private String description;
+public class Weather implements Parcelable {
+    public String windShort;
+    public double windSpeed;
+    public double pressure;
+    public double temperature;
+    public String date;
+    public String time;
+    public String iconUrl;
+    public String iconCode;
+    public String description;
 
     public Weather(String windShort, double windSpeed, double pressure, double temperature, String date, String time, String iconUrl, String iconCode, String description) {
         this.windShort = windShort;
@@ -106,5 +111,10 @@ public class Weather implements Parcelable{
         parcel.writeString(iconUrl);
         parcel.writeString(iconCode);
         parcel.writeString(description);
+    }
+
+    @BindingAdapter({"bind:iconUrl", "bind:errorImage"})
+    public static void loadImage(ImageView view, String url, Drawable error) {
+        Picasso.with(view.getContext()).load(url).error(error).into(view);
     }
 }

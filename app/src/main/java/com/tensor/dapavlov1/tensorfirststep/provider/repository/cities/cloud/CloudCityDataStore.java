@@ -62,24 +62,29 @@ public class CloudCityDataStore implements CityDataStore {
                 //Если город не найден в бд
                 if (dbCity == null) {
                     cachedCity(tempCity);
+                    boolean isFavorite = false;
                     throw new CityNotFoundException(
                             MapperDbToView.getInstance().convertDbModelToViewModel(
                                     tempCity.getDbCity(),
-                                    tempCity.getWeathers()));
+                                    tempCity.getWeathers(),
+                                    isFavorite));
                 }
 
                 cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));
+                boolean isFavorite = true;
                 throw new CityFoundException(
                         MapperDbToView.getInstance().convertDbModelToViewModel(
                                 tempCity.getDbCity(),
-                                tempCity.getWeathers()));
+                                tempCity.getWeathers(),
+                                isFavorite));
             } catch (EmptyDbException e) {
                 //если БД пуста
                 cachedCity(tempCity);
                 throw new CityNotFoundException(
                         MapperDbToView.getInstance().convertDbModelToViewModel(
                                 tempCity.getDbCity(),
-                                tempCity.getWeathers()));
+                                tempCity.getWeathers(),
+                                false));
             }
         } else {
             throw new EmptyResponseException();

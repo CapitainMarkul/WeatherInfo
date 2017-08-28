@@ -3,7 +3,6 @@ package com.tensor.dapavlov1.tensorfirststep.data.viewmodels;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,20 +10,24 @@ import java.util.List;
  */
 
 public class City implements Parcelable {
-    private String name;
-    private String lastTimeUpdate;
-    private List<Weather> weathers;
+    public String name;
+    public String lastTimeUpdate;
+    public List<Weather> weathers;
+    public boolean isFavorite;
 
-    public City(String name, String lastTimeUpdate, List<Weather> weathers) {
+
+    public City(String name, String lastTimeUpdate, List<Weather> weathers, boolean isFavorite) {
         this.name = name;
         this.lastTimeUpdate = lastTimeUpdate;
         this.weathers = weathers;
+        this.isFavorite = isFavorite;
     }
 
     protected City(Parcel in) {
         name = in.readString();
         lastTimeUpdate = in.readString();
         weathers = in.createTypedArrayList(Weather.CREATOR);
+        isFavorite = in.readByte() != 0;
     }
 
     public String getName() {
@@ -37,6 +40,10 @@ public class City implements Parcelable {
 
     public List<Weather> getWeathers() {
         return weathers;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
     }
 
     public static final Creator<City> CREATOR = new Creator<City>() {
@@ -61,5 +68,6 @@ public class City implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(lastTimeUpdate);
         parcel.writeTypedList(weathers);
+        parcel.writeByte((byte) (isFavorite ? 1 : 0));
     }
 }

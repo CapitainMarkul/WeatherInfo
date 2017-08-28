@@ -1,8 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
-import android.app.Activity;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableInt;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -29,7 +26,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private Router router;
 
     private List<City> cachedCities = new ArrayList<>();
-    private boolean isRefreshComplete = false;
+    private boolean isLoading = false;
 
     //для связи с UI
     private Handler sendMessageToUi;
@@ -48,9 +45,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                         public void run() {
                             cachedInfo(result);
                             showCachedCities();
-
-                            activity.hideEmptyCard();
-                            activity.runRefreshLayout(false);
+                            activity.getBinding().setIsLoading(false);
 
                             activity.showMessage(R.string.activity_favorite_update_success);
                         }
@@ -68,9 +63,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                 public void run() {
                     cachedInfo(result);
                     showCachedCities();
-
-                    activity.hideEmptyCard();
-                    activity.runRefreshLayout(false);
+                    activity.getBinding().setCities(result);
+                    activity.getBinding().setIsLoading(false);
 
                     activity.showMessage(R.string.str_error_connect_to_internet);
                 }
@@ -82,24 +76,24 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
-                    isRefreshComplete = true;
-                    activity.runRefreshLayout(getRefreshComplete());
-                    activity.showEmptyCard();
+                    isLoading = true;
+                    activity.getBinding().setCities(null);
+                    activity.getBinding().setIsLoading(false);
                 }
             });
         }
     };
 
     private void cachedInfo(List<City> cities) {
-        isRefreshComplete = true;
+        isLoading = true;
 
         cachedCities.clear();
         cachedCities.addAll(cities);
     }
 
     public void updateWeathers() {
-        isRefreshComplete = false;
-        activity.runRefreshLayout(true);
+        isLoading = false;
+        activity.getBinding().setIsLoading(true);
 
         App.getExecutorService().execute(new Runnable() {
             @Override
@@ -115,24 +109,17 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
     public void deleteCity(int position) {
         new CitiesDataRepository().delete(position);
-//        DataProvider.getInstance().deleteCity();
-    }
-
-    public void onSaveClick(String s) {
-        int i = 0;
-        i++;
     }
 
     public void showCachedCities() {
         if (cachedCities != null && !cachedCities.isEmpty()) {
-            activity.refreshWeathers(cachedCities);
-        } else {
-            activity.showEmptyCard();
+            activity.refreshAdapter(cachedCities);
         }
+        activity.getBinding().setCities(cachedCities);
     }
 
-    public boolean getRefreshComplete() {
-        return isRefreshComplete;
+    public boolean getLoading() {
+        return isLoading;
     }
 
     public void setRouter(Router router) {

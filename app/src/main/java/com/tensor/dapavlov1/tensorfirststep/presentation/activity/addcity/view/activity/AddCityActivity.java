@@ -17,17 +17,15 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 
-import com.squareup.picasso.Picasso;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
-import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +38,7 @@ import java.util.Map;
 
 public class AddCityActivity extends AppCompatActivity
         implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter,
-        LoaderManager.LoaderCallbacks<Map<String, Object>> {
+        LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
     private final static String NEW_CITY_PRESENTER = "new_city_presenter";
     private final static String NEW_CITY_ADAPTER = "new_city_adapter";
 
@@ -62,6 +60,7 @@ public class AddCityActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
+        binding.cvWeatherCity.setEvents(this);
 
         //@IntegerRes - не смог заставить работать
         WEATHER_NOW = getResources().getInteger(R.integer.weather_now);
@@ -112,7 +111,6 @@ public class AddCityActivity extends AppCompatActivity
         binding.toolBar.tvAutocompleteText.clearFocus();
 
         mPresenter.attachActivity(this);
-//        mPresenter.setActivity(this);
         mPresenter.checkEndTask();
     }
 
@@ -122,7 +120,7 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     @BindingAdapter({"bind:onKeyListener"})
-    public static void setOnKeyListener(AutoCompleteTextView view, View.OnKeyListener onKeyListener){
+    public static void setOnKeyListener(AutoCompleteTextView view, View.OnKeyListener onKeyListener) {
         view.setOnKeyListener(onKeyListener);
     }
 
@@ -192,58 +190,9 @@ public class AddCityActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void showInformation(City city) {
-        binding.cvWeatherCity.tvCity.setText(city.getName());
-        binding.cvWeatherCity.tvTime.setText(city.getLastTimeUpdate());
-
-        Weather weatherNow = city.getWeathers().get(WEATHER_NOW);
-        binding.cvWeatherCity.tvTemperature.setText(String.valueOf(weatherNow.getTemperature()));
-        binding.cvWeatherCity.tvDescription.setText(weatherNow.getDescription());
-        binding.cvWeatherCity.tvWindShort.setText(weatherNow.getWindShort());
-        binding.cvWeatherCity.tvWindSpeed.setText(String.valueOf(weatherNow.getWindSpeed()));
-        binding.cvWeatherCity.tvPressure.setText(String.valueOf(weatherNow.getPressure()));
-        binding.cvWeatherCity.rlRootContainer.setBackground(
-                SwitchGradient.getInstance().getBackgroung(weatherNow.getIconCode()));
-        // ??
-        Picasso.with(getApplicationContext())
-                .load(weatherNow.getIconUrl())
-                .into(binding.cvWeatherCity.ivIconWeather);
-
-        refreshWeathers(city.getWeathers());
-    }
-
     public void refreshWeathers(final List<Weather> weathers) {
         adapterHorizontalWeather.setItems(weathers);
         adapterHorizontalWeather.notifyDataSetChanged();
-    }
-
-//    static final ButterKnife.Action<View> INVISIBLE = new ButterKnife.Action<View>() {
-//        @Override
-//        public void apply(@NonNull View view, int index) {
-//            view.setVisibility(View.INVISIBLE);
-//        }
-//    };
-
-    private void hideAllCardViews() {
-        for (CardView item : cardViews) {
-            item.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void showCard(final CardView cardView) {
-        hideAllCardViews();
-        cardView.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void showWeatherCardNothingFind() {
-        showCard(binding.cvNothingWeather.cvNothing);
-    }
-
-    @Override
-    public void showWeatherCardFullInfo() {
-        showCard(binding.cvWeatherCity.cardFullInfo);
     }
 
     @Override
@@ -254,16 +203,6 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     public void errorMessage(@StringRes final int message) {
         Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void hideLoading() {
-        binding.layoutProgressBar.progressBar.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void showLoading() {
-        binding.layoutProgressBar.progressBar.setVisibility(View.VISIBLE);
     }
 
     private void setupRecyclerView() {
@@ -297,6 +236,10 @@ public class AddCityActivity extends AppCompatActivity
         return values;
     }
 
+    public ActivityAddCityBinding getBinding() {
+        return binding;
+    }
+
     @Override
     public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
         mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
@@ -317,5 +260,10 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     public void onLoaderReset(Loader<Map<String, Object>> loader) {
 
+    }
+
+    @Override
+    public void onItemClick() {
+        mPresenter.onFavoriteClick();
     }
 }

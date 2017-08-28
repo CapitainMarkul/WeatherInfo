@@ -5,7 +5,7 @@ package com.tensor.dapavlov1.tensorfirststep.interfaces;
  */
 
 public interface Loading {
-    void hideLoading();
-
-    void showLoading();
+//    void hideLoading();
+//
+//    void showLoading();
 }

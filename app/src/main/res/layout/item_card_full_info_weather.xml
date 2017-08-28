@@ -2,11 +2,22 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
-<data>
-    <variable
-        name="mPresenter"
-        type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter"/>
-</data>
+
+    <data>
+
+        <variable
+            name="mPresenter"
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter"/>
+
+        <variable
+            name="events"
+            type="com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick"/>
+
+        <variable
+            name="city"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City"/>
+    </data>
+
     <android.support.v7.widget.CardView
         android:id="@+id/card_full_info"
         style="@style/mCardViewWithoutHeight"
@@ -34,6 +45,7 @@
                     style="@style/mTvSingleLine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{city.name}"
                     android:textSize="25sp"
                     android:textStyle="bold"
                     tools:text="Название города,"/>
@@ -43,6 +55,7 @@
                     style="@style/mTvSingleLine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@{city.lastTimeUpdate}"
                     android:textSize="17sp"
                     android:textStyle="italic"
                     tools:text="4 августа, 9.20"/>
@@ -58,7 +71,9 @@
                 android:layout_alignTop="@+id/ln_container_city_info"
                 android:layout_marginEnd="5dp"
                 android:button="@drawable/selector_checkbox"
-                android:onClick="@{() -> mPresenter.onClickToFavorite()}"/>
+                android:checked="@{city.isFavorite}"
+                android:onClick="@{() -> events.onItemClick()}"/>
+                <!--android:onClick="@{() -> mPresenter.onClickToFavorite()}"/>-->
             <!--END Line Top-->
 
             <!--Second Line-->
@@ -80,6 +95,7 @@
                         style="@style/mTvSingleLine"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{Double.toString(city.weathers.get(0).temperature)}"
                         android:textSize="75sp"
                         android:textStyle="bold"
                         tools:text="19"/>
@@ -102,13 +118,16 @@
                         android:id="@+id/iv_icon_weather"
                         android:layout_width="@dimen/item_card_full_info_weather_big_icon_size"
                         android:layout_height="@dimen/item_card_full_info_weather_big_icon_size"
-                        android:src="@drawable/test_image"/>
+                        app:errorImage="@{@drawable/ic_cloud_error}"
+                        app:iconUrl="@{city.weathers.get(0).iconUrl}"
+                        tools:src="@drawable/test_image"/>
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/tv_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="@{city.weathers.get(0).description}"
                     android:textAlignment="center"
                     android:textSize="35sp"
                     tools:text="Ясно"/>
@@ -141,6 +160,7 @@
                         android:id="@+id/tv_wind_short"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{city.weathers.get(0).windShort}"
                         android:textSize="15sp"
                         tools:text="ЮЗ"/>
 
@@ -152,6 +172,7 @@
                         android:id="@+id/tv_wind_speed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{Double.toString(city.weathers.get(0).windSpeed)}"
                         android:textSize="15sp"
                         tools:text="5"/>
 
@@ -177,6 +198,7 @@
                         android:id="@+id/tv_pressure"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@{Double.toString(city.weathers.get(0).pressure)}"
                         android:textSize="15sp"
                         tools:text="960"/>
 

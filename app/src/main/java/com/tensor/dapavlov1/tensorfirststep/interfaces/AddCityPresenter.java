@@ -9,13 +9,13 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
  */
 
 public interface AddCityPresenter extends Loading, ShowMessage {
-    void showInformation(City city);
-
-    void showWeatherCardNothingFind();
-
-//    void showInformation(City getCities, String dateTimeNow);
-
-    void showWeatherCardFullInfo();
+//    void showInformation(City city);
+//
+//    void showWeatherCardNothingFind();
+//
+////    void showInformation(City getCities, String dateTimeNow);
+//
+//    void showWeatherCardFullInfo();
 
     void cityIsFavorite(Boolean checked);
 }

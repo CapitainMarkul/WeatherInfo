@@ -9,9 +9,9 @@ import java.util.List;
  */
 //, IAddCityIntent
 public interface FavoritePresenter extends Loading, ShowMessage {
-    void refreshWeathers(List<City> weathers);
-
-    void showEmptyCard();
-
-    void hideEmptyCard();
+    void refreshAdapter(List<City> weathers);
+//
+//    void showEmptyCard();
+//
+//    void hideEmptyCard();
 }

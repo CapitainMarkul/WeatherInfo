@@ -25,18 +25,20 @@ public class MapperDbToView {
     private MapperDbToView() {
     }
 
-    public City convertDbModelToViewModel(DbCity dbCity, List<DbWeather> dbWeather) {
-        return new City(dbCity.getName(), dbCity.getLastTimeUpdate(), getWeathers(dbWeather));
+    public City convertDbModelToViewModel(DbCity dbCity, List<DbWeather> dbWeather, boolean isFavorite) {
+        return new City(dbCity.getName(), dbCity.getLastTimeUpdate(), getWeathers(dbWeather), isFavorite);
     }
 
     public List<City> getCityViewModels(List<ModelCityWeather> dbCity) {
         List<City> cityList = new ArrayList<>();
+        boolean isFavorite = true;
         for (ModelCityWeather item : dbCity) {
             cityList.add(
                     convertDbModelToViewModel(
                             item.getDbCity().getName(),
                             item.getDbCity().getLastTimeUpdate(),
-                            item.getWeathers()
+                            item.getWeathers(),
+                            isFavorite
                     )
             );
         }
@@ -45,20 +47,22 @@ public class MapperDbToView {
 
     public List<City> getCityViewModelsFromDao(List<DbCity> dbCity) {
         List<City> cityList = new ArrayList<>();
+        boolean isFavorite = true;
         for (DbCity item : dbCity) {
             cityList.add(
                     convertDbModelToViewModel(
                             item.getName(),
                             item.getLastTimeUpdate(),
-                            item.getWeathers()
+                            item.getWeathers(),
+                            isFavorite
                     )
             );
         }
         return cityList;
     }
 
-    private City convertDbModelToViewModel(String cityName, String lastTimeUpdate, List<DbWeather> weathers) {
-        return new City(cityName, lastTimeUpdate, getWeathers(weathers));
+    private City convertDbModelToViewModel(String cityName, String lastTimeUpdate, List<DbWeather> weathers, boolean isFavorite) {
+        return new City(cityName, lastTimeUpdate, getWeathers(weathers), isFavorite);
     }
 
     private List<Weather> getWeathers(List<DbWeather> dbWeather) {

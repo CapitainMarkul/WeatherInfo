@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
@@ -33,10 +34,8 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         if (cachedCity != null) {
             TempCity.getInstance().setModelCityWeather(
                     (ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
-            showInformation(cachedCity);
-        } else {
-            activity.showWeatherCardNothingFind();
         }
+        showInformation(cachedCity);
     }
 
     public Bundle saveData(Bundle outState) {
@@ -63,7 +62,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                     activity.cityIsFavorite(true);
                     cachedInfo(result);
                     showInformation(cachedCity);
-                    hideViewLoading();
                 }
             });
         }
@@ -75,8 +73,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                 public void run() {
                     activity.cityIsFavorite(false);
                     cachedInfo(result);
-                    showInformation(result);
-                    hideViewLoading();
+                    showInformation(cachedCity);
                 }
             });
         }
@@ -86,9 +83,8 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             sendMessageToUi.post(new Runnable() {
                 @Override
                 public void run() {
-                    activity.showWeatherCardNothingFind();
                     activity.showMessage(R.string.str_error_connect_to_internet);
-                    hideViewLoading();
+                    activity.getBinding().setIsLoading(false);
                 }
             });
         }
@@ -99,14 +95,14 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                 @Override
                 public void run() {
                     isRefresh = false;
-                    activity.showWeatherCardNothingFind();
-                    hideViewLoading();
+                    showInformation(null);
+                    activity.getBinding().setIsLoading(false);
                 }
             });
         }
     };
 
-    public void clearInputText(){
+    public void clearInputText() {
         activity.clearInputText();
     }
 
@@ -117,7 +113,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     public void getWeatherInCity(final String fullCityName) {
         isRefresh = true;
-        showViewLoading();
+        activity.getBinding().setIsLoading(true);
 
         App.getExecutorService().execute(new Runnable() {
             @Override
@@ -125,14 +121,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
                 new CitiesDataRepository().getCity(fullCityName, cityCallback);
             }
         });
-    }
-
-    public void onClickToFavorite(){
-        if(activity.isCheckedNow()){
-            deleteFromFavorite();
-        } else {
-            addToFavorite();
-        }
     }
 
     private void addToFavorite() {
@@ -149,30 +137,32 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     public void checkEndTask() {
         if (isRefresh) {
-            showViewLoading();
+            activity.getBinding().setIsLoading(true);
         } else {
-            hideViewLoading();
-            if (cachedCity != null) {
-                showInformation(cachedCity);
-            }
+//            hideViewLoading();
+//            if (cachedCity != null) {
+            showInformation(cachedCity);
+//            }
         }
     }
 
-    private void hideViewLoading() {
-        activity.hideLoading();
-    }
-
-    private void showViewLoading() {
-        activity.showLoading();
-    }
-
     public void showInformation(City city) {
-        activity.showWeatherCardFullInfo();
-        activity.showInformation(city);
+        activity.getBinding().setCity(city);
+        activity.getBinding().setIsLoading(false);
+        if (city != null) {
+            activity.refreshWeathers(cachedCity.getWeathers());
+        }
     }
 
     private void showMessage(int message) {
         activity.showMessage(message);
     }
 
+    public void onFavoriteClick() {
+        if (activity.isCheckedNow()) {
+            addToFavorite();
+        } else {
+            deleteFromFavorite();
+        }
+    }
 }

@@ -25,9 +25,9 @@ public class MapperGsonToView extends MapperHelp {
     private MapperGsonToView() {
     }
 
-    public City convertGsonModelToViewModel(GsonCity gsonCity) {
-        return new City(gsonCity.getName(), TrimDateSingleton.getInstance().getNowTime(), getWeathersFromGson(gsonCity.getWeathers()));
-    }
+//    public City convertGsonModelToViewModel(GsonCity gsonCity) {
+//        return new City(gsonCity.getName(), TrimDateSingleton.getInstance().getNowTime(), getWeathersFromGson(gsonCity.getWeathers()));
+//    }
 
     private List<Weather> getWeathersFromGson(List<GsonWeatherRoot> gsonWeathers) {
         List<Weather> viewWeathers = new ArrayList<>();
