@@ -10,10 +10,10 @@ import java.util.List;
  */
 
 public class City implements Parcelable {
-    public String name;
-    public String lastTimeUpdate;
-    public List<Weather> weathers;
-    public boolean isFavorite;
+    private String name;
+    private String lastTimeUpdate;
+    private List<Weather> weathers;
+    private boolean isFavorite;
 
 
     public City(String name, String lastTimeUpdate, List<Weather> weathers, boolean isFavorite) {
@@ -44,6 +44,10 @@ public class City implements Parcelable {
 
     public boolean isFavorite() {
         return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 
     public static final Creator<City> CREATOR = new Creator<City>() {

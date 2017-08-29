@@ -33,7 +33,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private Handler sendMessageToUi;
 
     private void cityIsFavorite(boolean isFavorite){
-        cachedCity.isFavorite = isFavorite;
+        cachedCity.setFavorite(isFavorite);
     }
 
     public void resumePresenter(Bundle saveDataBundle) {

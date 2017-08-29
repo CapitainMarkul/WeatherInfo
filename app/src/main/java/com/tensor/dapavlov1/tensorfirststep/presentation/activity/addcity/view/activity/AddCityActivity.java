@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
 
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,11 +10,14 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
@@ -31,6 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -65,7 +70,7 @@ public class AddCityActivity extends AppCompatActivity
         setupLoaders();
 
         setupViews();
-        setupListeners();
+        setupRxListeners();
         createPresenter();
         setupSingleton();
 
@@ -115,32 +120,26 @@ public class AddCityActivity extends AppCompatActivity
         binding.toolBar.tvAutocompleteText.setAdapter(new PlacesAutoComplete(this, R.layout.item_auto_complete));
     }
 
-    private void setupListeners() {
-        //@OnItemClick не поддерживает виджет AutoCompleteTextView # 483
-        //https://github.com/JakeWharton/butterknife/issues/102
-        binding.toolBar.tvAutocompleteText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                runSearch();
-            }
-        });
+    // TODO: 29.08.2017 Вопрос об обработке Error в subscribe кнопки?
+    // Мы же обрабатываем исключения в коде
+    private void setupRxListeners() {
+        RxAutoCompleteTextView.itemClickEvents(binding.toolBar.tvAutocompleteText)
+                .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .subscribe(
+                        next -> runSearch(),
+                        Throwable::printStackTrace
+                );
 
-        binding.toolBar.tvAutocompleteText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    switch (keyCode) {
-                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                        case KeyEvent.KEYCODE_ENTER:
-                            runSearch();
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
-            }
-        });
+        RxView.keys(binding.toolBar.tvAutocompleteText)
+                .map(mapper -> mapper.getAction() == KeyEvent.ACTION_DOWN)
+                .subscribe(
+                        next -> {
+                            if (next) {
+                                // TODO: 29.08.2017 проверить, на какие еще клавиши Триггерит
+                                runSearch();
+                            }
+                        }
+                );
     }
 
     public void runSearch() {

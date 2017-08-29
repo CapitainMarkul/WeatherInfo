@@ -13,15 +13,15 @@ import com.squareup.picasso.Picasso;
  */
 
 public class Weather implements Parcelable {
-    public String windShort;
-    public double windSpeed;
-    public double pressure;
-    public double temperature;
-    public String date;
-    public String time;
-    public String iconUrl;
-    public String iconCode;
-    public String description;
+    private String windShort;
+    private double windSpeed;
+    private double pressure;
+    private double temperature;
+    private String date;
+    private String time;
+    private String iconUrl;
+    private String iconCode;
+    private String description;
 
     public Weather(String windShort, double windSpeed, double pressure, double temperature, String date, String time, String iconUrl, String iconCode, String description) {
         this.windShort = windShort;
