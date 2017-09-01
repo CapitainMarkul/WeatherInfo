@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -53,7 +54,9 @@
             android:id="@+id/iv_icon_weather_small"
             android:layout_width="@dimen/item_horizontal_recycler_weather_icon_size"
             android:layout_height="@dimen/item_horizontal_recycler_weather_icon_size"
-            android:src="@drawable/test_image"/>
+            app:errorImage="@{@drawable/ic_cloud_error}"
+            app:iconUrl="@{weather.iconUrl}"
+            tools:src="@drawable/test_image"/>
 
         <TextView
             android:id="@+id/tv_time_small"

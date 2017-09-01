@@ -4,9 +4,9 @@ import android.support.annotation.Nullable;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 
 import org.greenrobot.greendao.query.Query;
@@ -14,21 +14,48 @@ import org.greenrobot.greendao.query.Query;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Created by da.pavlov1 on 14.08.2017.
  */
 
 public class DbClient {
-    private DbCityDao cityDao;
+    //    private DbCityDao cityDao;
     private Query<DbCity> query;
 
-    public DbClient(DbCityDao cityDao, Query<DbCity> query) {
-        this.cityDao = cityDao;
+    //    public DbClient(DbCityDao cityDao, Query<DbCity> query) {
+////        this.cityDao = cityDao;
+//        this.query = query;
+//    }
+    public DbClient(Query<DbCity> query) {
         this.query = query;
     }
 
-    public List<DbCity> loadListAllCity() throws EmptyDbException {
+    public Flowable<DbCity> loadListAllCitiesRx() {
+        return Flowable.create(e -> {
+            try {
+                for (DbCity item : loadListAllCities()) {
+                    e.onNext(item);
+                }
+                e.onComplete();
+            } catch (EmptyDbException e1) {
+                e1.printStackTrace();
+            }
+        }, BackpressureStrategy.BUFFER);
+    }
+
+    public List<DbCity> loadListAllCities() throws EmptyDbException {
         List<DbCity> resultList = query.forCurrentThread().list();
         if (resultList.isEmpty()) {
             throw new EmptyDbException();
@@ -36,9 +63,28 @@ public class DbClient {
         return resultList;
     }
 
-    public void updateAllCity(List<ModelCityWeather> modelCityWeathers) {
+    public List<String> getCityNames() throws EmptyDbException {
+        List<String> cityNames = new ArrayList<>();
+        for (DbCity item : loadListAllCities()) {
+            cityNames.add(item.getName());
+        }
+        return cityNames;
+    }
+
+    public void updateCity(ModelCityWeather modelCityWeather) {
+
+    }
+
+    public void updateAllCities(List<ModelCityWeather> modelCityWeathers) {
         //выгружаем старую информацию о погоде
-        List<DbCity> listCityOld = App.getDaoSession().getDbCityDao().loadAll();
+        List<DbCity> listCityOld;
+        try {
+            listCityOld = loadListAllCities();
+        } catch (EmptyDbException e) {
+            //Если Бд пуста, то и обновлять нечего
+            return;
+        }
+
         List<ModelCityWeather> tempList = new ArrayList<>();
         tempList.addAll(modelCityWeathers);
 
@@ -54,7 +100,6 @@ public class DbClient {
                     //Update Time
                     itemOld.setLastTimeUpdate(
                             itemNewCity.getLastTimeUpdate());
-
 
                     //если возникнут ошибки при обновлении информации в БД
                     try {
@@ -81,19 +126,30 @@ public class DbClient {
         }
     }
 
-    public DbCity isAdd(DbCity city) throws EmptyDbException {
-        List<DbCity> dbCityList = loadListAllCity();
+    public DbCity isAdd(String cityName, String lastTimeUpdate) {
+        List<DbCity> dbCityList;
+        try {
+            dbCityList = loadListAllCities();
+        } catch (EmptyDbException e) {
+            //Если Бд пуста, то и города в ней быть не может
+            return null;
+        }
+
         //ситуация с одинаковыми названиями городов - возможна,
         // (Города Кострома, Костромская обл и Кострома Самарская, обл. будут считаться за один город)
         // в случае необходимости можно поправить, если сохранять более полную информацию в БД
         for (DbCity item : dbCityList) {
-            if (item.getName().equals(city.getName())) {
-                item.setLastTimeUpdate(city.getLastTimeUpdate());
+            if (item.getName().equals(cityName)) {
+                item.setLastTimeUpdate(lastTimeUpdate);
                 item.update();
                 return item;    // иначе, на экране добавления не сможем удалить город из избранного!
             }
         }
         return null;
+    }
+
+    public Maybe<DbCity> isAddRx(String cityName, String lastTimeUpdate) throws EmptyDbException {
+        return Maybe.just(isAdd(cityName, lastTimeUpdate));
     }
 
     //Сначала в БД заносится город, узнаем его ID,  прикрепляем к нему Лист с погодой
@@ -114,28 +170,20 @@ public class DbClient {
     private DbCity getDaoCity(int index) {
         try {
             return query.forCurrentThread().list().get(index);
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }
 
     public void deleteCity(final int position) {
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                deleteCity(getDaoCity(position));
-            }
-        });
+        App.getExecutorService().execute(() -> deleteCity(getDaoCity(position)));
     }
 
     public void deleteCity(@Nullable DbCity dbCity) {
-        if(dbCity != null) {
+        if (dbCity != null) {
             //Информация о сессии с БД, не переживает Terminate (приходится вот так восстанавливать)
             if (dbCity.getId() == null) {
-                try {
-                    dbCity = isAdd(dbCity);
-                } catch (EmptyDbException e) {
-                }
+                dbCity = isAdd(dbCity.getName(), dbCity.getLastTimeUpdate());
             }
             App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
             dbCity.delete();

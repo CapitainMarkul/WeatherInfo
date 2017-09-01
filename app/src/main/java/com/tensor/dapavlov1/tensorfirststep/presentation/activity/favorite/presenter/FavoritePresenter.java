@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
-import android.os.Handler;
-import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
@@ -17,6 +16,8 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDat
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -28,28 +29,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private List<City> cachedCities = new ArrayList<>();
     private boolean isLoading = false;
 
-    //для связи с UI
-    private Handler sendMessageToUi;
-
-    public FavoritePresenter() {
-        sendMessageToUi = new Handler(Looper.getMainLooper());
-    }
-
-    private CallbackCities<List<City>> callbackCities = new CallbackCities<List<City>>() {
+    private CallbackCities<City> callbackCities = new CallbackCities<City>() {
         @Override
-        public void onUpdate(final List<City> result) {
+        public void onUpdate(final City result) {
             try {
                 if (activity != null) {
-                    sendMessageToUi.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            cachedInfo(result);
-                            showCachedCities();
-                            activity.getBinding().setIsLoading(false);
-
-                            activity.showMessage(R.string.activity_favorite_update_success);
-                        }
-                    });
+                    showCity(result);
+                    cachedInfo(result);
+                    activity.getBinding().setIsLoading(false);
                 }
             } catch (NullPointerException e) {
                 Toast.makeText(App.getContext(), App.getContext().getText(R.string.activity_favorite_unknown_error), Toast.LENGTH_SHORT).show();
@@ -57,50 +44,52 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         }
 
         @Override
-        public void onOldFromDb(final List<City> result) {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    cachedInfo(result);
-                    showCachedCities();
-                    activity.getBinding().setCities(result);
-                    activity.getBinding().setIsLoading(false);
+        public void onOldFromDb(final City result) {
+//            sendMessageToUi.post(() -> {
+//            cachedInfo(result);
+//            showCity(result);
+//                showCachedCities();
 
-                    activity.showMessage(R.string.str_error_connect_to_internet);
-                }
-            });
+//                activity.getBinding().setCities(result);
+//                activity.getBinding().setIsLoading(false);
+
+            activity.showMessage(R.string.str_error_connect_to_internet);
+//            });
         }
 
         @Override
         public void isEmpty() {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    isLoading = true;
-                    activity.getBinding().setCities(null);
-                    activity.getBinding().setIsLoading(false);
-                }
-            });
+//            sendMessageToUi.post(() -> {
+            isLoading = true;
+            activity.getBinding().setCities(null);
+            activity.getBinding().setCity(null);
+//                activity.getBinding().setIsLoading(false);
+//            });
+        }
+
+        @Override
+        public void onComplete() {
+            activity.getBinding().setIsLoading(false);
+            activity.showMessage(R.string.activity_favorite_update_success);
         }
     };
 
-    private void cachedInfo(List<City> cities) {
+    private void cachedInfo(City city) {
         isLoading = true;
-
-        cachedCities.clear();
-        cachedCities.addAll(cities);
+        cachedCities.add(city);
     }
 
     public void updateWeathers() {
         isLoading = false;
+        cachedCities.clear();
         activity.getBinding().setIsLoading(true);
 
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                new CitiesDataRepository().getCities(callbackCities);
-            }
-        });
+        new CitiesDataRepository().getCitiesRx()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        city -> callbackCities.onUpdate(city),
+                        throwable -> callbackCities.onComplete(),
+                        () -> callbackCities.onComplete());
     }
 
     public void switchActivity() {
@@ -111,9 +100,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         new CitiesDataRepository().delete(position);
     }
 
+    private void showCity(City city) {
+        activity.setItemInAdapter(city);
+        activity.getBinding().setCity(city);
+    }
+
     public void showCachedCities() {
         if (cachedCities != null && !cachedCities.isEmpty()) {
-            activity.refreshAdapter(cachedCities);
+            activity.setItemsInAdapter(cachedCities);
         }
         activity.getBinding().setCities(cachedCities);
     }

@@ -15,4 +15,8 @@ public class CallbackCities<T> {
     public void isEmpty() {
 
     }
+
+    public void onComplete(){
+
+    }
 }

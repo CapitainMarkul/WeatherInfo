@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
@@ -86,18 +85,25 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void setupListeners() {
-        binding.srRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresenter.updateWeathers();
-            }
+        binding.srRefresh.setOnRefreshListener(() -> {
+            adapterFavorite.setDefaultSetting();
+
+            mPresenter.updateWeathers();
         });
     }
 
     @Override
-    public void refreshAdapter(final List<City> weathers) {
+    public void setItemsInAdapter(final List<City> weathers) {
         adapterFavorite.setItems(weathers);
-        adapterFavorite.notifyDataSetChanged();
+//        adapterFavorite.notifyDataSetChanged();
+//        binding.recyclerViewFavorite.scrollToPosition(adapterFavorite.getItemCount());
+    }
+
+    public void setItemInAdapter(City cityWeather) {
+        adapterFavorite.setItem(cityWeather);
+//        adapterFavorite.notifyItemInserted(adapterFavorite.getItemCount());
+        //для работы анимации на 1 элементе
+        binding.recyclerViewFavorite.scrollToPosition(0);
     }
 
     @Override
@@ -177,7 +183,12 @@ public class FavoriteActivity extends AppCompatActivity
         //если были обновления на другом экране
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getLoading()) {
+            adapterFavorite.isAnimate(isChangingConfigurations());
             mPresenter.showCachedCities();
+        } else {
+            if (getBinding().getCities() != null || getBinding().getCity() != null) {
+                getBinding().setIsLoading(true);
+            }
         }
     }
 
@@ -192,6 +203,8 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void onEmpty() {
-        binding.setCities(null);
+        binding.setIsLoading(false);
+//        binding.setCities(null);
+        binding.setCity(null);
     }
 }

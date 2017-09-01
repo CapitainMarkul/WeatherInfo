@@ -10,14 +10,14 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
@@ -28,6 +28,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapte
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
+import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -48,6 +54,10 @@ public class AddCityActivity extends AppCompatActivity
     private final static String NEW_CITY_ADAPTER = "new_city_adapter";
 
     private final static int LOADER_NEW_CITY_ID = 2;
+
+    private PlacesAutoComplete placesAutoComplete;
+
+    private AutoCompleteTextView autoText;
 
     private AddCityPresenter mPresenter;
     private AdapterHorizontalWeather adapterHorizontalWeather;
@@ -109,46 +119,85 @@ public class AddCityActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        binding.toolBar.tvAutocompleteText.clearFocus();
+        autoText.clearFocus();
 
         mPresenter.attachActivity(this);
         mPresenter.checkEndTask();
     }
 
     private void setupViews() {
+        autoText = binding.toolBar.tvAutocompleteText;
+
         binding.cvWeatherCity.cardFullInfo.setVisibility(View.INVISIBLE);
-        binding.toolBar.tvAutocompleteText.setAdapter(new PlacesAutoComplete(this, R.layout.item_auto_complete));
+
+        placesAutoComplete = new PlacesAutoComplete(this, R.layout.item_auto_complete);
+        autoText.setAdapter(placesAutoComplete);
     }
 
     // TODO: 29.08.2017 Вопрос об обработке Error в subscribe кнопки?
     // Мы же обрабатываем исключения в коде
     private void setupRxListeners() {
-        RxAutoCompleteTextView.itemClickEvents(binding.toolBar.tvAutocompleteText)
-                .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+        RxAutoCompleteTextView.itemClickEvents(autoText)
+//                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(
                         next -> runSearch(),
                         Throwable::printStackTrace
                 );
 
-        RxView.keys(binding.toolBar.tvAutocompleteText)
-                .map(mapper -> mapper.getAction() == KeyEvent.ACTION_DOWN)
-                .subscribe(
-                        next -> {
-                            if (next) {
-                                // TODO: 29.08.2017 проверить, на какие еще клавиши Триггерит
-                                runSearch();
-                            }
-                        }
-                );
+        // какого символа начинаем показывать подсказки
+        autoText.setThreshold(3);
+
+        RxTextView.textChanges(autoText)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(s -> s.length() > 2)
+                .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
+                    @Override
+                    public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
+                        return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
+                                .map(s -> GsonFactory.getInstance().getPlacesName(s));
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> {
+                    //иначе при клике на элемент, спустя время, снова вылезает подсказка
+
+                    autoText.setAdapter(placesAutoComplete.setItems(result));
+//                    placesAutoComplete.setItems(result);
+                    autoText.showDropDown();
+//                    temp.clear();
+//                    temp.addAll(result);
+                });
+
+        RxView.clicks(autoText)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(res -> {
+                    if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
+                        autoText.showDropDown();
+                    }
+                });
+
+//        RxView.keys(autoText)
+//                .debounce(DEBOUNSE_VIEW, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+//                .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+//                .subscribe(
+//                        next -> {
+//                            if (next) {
+//                                // TODO: 29.08.2017 Не работает Back
+//                                runSearch();
+//                            }
+//                        }
+//                );
     }
 
     public void runSearch() {
         binding.cvWeatherCity.setCity(null);
-        mPresenter.getWeatherInCity(binding.toolBar.tvAutocompleteText.getText().toString());
+        mPresenter.getWeatherInCity(autoText.getText().toString());
     }
 
     public void clearInputText() {
-        binding.toolBar.tvAutocompleteText.setText("");
+        autoText.setText("");
     }
 
     public boolean isCheckedNow() {
@@ -227,6 +276,11 @@ public class AddCityActivity extends AppCompatActivity
 
         if (saveBundle != null) {
             mPresenter.resumePresenter(saveBundle);
+            //при перевороте экрана, нужно восстановить состояние подсказок
+            if (autoText.getAdapter().getCount() > 0
+                    && !autoText.isPopupShowing()) {
+                autoText.showDropDown();
+            }
         }
 
         setupRecyclerView();

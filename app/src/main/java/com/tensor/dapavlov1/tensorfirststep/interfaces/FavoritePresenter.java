@@ -9,7 +9,7 @@ import java.util.List;
  */
 //, IAddCityIntent
 public interface FavoritePresenter extends Loading, ShowMessage {
-    void refreshAdapter(List<City> weathers);
+    void setItemsInAdapter(List<City> weathers);
 //
 //    void showEmptyCard();
 //

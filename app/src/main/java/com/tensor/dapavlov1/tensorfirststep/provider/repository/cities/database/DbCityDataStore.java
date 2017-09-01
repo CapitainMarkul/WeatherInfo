@@ -9,9 +9,10 @@ import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexComm
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.RemoteControlDb;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
+
+import io.reactivex.Observable;
 
 /**
  * Created by da.pavlov1 on 24.08.2017.
@@ -50,7 +51,7 @@ public class DbCityDataStore implements CityDataStore {
 
     // TODO: 24.08.2017 Пустой метод!
     @Override
-    public City getCity(String fullCityName) throws NetworkConnectException, EmptyResponseException, CityNotFoundException, CityFoundException {
+    public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
         return null;
     }
 }

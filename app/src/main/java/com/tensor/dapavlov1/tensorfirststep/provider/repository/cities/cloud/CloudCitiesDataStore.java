@@ -11,12 +11,13 @@ import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
 
 /**
  * Created by da.pavlov1 on 23.08.2017.
@@ -26,37 +27,31 @@ public class CloudCitiesDataStore implements CitiesDataStore {
     private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
     private WeatherApiClient weatherClient = ApiFabric.getInstance().createClientWeatherApi();
 
-    @Override
-    public List<City> getCities() throws NetworkConnectException, EmptyDbException {
-        try {
-            return updateCityInfo(
-                    MapperDbToView.getInstance().getCityViewModelsFromDao(dbClient.loadListAllCity()));
-        } catch (IOException e) {
-            //вернем пустую карточку
-            throw new EmptyDbException();
-        }
+    private MapperDbToView dbToViewMap = MapperDbToView.getInstance();
+    private MapperGsonToDb gsonToDbMap = MapperGsonToDb.getInstance();
+    private GsonFactory gsonFactory = GsonFactory.getInstance();
+
+    private List<String> cityNames = new ArrayList<>();
+
+    public CloudCitiesDataStore(List<String> cityNames) {
+        this.cityNames = cityNames;
     }
 
-    private List<City> updateCityInfo(final List<City> cities) throws IOException {
-        //получаем обновленную информацию
-        final List<ModelCityWeather> modelCityWeathers = new ArrayList<>();
-        for (City item : cities) {
-            modelCityWeathers.add(
-                    MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-                            GsonFactory.getInstance().createGsonCityModel(
-                                    weatherClient.getJsonFromApiWeather(item.getName())
-                            )
-                    )
-            );
-        }
-        //set Update in BD
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                dbClient.updateAllCity(modelCityWeathers);
-            }
-        });
-
-        return MapperDbToView.getInstance().getCityViewModels(modelCityWeathers);
+    @Override
+    public Flowable<City> getCitiesRx() {
+        return weatherClient.observableWeathersResponseRx(cityNames)
+                .map(string -> gsonFactory.createGsonCityModel(string))
+                .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .switchMap(modelCityWeather -> {
+                    // TODO: 31.08.2017 Можно переписать метод для сохранения одного элемента
+                    //        //set Update weather info in DB
+                    List<ModelCityWeather> list = new ArrayList<>();
+                    list.add(modelCityWeather);
+                    App.getExecutorService().execute(() -> dbClient.updateAllCities(list));
+                    return Flowable.create((FlowableOnSubscribe<City>) e ->
+                                    e.onNext(dbToViewMap.convertDbModelToViewModel(modelCityWeather.getDbCity(), modelCityWeather.getWeathers(), true)),
+                            BackpressureStrategy.BUFFER);
+                });
     }
 }

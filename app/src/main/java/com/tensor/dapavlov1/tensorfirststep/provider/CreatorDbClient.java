@@ -33,6 +33,7 @@ public class CreatorDbClient {
     }
 
     public DbClient createNewDaoClient() {
-        return new DbClient(modelCityDao, query);
+//        return new DbClient(modelCityDao, query);
+        return new DbClient(query);
     }
 }

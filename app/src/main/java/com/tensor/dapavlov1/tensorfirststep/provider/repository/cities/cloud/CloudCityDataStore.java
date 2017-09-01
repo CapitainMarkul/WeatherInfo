@@ -13,13 +13,9 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimCityInfo;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
-import java.io.IOException;
+import io.reactivex.Observable;
 
 /**
  * Created by da.pavlov1 on 23.08.2017.
@@ -41,54 +37,31 @@ public class CloudCityDataStore implements CityDataStore {
     }
 
     @Override
-    public City getCity(String fullCityName) throws NetworkConnectException, EmptyResponseException, CityNotFoundException, CityFoundException {
-        String response;
-        try {
-            response = weatherClient.getJsonFromApiWeather(
-                    TrimCityInfo.getInstance().trimCityName(fullCityName));
-        } catch (IOException e) {
-            //если проблемы с получением ответа
-            throw new NetworkConnectException();
-        }
-
-        if (response != null && !response.equals("")) {
-            ModelCityWeather tempCity = MapperGsonToDb.getInstance().convertGsonModelToDaoModel(
-                    GsonFactory.getInstance().createGsonCityModel(response));
-
-            try {
-                //проверяем, есть ли этот город в списке Favorite
-                DbCity dbCity = dbClient.isAdd(tempCity.getDbCity());
-
-                //Если город не найден в бд
-                if (dbCity == null) {
-                    cachedCity(tempCity);
-                    boolean isFavorite = false;
-                    throw new CityNotFoundException(
-                            MapperDbToView.getInstance().convertDbModelToViewModel(
-                                    tempCity.getDbCity(),
-                                    tempCity.getWeathers(),
-                                    isFavorite));
-                }
-
-                cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));
-                boolean isFavorite = true;
-                throw new CityFoundException(
-                        MapperDbToView.getInstance().convertDbModelToViewModel(
-                                tempCity.getDbCity(),
-                                tempCity.getWeathers(),
-                                isFavorite));
-            } catch (EmptyDbException e) {
-                //если БД пуста
-                cachedCity(tempCity);
-                throw new CityNotFoundException(
-                        MapperDbToView.getInstance().convertDbModelToViewModel(
-                                tempCity.getDbCity(),
-                                tempCity.getWeathers(),
-                                false));
-            }
-        } else {
-            throw new EmptyResponseException();
-        }
+    public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
+        return weatherClient
+                .observableWeatherResponseRx(TrimCityInfo.getInstance().trimCityName(fullCityName))
+                .map(response -> {
+                    if (response == null || response.equals("")) {
+                        throw new EmptyResponseException();
+                    }
+                    return response;
+                })
+                .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
+                .map(gsonCity -> MapperGsonToDb.getInstance().convertGsonModelToDaoModel(gsonCity))
+                .map(mapper -> {
+                    cachedCity(mapper);
+                    return MapperDbToView.getInstance().convertDbModelToViewModel(mapper.getDbCity(), mapper.getWeathers(), false);
+                })
+                .map(viewCity -> {
+                    DbCity dbCity = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
+                    if (dbCity == null) {
+                        viewCity.setFavorite(false);
+                        return viewCity;
+                    }
+                    cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));   // todo Вспомнить
+                    viewCity.setFavorite(true);
+                    return viewCity;
+                });
     }
 
     private void cachedCity(ModelCityWeather tempCity) {

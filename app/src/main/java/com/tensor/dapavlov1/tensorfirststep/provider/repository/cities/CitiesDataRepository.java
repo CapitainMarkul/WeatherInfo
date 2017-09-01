@@ -1,19 +1,25 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCitiesRx;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by da.pavlov1 on 22.08.2017.
@@ -33,42 +39,47 @@ public class CitiesDataRepository implements CitiesRepository {
     }
 
     @Override
-    public void getCity(String fullCityName, CallbackCity<City> callbackCity) {
+    public void getCity(String fullCityName, CallbackCity<City> callbackCities) {
         try {
             CityDataStore cityDataStore = citiesDataStoreFactory.createCityDataStore();
-
-            try {
-                cityDataStore.getCity(fullCityName);
-            } catch (EmptyResponseException e) {
-                callbackCity.isEmpty();
-            } catch (CityNotFoundException obj) {
-                callbackCity.isNotFavoriteCity(obj.getCity());
-            } catch (CityFoundException obj) {
-                callbackCity.isFavoriteCity(obj.getCity());
-            }
+            cityDataStore.getCity(fullCityName)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            result -> {
+                                if (result.isFavorite()) {
+                                    callbackCities.isFavoriteCity(result);
+                                } else {
+                                    callbackCities.isNotFavoriteCity(result);
+                                }
+                            },
+                            error -> {
+                                if (error instanceof EmptyDbException) {
+                                    callbackCities.isEmpty();
+                                } else if (error instanceof NetworkConnectException) {
+                                    callbackCities.onErrorConnect();
+                                } else {
+                                    // если случилось что-то непредусмотренное, показываем карточку "Город не найден"
+                                    callbackCities.onErrorConnect();
+                                }
+                            }
+                    );
         } catch (NetworkConnectException e) {
-            callbackCity.onErrorConnect();
+            callbackCities.onErrorConnect();
+        } catch (EmptyResponseException e) {
+            callbackCities.isEmpty();
         }
     }
 
     @Override
-    public void getCities(CallbackCities<List<City>> callbackCities) {
+    public Flowable<City> getCitiesRx() {
         //определяем откуда тянуть информацию/ Из бд или из сети
-        CitiesDataStore citiesDataStore = citiesDataStoreFactory.createCitiesDataStore();
-
-        //Для удобства обработки CallBack'ов были
-        // введены собственные исключения
+        CitiesDataStore citiesDataStore;
         try {
-            //Данные обновлены успешно
-            callbackCities.onUpdate(
-                    citiesDataStore.getCities());
+            citiesDataStore = citiesDataStoreFactory.createCitiesDataStore();
         } catch (EmptyDbException e) {
-            //отсутствуют данные для обновления, или прочие ошибки
-            // (В идеале уведомления с подробностями)
-            callbackCities.isEmpty();
-        } catch (NetworkConnectException e) {
-            //Отображаем не обновленные данные
-            callbackCities.onOldFromDb(e.getOldCitiesInfo());
+            return Flowable.empty();
         }
+        return citiesDataStore.getCitiesRx();
     }
 }

@@ -2,10 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapt
 
 import android.content.Context;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
 import android.widget.Filterable;
-
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
 
 import java.util.List;
 
@@ -15,53 +12,23 @@ import java.util.List;
 
 public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterable {
 
-    private List<String> resultList;
+    //    private List<String> resultList;
+    private Context context;
+    private int resource;
 
-    //    private Context mContext;
-//    private int mResource;
-//
     public PlacesAutoComplete(Context context, int resource) {
         super(context, resource);
+        this.context = context;
+        this.resource = resource;
     }
 
-    @Override
-    public int getCount() {
-        // Last item will be the footer
-        return resultList.size();
+    public ArrayAdapter<String> setItems(List<String> list) {
+        return new ArrayAdapter<>(context, resource, list);
     }
 
-    @Override
-    public String getItem(int position) {
-        return resultList.get(position);
-    }
-
-    @Override
-    public Filter getFilter() {
-        Filter filter = new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                if (constraint != null) {
-                    resultList = PlacesDataRepository.getInstance().getPlaces(constraint.toString());
-
-                    if (resultList != null) {
-                        filterResults.values = resultList;
-                        filterResults.count = resultList.size();
-                    }
-                }
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null && results.count > 0) {
-                    notifyDataSetChanged();
-                } else {
-                    notifyDataSetInvalidated();
-                }
-            }
-        };
-
-        return filter;
-    }
+//    public void setItemsa(List<String> list) {
+//        resultList = list;
+//        notifyDataSetChanged();
+////        notifyDataSetChanged();
+//    }
 }

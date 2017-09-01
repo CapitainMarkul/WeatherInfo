@@ -8,13 +8,20 @@ import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
+import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -32,7 +39,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     //для связи с UI
     private Handler sendMessageToUi;
 
-    private void cityIsFavorite(boolean isFavorite){
+    private void cityIsFavorite(boolean isFavorite) {
         cachedCity.setFavorite(isFavorite);
     }
 
@@ -63,52 +70,40 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private CallbackCity<City> cityCallback = new CallbackCity<City>() {
         @Override
         public void isFavoriteCity(final City result) {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    activity.cityIsFavorite(true);
-                    cachedInfo(result);
-                    showInformation(cachedCity);
-                    stopAnimation();
-                }
+            sendMessageToUi.post(() -> {
+                activity.cityIsFavorite(true);
+                cachedInfo(result);
+                showInformation(cachedCity);
+                stopAnimation();
             });
         }
 
         @Override
         public void isNotFavoriteCity(final City result) {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    activity.cityIsFavorite(false);
-                    cachedInfo(result);
-                    showInformation(cachedCity);
-                    stopAnimation();
-                }
+            sendMessageToUi.post(() -> {
+                activity.cityIsFavorite(false);
+                cachedInfo(result);
+                showInformation(cachedCity);
+                stopAnimation();
             });
         }
 
         @Override
         public void onErrorConnect() {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    activity.showMessage(R.string.str_error_connect_to_internet);
-                    activity.getBinding().setIsLoading(false);
-                    stopAnimation();
-                }
+            sendMessageToUi.post(() -> {
+                activity.showMessage(R.string.str_error_connect_to_internet);
+                activity.getBinding().setIsLoading(false);
+                stopAnimation();
             });
         }
 
         @Override
         public void isEmpty() {
-            sendMessageToUi.post(new Runnable() {
-                @Override
-                public void run() {
-                    isLoading = false;
-                    showInformation(null);
-                    activity.getBinding().setIsLoading(false);
-                    stopAnimation();
-                }
+            sendMessageToUi.post(() -> {
+                isLoading = false;
+                showInformation(null);
+                activity.getBinding().setIsLoading(false);
+                stopAnimation();
             });
         }
     };
@@ -137,12 +132,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         activity.getBinding().setIsLoading(true);
         startAnimation();
 
-        App.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                new CitiesDataRepository().getCity(fullCityName, cityCallback);
-            }
-        });
+        new CitiesDataRepository().getCity(fullCityName, cityCallback);
     }
 
     private void addToFavorite() {

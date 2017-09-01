@@ -23,6 +23,10 @@
             type="List&lt;com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City&gt;"/> <!-- generic List<Item> -->
 
         <variable
+            name="city"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City"/>
+
+        <variable
             name="mPresenter"
             type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter.FavoritePresenter"/>
     </data>
@@ -57,7 +61,8 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/card_weather_default"
                 layout="@layout/card_weather_default"
-                android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>
+                android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>
+            <!--android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>-->
         </LinearLayout>
 
         <android.support.v4.widget.SwipeRefreshLayout
@@ -71,7 +76,7 @@
                 android:id="@+id/recycler_view_favorite"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="@{cities != null ? v.VISIBLE : v.INVISIBLE}"/>
+                android:visibility="@{city != null || cities!= null ? v.VISIBLE : v.INVISIBLE}"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
