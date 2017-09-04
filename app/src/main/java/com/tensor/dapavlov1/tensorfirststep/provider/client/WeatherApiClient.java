@@ -82,6 +82,7 @@ public class WeatherApiClient extends ApiHelper {
         });
     }
 
+    //WeatherApiClient
     public Observable<String> observableWeathersResponseRx(@NonNull List<String> cityNames) {
         return Observable.create(source -> {
             for (String cityName : cityNames) {
@@ -102,7 +103,8 @@ public class WeatherApiClient extends ApiHelper {
                 });
             }
 
-            // TODO: 31.08.2017 В какой момент отправлять onComplete ? анные не успевают отобразиться
+            // TODO: 31.08.2017 В какой момент отправлять onComplete ?
+            // Если отправить отсюда, то данные не успевают отобразиться
 //            source.onComplete();
         });
     }
