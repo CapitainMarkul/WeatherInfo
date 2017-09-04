@@ -84,7 +84,6 @@ public class WeatherApiClient extends ApiHelper {
 
     public Observable<String> observableWeathersResponseRx(@NonNull List<String> cityNames) {
         return Observable.create(source -> {
-//            for(int i = 0; i < cityNames.size(); i++){
             for (String cityName : cityNames) {
                 Call call = okHttpClient.newCall(createRequest(cityName));
                 //отменяем запрос, если произошла отписка
