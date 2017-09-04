@@ -70,41 +70,46 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private CallbackCity<City> cityCallback = new CallbackCity<City>() {
         @Override
         public void isFavoriteCity(final City result) {
-            sendMessageToUi.post(() -> {
+//            sendMessageToUi.post(() -> {
                 activity.cityIsFavorite(true);
                 cachedInfo(result);
                 showInformation(cachedCity);
                 stopAnimation();
-            });
+//            });
         }
 
         @Override
         public void isNotFavoriteCity(final City result) {
-            sendMessageToUi.post(() -> {
+//            sendMessageToUi.post(() -> {
                 activity.cityIsFavorite(false);
                 cachedInfo(result);
                 showInformation(cachedCity);
                 stopAnimation();
-            });
+//            });
         }
 
         @Override
         public void onErrorConnect() {
-            sendMessageToUi.post(() -> {
+//            sendMessageToUi.post(() -> {
                 activity.showMessage(R.string.str_error_connect_to_internet);
                 activity.getBinding().setIsLoading(false);
                 stopAnimation();
-            });
+//            });
         }
 
         @Override
         public void isEmpty() {
-            sendMessageToUi.post(() -> {
+//            sendMessageToUi.post(() -> {
                 isLoading = false;
                 showInformation(null);
                 activity.getBinding().setIsLoading(false);
                 stopAnimation();
-            });
+//            });
+        }
+
+        @Override
+        public void keyError() {
+            // TODO: 04.09.2017 Можно сделать, если потребуется
         }
     };
 

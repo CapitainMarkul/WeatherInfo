@@ -1,10 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCitiesRx;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
@@ -13,11 +10,7 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
-import java.util.List;
-
 import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -60,7 +53,7 @@ public class CitiesDataRepository implements CitiesRepository {
                                     callbackCities.onErrorConnect();
                                 } else {
                                     // если случилось что-то непредусмотренное, показываем карточку "Город не найден"
-                                    callbackCities.onErrorConnect();
+                                    callbackCities.isEmpty();
                                 }
                             }
                     );

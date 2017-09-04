@@ -34,10 +34,6 @@ public class DbClient {
     //    private DbCityDao cityDao;
     private Query<DbCity> query;
 
-    //    public DbClient(DbCityDao cityDao, Query<DbCity> query) {
-////        this.cityDao = cityDao;
-//        this.query = query;
-//    }
     public DbClient(Query<DbCity> query) {
         this.query = query;
     }
@@ -69,10 +65,6 @@ public class DbClient {
             cityNames.add(item.getName());
         }
         return cityNames;
-    }
-
-    public void updateCity(ModelCityWeather modelCityWeather) {
-
     }
 
     public void updateAllCities(List<ModelCityWeather> modelCityWeathers) {

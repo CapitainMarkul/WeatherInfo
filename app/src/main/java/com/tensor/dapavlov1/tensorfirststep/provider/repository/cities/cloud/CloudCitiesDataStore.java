@@ -44,7 +44,6 @@ public class CloudCitiesDataStore implements CitiesDataStore {
                 .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .switchMap(modelCityWeather -> {
-                    // TODO: 31.08.2017 Можно переписать метод для сохранения одного элемента
                     //        //set Update weather info in DB
                     List<ModelCityWeather> list = new ArrayList<>();
                     list.add(modelCityWeather);

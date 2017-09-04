@@ -8,8 +8,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
@@ -17,7 +17,6 @@ import android.widget.AutoCompleteTextView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
@@ -31,7 +30,6 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGra
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +50,9 @@ public class AddCityActivity extends AppCompatActivity
         LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
     private final static String NEW_CITY_PRESENTER = "new_city_presenter";
     private final static String NEW_CITY_ADAPTER = "new_city_adapter";
+    private final static String IS_TEXT_CHANGED = "is_text_changed";
+
+    private final static String IS_CONFIG_CHANGE = "is_config_change";
 
     private final static int LOADER_NEW_CITY_ID = 2;
 
@@ -64,7 +65,8 @@ public class AddCityActivity extends AppCompatActivity
 
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
 
-    private List<CardView> cardViews = new ArrayList<>();
+    private boolean isTextChanged = true;
+    private boolean isConfigChange = false;
 
     private Bundle saveBundle;
     private ActivityAddCityBinding binding;
@@ -76,7 +78,8 @@ public class AddCityActivity extends AppCompatActivity
         binding.cvWeatherCity.setEvents(this);
         binding.cvWeatherCity.setSwitchGradient(SwitchGradient.getInstance());
 
-        createCardViewList();
+        binding.setFirstLaunch(true);
+
         setupLoaders();
 
         setupViews();
@@ -87,13 +90,10 @@ public class AddCityActivity extends AppCompatActivity
         saveBundle = savedInstanceState;
     }
 
-    private void createCardViewList() {
-        cardViews.add(binding.cvNothingWeather.cvNothing);
-        cardViews.add(binding.cvWeatherCity.cardFullInfo);
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_CONFIG_CHANGE, isChangingConfigurations());
+        outState.putBoolean(IS_TEXT_CHANGED, isTextChanged);
         super.onSaveInstanceState(mPresenter.saveData(outState));
     }
 
@@ -138,14 +138,29 @@ public class AddCityActivity extends AppCompatActivity
     // Мы же обрабатываем исключения в коде
     private void setupRxListeners() {
         RxAutoCompleteTextView.itemClickEvents(autoText)
-//                .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(
-                        next -> runSearch(),
-                        Throwable::printStackTrace
+                        next -> {
+                            runSearch();
+                            binding.setFirstLaunch(false);
+                            isTextChanged = false;
+                        },
+                        throwable -> showMessage(R.string.unknown_error)
                 );
 
-        // какого символа начинаем показывать подсказки
+        // С какого символа начинаем показывать подсказки
         autoText.setThreshold(3);
+
+        RxTextView.textChanges(autoText)
+                .filter(charSequence -> {
+                    //Данное устловие позволяет защититься от показа подсказки, в тот момент,
+                    // когда пользователь уже выбрал один из вариантов, и перевернул экран
+                    if (isConfigChange) {
+                        isConfigChange = false;
+                        return false;
+                    }
+                    return true;
+                })
+                .subscribe(next -> isTextChanged = true);
 
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -153,42 +168,58 @@ public class AddCityActivity extends AppCompatActivity
                 .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
                     @Override
                     public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
+                        isTextChanged = isTextChanged;
                         return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
                                 .map(s -> GsonFactory.getInstance().getPlacesName(s));
                     }
                 })
+                .filter(charSequence -> isTextChanged)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    //иначе при клике на элемент, спустя время, снова вылезает подсказка
-
-                    autoText.setAdapter(placesAutoComplete.setItems(result));
-//                    placesAutoComplete.setItems(result);
-                    autoText.showDropDown();
-//                    temp.clear();
-//                    temp.addAll(result);
-                });
+                            autoText.setAdapter(placesAutoComplete.setItems(result));
+                            autoText.showDropDown();
+                        },
+                        throwable -> showMessage(R.string.unknown_error));
 
         RxView.clicks(autoText)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(res -> {
-                    if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
-                        autoText.showDropDown();
-                    }
-                });
+                            if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
+                                autoText.showDropDown();
+                            }
+                        },
+                        throwable -> showMessage(R.string.unknown_error));
 
-//        RxView.keys(autoText)
-//                .debounce(DEBOUNSE_VIEW, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-//                .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
-//                .subscribe(
-//                        next -> {
-//                            if (next) {
-//                                // TODO: 29.08.2017 Не работает Back
-//                                runSearch();
-//                            }
-//                        }
-//                );
+        RxView.keys(autoText)
+                .filter(event -> {
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                        //перехватываем нажатие кнопки Back
+                        onBackPressed();
+                        return false;
+                    }
+                    return true;
+                })
+                .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+                .subscribe(
+                        next -> {
+                            if (next) {
+                                runSearch();
+                                binding.setFirstLaunch(false);
+                                isTextChanged = false;
+                                if (autoText.isPopupShowing()) {
+                                    autoText.dismissDropDown();
+                                }
+                            }
+                        },
+                        throwable -> showMessage(R.string.unknown_error));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     public void runSearch() {
@@ -276,9 +307,15 @@ public class AddCityActivity extends AppCompatActivity
 
         if (saveBundle != null) {
             mPresenter.resumePresenter(saveBundle);
+
+            //чтобы при перевороте, не появлялась новая подсказка,
+            // определяем был ли ConfigChange, и смотрим состояние изменения текста
+            isConfigChange = saveBundle.getBoolean(IS_CONFIG_CHANGE);
+            isTextChanged = saveBundle.getBoolean(IS_TEXT_CHANGED);
+
             //при перевороте экрана, нужно восстановить состояние подсказок
             if (autoText.getAdapter().getCount() > 0
-                    && !autoText.isPopupShowing()) {
+                    && !autoText.isPopupShowing() && !isTextChanged) {
                 autoText.showDropDown();
             }
         }

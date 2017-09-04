@@ -33,9 +33,9 @@ public class PlacesDataRepository implements PlacesRepository {
             PlacesDataStore placesDataStore = placesDataStoreFactory.createPlacesDataStore();
             return placesDataStore.getPlaces(inputText);
         } catch (NetworkConnectException e) {
-            return null;
+            return Observable.empty();
         } catch (IOException e) {
-            return null;
+            return Observable.empty();
         }
     }
 }

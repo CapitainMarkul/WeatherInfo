@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
@@ -39,7 +38,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                     activity.getBinding().setIsLoading(false);
                 }
             } catch (NullPointerException e) {
-                Toast.makeText(App.getContext(), App.getContext().getText(R.string.activity_favorite_unknown_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(App.getContext(), App.getContext().getText(R.string.unknown_error), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -103,6 +102,10 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private void showCity(City city) {
         activity.setItemInAdapter(city);
         activity.getBinding().setCity(city);
+    }
+
+    public void clearCacheCities(){
+        cachedCities.clear();
     }
 
     public void showCachedCities() {

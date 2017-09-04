@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
@@ -40,9 +41,9 @@ public class FavoriteActivity extends AppCompatActivity
 
     private final static int LOADER_FAVORITE_ID = 1;
 
-    FavoritePresenter mPresenter;
-    AdapterFavorite adapterFavorite;
-    RouterToAddCity routerToAddCity;
+    private FavoritePresenter mPresenter;
+    private AdapterFavorite adapterFavorite;
+    private RouterToAddCity routerToAddCity;
 
     private ActivityFavoriteBinding binding;
 
@@ -58,10 +59,15 @@ public class FavoriteActivity extends AppCompatActivity
 
     private void checkUpdateInOtherActivity() {
         if (CheckUpdateInOtherActivity.getInstance().isUpdate()) {
-            mPresenter.updateWeathers();
+            launchUpdateWeatherInfo();
             CheckUpdateInOtherActivity.getInstance().setUpdate(false);
         }
     }
+
+//    private void updateWeathers(){
+//        adapterFavorite.setDefaultSetting();
+//        mPresenter.updateWeathers();
+//    }
 
     @Override
     protected void onResume() {
@@ -81,14 +87,14 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void launchUpdateWeatherInfo() {
+        adapterFavorite.setDefaultSetting();
         mPresenter.updateWeathers();
     }
 
     private void setupListeners() {
         binding.srRefresh.setOnRefreshListener(() -> {
-            adapterFavorite.setDefaultSetting();
-
-            mPresenter.updateWeathers();
+            launchUpdateWeatherInfo();
+            Log.d("ref", "^^^^^^^^^^^^^^^^^^^^^");
         });
     }
 
@@ -181,9 +187,10 @@ public class FavoriteActivity extends AppCompatActivity
         mPresenter.attachActivity(this);
 
         //если были обновления на другом экране
+
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getLoading()) {
-            adapterFavorite.isAnimate(isChangingConfigurations());
+//            adapterFavorite.isAnimate(isChangingConfigurations());
             mPresenter.showCachedCities();
         } else {
             if (getBinding().getCities() != null || getBinding().getCity() != null) {
@@ -204,7 +211,9 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     public void onEmpty() {
         binding.setIsLoading(false);
-//        binding.setCities(null);
+        binding.setCities(null);
         binding.setCity(null);
+        //чистим последний cachedCity,
+        mPresenter.clearCacheCities();
     }
 }

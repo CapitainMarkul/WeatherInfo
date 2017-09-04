@@ -17,6 +17,10 @@
         <variable
             name="isLoading"
             type="boolean"/>
+
+        <variable
+            name="firstLaunch"
+            type="boolean"/>
     </data>
 
     <RelativeLayout
@@ -38,7 +42,7 @@
                 <include
                     android:id="@+id/cv_nothing_weather"
                     layout="@layout/card_weather_nothing_find"
-                    android:visibility="@{city != null &amp;&amp; !isLoading ? v.INVISIBLE : v.VISIBLE}"/>
+                    android:visibility="@{firstLaunch || city != null &amp;&amp; !isLoading ? v.INVISIBLE : v.VISIBLE}"/>
 
                 <include
                     android:id="@+id/cv_weather_city"

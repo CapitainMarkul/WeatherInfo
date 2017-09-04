@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.AnimRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,9 +51,13 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
     }
 
     public void setItem(City cityWeather) {
+        notifyItemInserted(getItemCount());
         cityWeathers.add(cityWeather);
         isAnimate = true;
-        notifyItemInserted(getItemCount());
+    }
+
+    public void deleteOldResult() {
+
     }
 
     public void clearCache() {
@@ -63,7 +68,7 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         this.isAnimate = isConfigChange;
     }
 
-    public void setDefaultSetting(){
+    public void setDefaultSetting() {
         cityWeathers.clear();
     }
 
@@ -75,6 +80,8 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Log.e("City:", cityWeathers.get(position).getName());
+
         holder.binding.setCity(cityWeathers.get(position));
         holder.adapterHorizontalWeather.setItems(cityWeathers.get(position).getWeathers());
 
@@ -101,7 +108,6 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         private AdapterHorizontalWeather adapterHorizontalWeather;
         private ItemCardFullInfoWeatherBinding binding;
 
-
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
@@ -118,10 +124,10 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         }
 
         private void removeCard(int position) {
-            cityWeathers.remove(position);
-            setAnimation(binding.cardFullInfo,position,getOldPosition(), R.anim.recyclerdel);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(getAdapterPosition(), cityWeathers.size());
+            cityWeathers.remove(position);  //удаляем из листаАдаптера
+            notifyItemRemoved(position);    //тправляем запрос на обновление списка
+            notifyItemRangeChanged(getAdapterPosition(), cityWeathers.size());  //склеиваем новый список
+            setAnimation(binding.cardFullInfo, position, getOldPosition(), R.anim.recyclerdel);
             if (emptyListener != null && cityWeathers.isEmpty()) {
                 emptyListener.onEmpty();
             }

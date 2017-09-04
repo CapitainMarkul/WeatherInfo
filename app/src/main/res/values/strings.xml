@@ -7,7 +7,7 @@
     <string name="activity_favorite_update_success">Информация о погоде обновлена</string>
     <string name="activity_favorite_welcome_text">Добавьте новый город, нажав на кнопку "+"</string>
     <string name="activity_favorite_sorry">К сожалению, \nВаш город не поддерживается ;(</string>
-    <string name="activity_favorite_unknown_error">Возникла ошибка. Повторите попытку</string>
+    <string name="unknown_error">Возникла ошибка. Повторите попытку</string>
 
 
     <string name="str_error_connect_to_internet">Отсутствует подключение. Информация не обновлена</string>
@@ -18,5 +18,7 @@
     <string name="activity_add_city_wind">Ветер:\u0020</string>
     <string name="activity_add_city_wind_unit">\u0020М/с</string>
     <string name="activity_add_city_searching">В поисках города…</string>
+
+    <string name="activity_favorite_key_error">Скорее всего, закончился ключ для доступа к API. Обратитесь за новым ключом.</string>
 
 </resources>

@@ -35,10 +35,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--<android.support.v7.widget.CardView-->
+        <!--android:id="@+id/tb_favorite"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="3dp"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--app:cardBackgroundColor="@color/colorPrimaryDark"-->
+        <!--app:cardCornerRadius="8dp"-->
+        <!--app:cardElevation="5dp">-->
+
+        <!--<TextView-->
+        <!--style="@style/mTvSingleLine"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="1dp"-->
+        <!--android:text="@string/app_name"-->
+        <!--android:textAlignment="center"-->
+        <!--android:textColor="@color/colorAppName"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textStyle="italic"/>-->
+        <!--</android.support.v7.widget.CardView>-->
+
         <Toolbar
             android:id="@+id/tb_favorite"
             android:layout_width="match_parent"
             android:layout_height="@dimen/activity_favorite_toolbar_height"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/gradient_toolbar">
 
             <TextView
@@ -61,7 +85,8 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/card_weather_default"
                 layout="@layout/card_weather_default"
-                android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>
+                android:visibility="@{!isLoading &amp;&amp; city == null &amp;&amp; cities == null ? v.VISIBLE : v.INVISIBLE}"/>
+            <!--android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>-->
             <!--android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>-->
         </LinearLayout>
 

@@ -16,4 +16,7 @@ public class CallbackCity<T> {
 
     public void isEmpty() {
     }
+
+    public void keyError() {
+    }
 }
