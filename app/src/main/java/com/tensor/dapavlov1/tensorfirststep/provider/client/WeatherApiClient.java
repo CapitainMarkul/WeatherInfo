@@ -2,12 +2,14 @@ package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +72,9 @@ public class WeatherApiClient extends ApiHelper {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    source.onError(e);
+                    source.setCancellable(call::cancel);
+                    Log.e("call:", "cancel");
+//                    source.onError(e);
                 }
 
                 @Override
@@ -89,6 +93,7 @@ public class WeatherApiClient extends ApiHelper {
                 Call call = okHttpClient.newCall(createRequest(cityName));
                 //отменяем запрос, если произошла отписка
 //                source.setCancellable(call::cancel);
+
                 call.enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {

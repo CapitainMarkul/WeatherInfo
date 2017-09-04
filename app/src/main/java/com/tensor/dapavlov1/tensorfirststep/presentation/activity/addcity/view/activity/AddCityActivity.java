@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +19,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
+import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
@@ -144,8 +146,10 @@ public class AddCityActivity extends AppCompatActivity
                             binding.setFirstLaunch(false);
                             isTextChanged = false;
                         },
-                        throwable -> showMessage(R.string.unknown_error)
-                );
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        DisposableManager::addDisposable);
 
         // С какого символа начинаем показывать подсказки
         autoText.setThreshold(3);
@@ -160,7 +164,12 @@ public class AddCityActivity extends AppCompatActivity
                     }
                     return true;
                 })
-                .subscribe(next -> isTextChanged = true);
+                .subscribe(
+                        next -> isTextChanged = true,
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        DisposableManager::addDisposable);
 
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -168,7 +177,6 @@ public class AddCityActivity extends AppCompatActivity
                 .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
                     @Override
                     public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                        isTextChanged = isTextChanged;
                         return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
                                 .map(s -> GsonFactory.getInstance().getPlacesName(s));
                     }
@@ -176,21 +184,29 @@ public class AddCityActivity extends AppCompatActivity
                 .filter(charSequence -> isTextChanged)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> {
+                .subscribe(
+                        result -> {
                             autoText.setAdapter(placesAutoComplete.setItems(result));
                             autoText.showDropDown();
                         },
-                        throwable -> showMessage(R.string.unknown_error));
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        DisposableManager::addDisposable);
 
         RxView.clicks(autoText)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(res -> {
+                .subscribe(
+                        res -> {
                             if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
                                 autoText.showDropDown();
                             }
                         },
-                        throwable -> showMessage(R.string.unknown_error));
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        DisposableManager::addDisposable);
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -214,7 +230,10 @@ public class AddCityActivity extends AppCompatActivity
                                 }
                             }
                         },
-                        throwable -> showMessage(R.string.unknown_error));
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        DisposableManager::addDisposable);
     }
 
     @Override
@@ -272,6 +291,12 @@ public class AddCityActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        if (!isChangingConfigurations()) {
+            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+            DisposableManager.dispose();
+            Log.e("Dis: ", "True");
+            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+        }
         super.onDestroy();
         mPresenter.detachActivity();
     }

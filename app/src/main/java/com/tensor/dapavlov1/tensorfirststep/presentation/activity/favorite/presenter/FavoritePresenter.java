@@ -1,8 +1,10 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
@@ -83,12 +85,21 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         cachedCities.clear();
         activity.getBinding().setIsLoading(true);
 
-        new CitiesDataRepository().getCitiesRx()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        city -> callbackCities.onUpdate(city),
-                        throwable -> callbackCities.onComplete(),
-                        () -> callbackCities.onComplete());
+        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
+        Log.e("Disposable:", "True^^");
+        DisposableManager.dispose();
+        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
+
+        DisposableManager<FavoriteActivity>.addDisposable(
+                new CitiesDataRepository().getCitiesRx()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                city -> callbackCities.onUpdate(city),
+                                throwable -> callbackCities.onComplete(),
+                                () -> callbackCities.onComplete()));
+
+        Log.e("Favorite^^:", "true");
+        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
     }
 
     public void switchActivity() {
@@ -104,7 +115,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         activity.getBinding().setCity(city);
     }
 
-    public void clearCacheCities(){
+    public void clearCacheCities() {
         cachedCities.clear();
     }
 

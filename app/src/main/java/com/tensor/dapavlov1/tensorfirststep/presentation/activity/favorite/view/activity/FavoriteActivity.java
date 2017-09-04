@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
+import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.RootLoader;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
@@ -94,20 +95,16 @@ public class FavoriteActivity extends AppCompatActivity
     private void setupListeners() {
         binding.srRefresh.setOnRefreshListener(() -> {
             launchUpdateWeatherInfo();
-            Log.d("ref", "^^^^^^^^^^^^^^^^^^^^^");
         });
     }
 
     @Override
     public void setItemsInAdapter(final List<City> weathers) {
         adapterFavorite.setItems(weathers);
-//        adapterFavorite.notifyDataSetChanged();
-//        binding.recyclerViewFavorite.scrollToPosition(adapterFavorite.getItemCount());
     }
 
     public void setItemInAdapter(City cityWeather) {
         adapterFavorite.setItem(cityWeather);
-//        adapterFavorite.notifyItemInserted(adapterFavorite.getItemCount());
         //для работы анимации на 1 элементе
         binding.recyclerViewFavorite.scrollToPosition(0);
     }
@@ -137,6 +134,12 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        if (!isChangingConfigurations()) {
+            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+//            DisposableManager.dispose();
+            Log.e("Dis: ", "True");
+            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+        }
         super.onDestroy();
         mPresenter.detachActivity();
     }
