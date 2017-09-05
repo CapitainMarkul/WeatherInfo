@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
-import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
@@ -57,9 +56,9 @@ public class CitiesDataRepository implements CitiesRepository {
                                     callbackCities.isEmpty();
                                 }
                             },
-                            () -> {
-                            },
-                            disposable -> DisposableManager.addDisposable(disposable));
+                            () -> {});
+//                            },
+//                            disposable -> DisposableManager.addDisposable(disposable));
         } catch (NetworkConnectException e) {
             callbackCities.onErrorConnect();
         } catch (EmptyResponseException e) {

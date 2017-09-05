@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -53,25 +52,24 @@ public class AddCityActivity extends AppCompatActivity
     private final static String NEW_CITY_PRESENTER = "new_city_presenter";
     private final static String NEW_CITY_ADAPTER = "new_city_adapter";
     private final static String IS_TEXT_CHANGED = "is_text_changed";
-
     private final static String IS_CONFIG_CHANGE = "is_config_change";
 
-    private final static int LOADER_NEW_CITY_ID = 2;
-
-    private PlacesAutoComplete placesAutoComplete;
+    private final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
+    private final static int ID_LOADER_NEW_CITY = 2;
 
     private AutoCompleteTextView autoText;
 
+    private DisposableManager disposableManager;
+    private PlacesAutoComplete placesAutoComplete;
     private AddCityPresenter mPresenter;
     private AdapterHorizontalWeather adapterHorizontalWeather;
 
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
+    private Bundle saveBundle;
+    private ActivityAddCityBinding binding;
 
     private boolean isTextChanged = true;
     private boolean isConfigChange = false;
-
-    private Bundle saveBundle;
-    private ActivityAddCityBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,8 +77,9 @@ public class AddCityActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.cvWeatherCity.setEvents(this);
         binding.cvWeatherCity.setSwitchGradient(SwitchGradient.getInstance());
-
         binding.setFirstLaunch(true);
+
+        initDisposableManager();
 
         setupLoaders();
 
@@ -90,6 +89,10 @@ public class AddCityActivity extends AppCompatActivity
         setupSingleton();
 
         saveBundle = savedInstanceState;
+    }
+
+    private void initDisposableManager() {
+        disposableManager = DisposableManager.getInstance();
     }
 
     @Override
@@ -110,7 +113,7 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     private void setupLoaders() {
-        getSupportLoaderManager().initLoader(LOADER_NEW_CITY_ID, null, this);
+        getSupportLoaderManager().initLoader(ID_LOADER_NEW_CITY, null, this);
     }
 
     private void createPresenter() {
@@ -149,7 +152,7 @@ public class AddCityActivity extends AppCompatActivity
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        DisposableManager::addDisposable);
+                        disposable -> DisposableManager.getInstance().addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
 
         // С какого символа начинаем показывать подсказки
         autoText.setThreshold(3);
@@ -169,7 +172,7 @@ public class AddCityActivity extends AppCompatActivity
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        DisposableManager::addDisposable);
+                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
 
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -192,7 +195,7 @@ public class AddCityActivity extends AppCompatActivity
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        DisposableManager::addDisposable);
+                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
 
         RxView.clicks(autoText)
                 .debounce(500, TimeUnit.MILLISECONDS)
@@ -206,7 +209,7 @@ public class AddCityActivity extends AppCompatActivity
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        DisposableManager::addDisposable);
+                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -233,7 +236,8 @@ public class AddCityActivity extends AppCompatActivity
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        DisposableManager::addDisposable);
+                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
+//    Log.e("SIZEROOT:", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
     }
 
     @Override
@@ -292,10 +296,10 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
-            DisposableManager.dispose();
-            Log.e("Dis: ", "True");
-            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+//            Log.e("Size: ", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
+            disposableManager.disposeAll(ID_POOL_COMPOSITE_DISPOSABLE);
+//            Log.e("DisAdd: ", "True");
+//            Log.e("Size: ", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
         }
         super.onDestroy();
         mPresenter.detachActivity();

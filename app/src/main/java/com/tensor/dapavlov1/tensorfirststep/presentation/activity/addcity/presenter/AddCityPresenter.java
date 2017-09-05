@@ -8,20 +8,13 @@ import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -108,7 +101,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         }
 
         @Override
-        public void keyError() {
+        public void apiKeyError() {
             // TODO: 04.09.2017 Можно сделать, если потребуется
         }
     };

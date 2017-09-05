@@ -36,23 +36,6 @@ public class GoogleApiClient extends ApiHelper {
         return map;
     }
 
-//    @Nullable
-//    public String getJsonFromGooglePlaceApi(String inputText) throws IOException {
-//        Request request = new Request.Builder().url(
-//                createUrl(
-//                        BuildConfig.GOOGLE_API_SCHEME,
-//                        BuildConfig.GOOGLE_API_HOST,
-//                        BuildConfig.GOOGLE_API_SEGMENTS,
-//                        createMapForGoogleApi(
-//                                BuildConfig.GOOGLE_API_KEY,
-//                                BuildConfig.GOOGLE_API_TYPES,
-//                                inputText
-//                        ))).build();
-//        Response response = okHttpClient.newCall(request).execute();
-//
-//        return response.body().string();
-//    }
-
     private Request createRequest(@NonNull String inputText) {
         return new Request.Builder().url(
                 createUrl(

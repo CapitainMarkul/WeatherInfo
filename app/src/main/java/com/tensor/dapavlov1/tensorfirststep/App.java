@@ -4,6 +4,8 @@ import android.app.Application;
 import android.app.FragmentManager;
 import android.content.Context;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 
@@ -31,19 +33,20 @@ public class App extends Application {
     }
 
     @Override
-    public void onTerminate() {
-        super.onTerminate();
-
-    }
-
-
-    @Override
     public void onCreate() {
         super.onCreate();
+        setupLeakCanary();
         context = this;
-//        okHttpClient = new OkHttpClient();
         initSession();
     }
+
+    protected RefWatcher setupLeakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return RefWatcher.DISABLED;
+        }
+        return LeakCanary.install(this);
+    }
+
 
     public static DaoSession getDaoSession() {
         return daoSession;

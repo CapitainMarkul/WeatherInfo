@@ -8,7 +8,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -40,8 +42,10 @@ public class FavoriteActivity extends AppCompatActivity
     private final static String FAVORITE_PRESENTER = "favorite_presenter";
     private final static String FAVORITE_ADAPTER = "favorite_adapter";
 
+    public final static int ID_POOL_COMPOSITE_DISPOSABLE = 1;
     private final static int LOADER_FAVORITE_ID = 1;
 
+    private DisposableManager disposableManager;
     private FavoritePresenter mPresenter;
     private AdapterFavorite adapterFavorite;
     private RouterToAddCity routerToAddCity;
@@ -51,11 +55,20 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_favorite);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
 
+//        Log.e("ID", String.valueOf(R.id.rv_weather_on_other_time));
+
+
+        initDisposableManager();
         setupLoaders();
         setupListeners();
+    }
+
+    private void initDisposableManager() {
+        disposableManager = DisposableManager.getInstance();
     }
 
     private void checkUpdateInOtherActivity() {
@@ -63,6 +76,10 @@ public class FavoriteActivity extends AppCompatActivity
             launchUpdateWeatherInfo();
             CheckUpdateInOtherActivity.getInstance().setUpdate(false);
         }
+    }
+
+    public DisposableManager getDisposableManager() {
+        return disposableManager;
     }
 
 //    private void updateWeathers(){
@@ -96,6 +113,12 @@ public class FavoriteActivity extends AppCompatActivity
         binding.srRefresh.setOnRefreshListener(() -> {
             launchUpdateWeatherInfo();
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("TAG", "smth");
     }
 
     @Override
@@ -135,10 +158,10 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
-//            DisposableManager.dispose();
-            Log.e("Dis: ", "True");
-            Log.e("Size: ", String.valueOf(DisposableManager.testSize()));
+//            Log.e("Size: ", String.valueOf(DisposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
+            disposableManager.disposeAll(ID_POOL_COMPOSITE_DISPOSABLE);
+//            Log.e("Dis: ", "True");
+//            Log.e("Size: ", String.valueOf(DisposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
         }
         super.onDestroy();
         mPresenter.detachActivity();
@@ -177,6 +200,7 @@ public class FavoriteActivity extends AppCompatActivity
         binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
 
+
     @Override
     public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
         mPresenter = (FavoritePresenter) dataMap.get(FAVORITE_PRESENTER);
@@ -193,7 +217,7 @@ public class FavoriteActivity extends AppCompatActivity
 
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.getLoading()) {
-//            adapterFavorite.isAnimate(isChangingConfigurations());
+            adapterFavorite.setAnimate(isChangingConfigurations());
             mPresenter.showCachedCities();
         } else {
             if (getBinding().getCities() != null || getBinding().getCity() != null) {

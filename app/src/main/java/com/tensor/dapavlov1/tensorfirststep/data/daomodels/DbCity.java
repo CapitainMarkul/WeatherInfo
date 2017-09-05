@@ -58,7 +58,6 @@ public class DbCity implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeLong(id);
         parcel.writeString(name);
         parcel.writeString(lastTimeUpdate);
         parcel.writeTypedList(weathers);

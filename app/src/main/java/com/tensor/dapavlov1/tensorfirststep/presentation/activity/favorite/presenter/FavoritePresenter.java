@@ -85,12 +85,13 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         cachedCities.clear();
         activity.getBinding().setIsLoading(true);
 
-        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
-        Log.e("Disposable:", "True^^");
-        DisposableManager.dispose();
-        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
+//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
+//        Log.e("Disposable:", "True^^");
+//        DisposableManager.disposeAll(activity.ID_POOL_COMPOSITE_DISPOSABLE);
+//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
 
-        DisposableManager<FavoriteActivity>.addDisposable(
+        activity.getDisposableManager().addDisposable(
+                FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
                 new CitiesDataRepository().getCitiesRx()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -99,7 +100,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                                 () -> callbackCities.onComplete()));
 
         Log.e("Favorite^^:", "true");
-        Log.e("Size:", String.valueOf(DisposableManager.testSize()));
+//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
     }
 
     public void switchActivity() {

@@ -5,5 +5,5 @@ package com.tensor.dapavlov1.tensorfirststep.interfaces;
  */
 
 public interface ItemClick {
-    public void onItemClick();
+    void onItemClick();
 }

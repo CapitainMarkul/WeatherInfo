@@ -56,16 +56,8 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         isAnimate = true;
     }
 
-    public void deleteOldResult() {
-
-    }
-
-    public void clearCache() {
-        cityWeathers.clear();
-    }
-
-    public void isAnimate(boolean isConfigChange) {
-        this.isAnimate = isConfigChange;
+    public void setAnimate(boolean flag) {
+        isAnimate = flag;
     }
 
     public void setDefaultSetting() {
@@ -91,7 +83,7 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
     }
 
     private void setAnimation(View viewToAnimate, int position, int oldPosition, @AnimRes int animateRes) {
-        // If the bound view wasn't previously displayed on screen, it's animated
+        // FIXME: 05.09.2017 Зачем old position
         if (position > oldPosition) {
             Animation animation = AnimationUtils.loadAnimation(App.getContext(),
                     animateRes);

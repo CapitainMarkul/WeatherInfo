@@ -3,7 +3,9 @@ package com.tensor.dapavlov1.tensorfirststep.provider.client;
 import android.support.annotation.Nullable;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCityDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
@@ -31,11 +33,16 @@ import io.reactivex.annotations.NonNull;
  */
 
 public class DbClient {
-    //    private DbCityDao cityDao;
     private Query<DbCity> query;
+    private DaoSession daoSession;
 
-    public DbClient(Query<DbCity> query) {
-        this.query = query;
+    //    public DbClient(Query<DbCity> query, DaoSession daoSession) {
+//        this.query = query;
+//        this.daoSession = daoSession;
+//    }
+    public DbClient() {
+        daoSession = App.getDaoSession();
+        query = App.getDaoSession().getDbCityDao().queryBuilder().orderAsc(DbCityDao.Properties.Name).build();
     }
 
     public Flowable<DbCity> loadListAllCitiesRx() {
@@ -174,11 +181,16 @@ public class DbClient {
     public void deleteCity(@Nullable DbCity dbCity) {
         if (dbCity != null) {
             //Информация о сессии с БД, не переживает Terminate (приходится вот так восстанавливать)
-            if (dbCity.getId() == null) {
-                dbCity = isAdd(dbCity.getName(), dbCity.getLastTimeUpdate());
-            }
-            App.getDaoSession().getDbWeatherDao().deleteInTx(dbCity.getWeathers());
-            dbCity.delete();
+
+            DbCity temp = searchCity(dbCity.getName());
+            App.getDaoSession().getDbWeatherDao().deleteInTx(temp.getWeathers());
+            temp.delete();
         }
+    }
+
+    private DbCity searchCity(String cityName) {
+        return daoSession.getDbCityDao().queryBuilder()
+                .where(DbCityDao.Properties.Name.eq(cityName))
+                .unique();
     }
 }

@@ -24,16 +24,16 @@ public class CreatorDbClient {
         initQuery();
     }
 
-    private DbCityDao modelCityDao;
-    private Query<DbCity> query;
+//    private DbCityDao modelCityDao;
+//    private Query<DbCity> query;
 
     private void initQuery() {
-        modelCityDao = App.getDaoSession().getDbCityDao();
-        query = modelCityDao.queryBuilder().orderAsc(DbCityDao.Properties.Name).build();
+//        modelCityDao = App.getDaoSession();
+//        query = modelCityDao.queryBuilder().orderAsc(DbCityDao.Properties.Name).build();
     }
 
     public DbClient createNewDaoClient() {
 //        return new DbClient(modelCityDao, query);
-        return new DbClient(query);
+        return new DbClient();
     }
 }

@@ -49,7 +49,6 @@ public class DbCityDataStore implements CityDataStore {
         }
     }
 
-    // TODO: 24.08.2017 Пустой метод!
     @Override
     public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
         return null;

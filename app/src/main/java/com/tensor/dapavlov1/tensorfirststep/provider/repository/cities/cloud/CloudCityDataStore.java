@@ -25,7 +25,6 @@ public class CloudCityDataStore implements CityDataStore {
     private WeatherApiClient weatherClient = ApiFabric.getInstance().createClientWeatherApi();
     private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
 
-    // TODO: 24.08.2017 Пустые методы
     @Override
     public void add(ModelCityWeather city) {
 
@@ -58,7 +57,7 @@ public class CloudCityDataStore implements CityDataStore {
                         viewCity.setFavorite(false);
                         return viewCity;
                     }
-                    cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));   // todo Вспомнить
+                    cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));
                     viewCity.setFavorite(true);
                     return viewCity;
                 });
