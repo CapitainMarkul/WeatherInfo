@@ -39,7 +39,7 @@ public class CloudCitiesDataStore implements CitiesDataStore {
 
     @Override
     public Flowable<City> getCitiesRx() {
-        return weatherClient.observableWeathersResponseRx(cityNames)
+        return weatherClient.getWeatherInCityRx(cityNames)
                 .map(string -> gsonFactory.createGsonCityModel(string))
                 .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
                 .toFlowable(BackpressureStrategy.BUFFER)

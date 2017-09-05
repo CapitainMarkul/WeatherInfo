@@ -83,19 +83,6 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/tb_favorite">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <include
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/card_weather_default"
-                    layout="@layout/card_weather_default"
-                    android:visibility="@{!isLoading &amp;&amp; city == null &amp;&amp; cities == null ? v.VISIBLE : v.INVISIBLE}"/>
-                <!--android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>-->
-                <!--android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>-->
-            </LinearLayout>
-
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/sr_refresh"
                 android:layout_width="match_parent"
@@ -106,10 +93,22 @@
                     android:id="@+id/recycler_view_favorite"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
                     android:visibility="@{city != null || cities!= null ? v.VISIBLE : v.INVISIBLE}"/>
-
             </android.support.v4.widget.SwipeRefreshLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <include
+                    android:id="@+id/card_weather_default"
+                    layout="@layout/card_weather_default"
+                    android:visibility="@{isLoading || city != null || cities != null ? v.INVISIBLE : v.VISIBLE }"/>
+                <!--|| (!isLoading &amp;&amp; (city == null &amp;&amp; cities == null))-->
+                <!--android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>-->
+                <!--android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>-->
+            </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fb_add_new_city"

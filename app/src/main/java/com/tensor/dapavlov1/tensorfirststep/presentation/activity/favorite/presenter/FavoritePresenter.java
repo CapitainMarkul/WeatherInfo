@@ -37,6 +37,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                 if (activity != null) {
                     showCity(result);
                     cachedInfo(result);
+
                     activity.getBinding().setIsLoading(false);
                 }
             } catch (NullPointerException e) {
@@ -60,16 +61,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
         @Override
         public void isEmpty() {
-//            sendMessageToUi.post(() -> {
             isLoading = true;
             activity.getBinding().setCities(null);
             activity.getBinding().setCity(null);
-//                activity.getBinding().setIsLoading(false);
-//            });
         }
 
         @Override
         public void onComplete() {
+            isLoading = true;
             activity.getBinding().setIsLoading(false);
             activity.showMessage(R.string.activity_favorite_update_success);
         }
@@ -85,11 +84,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         cachedCities.clear();
         activity.getBinding().setIsLoading(true);
 
-//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
-//        Log.e("Disposable:", "True^^");
-//        DisposableManager.disposeAll(activity.ID_POOL_COMPOSITE_DISPOSABLE);
-//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
-
         activity.getDisposableManager().addDisposable(
                 FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
                 new CitiesDataRepository().getCitiesRx()
@@ -98,9 +92,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                                 city -> callbackCities.onUpdate(city),
                                 throwable -> callbackCities.onComplete(),
                                 () -> callbackCities.onComplete()));
-
-        Log.e("Favorite^^:", "true");
-//        Log.e("Size:", String.valueOf(DisposableManager.testSize(activity.ID_POOL_COMPOSITE_DISPOSABLE)));
     }
 
     public void switchActivity() {
@@ -127,7 +118,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         activity.getBinding().setCities(cachedCities);
     }
 
-    public boolean getLoading() {
+    public boolean isLoadingComplete() {
         return isLoading;
     }
 

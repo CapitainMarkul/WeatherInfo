@@ -8,9 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -55,12 +53,7 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_favorite);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
-
-//        Log.e("ID", String.valueOf(R.id.rv_weather_on_other_time));
-
 
         initDisposableManager();
         setupLoaders();
@@ -81,11 +74,6 @@ public class FavoriteActivity extends AppCompatActivity
     public DisposableManager getDisposableManager() {
         return disposableManager;
     }
-
-//    private void updateWeathers(){
-//        adapterFavorite.setDefaultSetting();
-//        mPresenter.updateWeathers();
-//    }
 
     @Override
     protected void onResume() {
@@ -158,10 +146,7 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-//            Log.e("Size: ", String.valueOf(DisposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
             disposableManager.disposeAll(ID_POOL_COMPOSITE_DISPOSABLE);
-//            Log.e("Dis: ", "True");
-//            Log.e("Size: ", String.valueOf(DisposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
         }
         super.onDestroy();
         mPresenter.detachActivity();
@@ -213,17 +198,34 @@ public class FavoriteActivity extends AppCompatActivity
 
         mPresenter.attachActivity(this);
 
-        //если были обновления на другом экране
-
         //если ответ от сервера уже пришел, то показываем результат
-        if (mPresenter.getLoading()) {
+        if (mPresenter.isLoadingComplete()) {
             adapterFavorite.setAnimate(isChangingConfigurations());
             mPresenter.showCachedCities();
         } else {
-            if (getBinding().getCities() != null || getBinding().getCity() != null) {
-                getBinding().setIsLoading(true);
+            if (binding.getCities() != null && binding.getCity() != null) {
+                binding.setIsLoading(true);
+            } else {
+                if(binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE){
+                    binding.setIsLoading(true);
+                }
             }
         }
+
+//        binding.re.recyclerViewFavorite.setVisibility(View.INVISIBLE);
+//        //test
+//        if (binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE ) {
+//            if (binding.recyclerViewFavorite.getVisibility() == View.VISIBLE ) {
+//
+//                Log.e("First", " yes");
+//            }
+//        }
+//        if (binding.cardWeatherDefault.cvDefault.isShown()) {
+//            if (binding.recyclerViewFavorite.isShown()) {
+//
+//                Log.e("Second", " yes");
+//            }
+//        }
     }
 
     public ActivityFavoriteBinding getBinding() {
@@ -237,10 +239,25 @@ public class FavoriteActivity extends AppCompatActivity
 
     @Override
     public void onEmpty() {
+        //чистим последний cachedCity, чтобы он не показывался при повороте экрана
+        mPresenter.clearCacheCities();
+
+//        Log.e("City:", String.valueOf(getBinding().getCities()));
+//        Log.e("Cities:", String.valueOf(getBinding().getCity()));
+//        Log.e("Loading:", String.valueOf(getBinding().getIsLoading()));
+
         binding.setIsLoading(false);
         binding.setCities(null);
         binding.setCity(null);
-        //чистим последний cachedCity,
-        mPresenter.clearCacheCities();
+
+//// FIXME: 05.09.2017 Когда RecyclerView становится пуст приветственная Карточка не появляется, хотя выражение в Биндинге вроде как верное и в логах
+        //Update: если не переворачивать экран, то все появится, но если во время обновления повернуть, а потом удалить, то нет
+//        binding.recyclerViewFavorite.setVisibility(View.INVISIBLE);
+//        binding.recyclerViewFavorite.setVisibility(View.INVISIBLE);
+//        binding.cardWeatherDefault.cvDefault.setVisibility(View.VISIBLE);
+//        //        binding.setIsLoading(true);
+//        Log.e("City:", String.valueOf(getBinding().getCities()));
+//        Log.e("Cities:", String.valueOf(getBinding().getCity()));
+//        Log.e("Loading:", String.valueOf(getBinding().getIsLoading()));
     }
 }

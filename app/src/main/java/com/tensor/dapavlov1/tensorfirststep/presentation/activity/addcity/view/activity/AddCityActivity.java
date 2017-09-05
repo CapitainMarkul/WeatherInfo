@@ -296,10 +296,7 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-//            Log.e("Size: ", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
             disposableManager.disposeAll(ID_POOL_COMPOSITE_DISPOSABLE);
-//            Log.e("DisAdd: ", "True");
-//            Log.e("Size: ", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
         }
         super.onDestroy();
         mPresenter.detachActivity();

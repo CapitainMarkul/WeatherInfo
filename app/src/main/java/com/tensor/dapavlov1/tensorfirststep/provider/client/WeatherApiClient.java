@@ -62,7 +62,7 @@ public class WeatherApiClient extends ApiHelper {
                         ))).build();
     }
 
-    public Observable<String> observableWeatherResponseRx(@NonNull String cityName) {
+    public Observable<String> getWeatherInCityRx(@NonNull String cityName) {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(cityName));
 
@@ -87,7 +87,7 @@ public class WeatherApiClient extends ApiHelper {
     }
 
     //WeatherApiClient
-    public Observable<String> observableWeathersResponseRx(@NonNull List<String> cityNames) {
+    public Observable<String> getWeatherInCityRx(@NonNull List<String> cityNames) {
         return Observable.create(source -> {
             for (String cityName : cityNames) {
                 Call call = okHttpClient.newCall(createRequest(cityName));

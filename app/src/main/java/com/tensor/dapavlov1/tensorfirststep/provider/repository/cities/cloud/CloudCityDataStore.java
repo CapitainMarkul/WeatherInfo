@@ -38,7 +38,7 @@ public class CloudCityDataStore implements CityDataStore {
     @Override
     public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
         return weatherClient
-                .observableWeatherResponseRx(TrimCityInfo.getInstance().trimCityName(fullCityName))
+                .getWeatherInCityRx(TrimCityInfo.getInstance().trimCityName(fullCityName))
                 .map(response -> {
                     if (response == null || response.equals("")) {
                         throw new EmptyResponseException();
