@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.AnimRes;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ItemCardFullInfoWeatherBinding;
@@ -85,7 +85,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     private void setAnimation(View viewToAnimate, int position, @AnimRes int animateRes) {
         if (position >= lastAnimateElement) {
-            Animation animation = AnimationUtils.loadAnimation(App.getContext(),
+            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(),
                     animateRes);
             viewToAnimate.startAnimation(animation);
             lastAnimateElement++;
@@ -106,12 +106,12 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             binding = DataBindingUtil.bind(itemView);
             binding.setEvents(this);
             binding.setSwitchGradient(SwitchGradient.getInstance());
-            setupViews();
+            setupViews(itemView.getContext());
         }
 
-        private void setupViews() {
+        private void setupViews(Context context) {
             binding.rvWeatherOnOtherTime.setLayoutManager(
-                    new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                    new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             horizontalWeatherAdapter = new HorizontalWeatherAdapter();
             binding.rvWeatherOnOtherTime.setAdapter(horizontalWeatherAdapter);
         }
