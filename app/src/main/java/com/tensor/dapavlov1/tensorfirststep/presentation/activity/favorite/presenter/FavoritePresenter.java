@@ -9,7 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CitiesCallback;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private List<CityView> cachedCities = new ArrayList<>();
     private boolean isLoading = false;
 
-    private CitiesCallback<CityView> citiesCallback = new CitiesCallback<CityView>() {
+    private CityCallback<CityView> citiesCallback = new CityCallback<CityView>() {
         @Override
         public void onUpdate(final CityView result) {
             try {

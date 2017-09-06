@@ -19,4 +19,15 @@ public class CityCallback<T> {
 
     public void apiKeyError() {
     }
+
+    public void onUpdate(T result) {
+    }
+
+    public void onOldFromDb(T result) {
+
+    }
+
+    public void onComplete(){
+
+    }
 }
