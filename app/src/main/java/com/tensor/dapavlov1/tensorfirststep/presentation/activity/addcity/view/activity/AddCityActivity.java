@@ -9,6 +9,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -105,7 +106,6 @@ public class AddCityActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        setupLoaders();
     }
 
     private void setupSingleton() {
@@ -125,9 +125,6 @@ public class AddCityActivity extends AppCompatActivity
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         autoText.clearFocus();
-
-        mPresenter.attachActivity(this);
-        mPresenter.checkEndTask();
     }
 
     private void setupViews() {
@@ -145,7 +142,9 @@ public class AddCityActivity extends AppCompatActivity
         RxAutoCompleteTextView.itemClickEvents(autoText)
                 .subscribe(
                         next -> {
-                            runSearch();
+                            Log.e("StartAct", String.valueOf(binding.getIsLoading()));
+                            startSearchingCity();
+                            Log.e("EndAct", String.valueOf(binding.getIsLoading()));
                             binding.setIsFirstLaunch(false);
                             isTextChanged = false;
                         },
@@ -225,7 +224,7 @@ public class AddCityActivity extends AppCompatActivity
                 .subscribe(
                         next -> {
                             if (next) {
-                                runSearch();
+                                startSearchingCity();
                                 binding.setIsFirstLaunch(false);
                                 isTextChanged = false;
                                 if (autoText.isPopupShowing()) {
@@ -244,7 +243,7 @@ public class AddCityActivity extends AppCompatActivity
         super.onBackPressed();
     }
 
-    public void runSearch() {
+    public void startSearchingCity() {
         binding.cvWeatherCity.setCityView(null);
         mPresenter.getWeatherInCity(autoText.getText().toString());
     }
@@ -328,7 +327,9 @@ public class AddCityActivity extends AppCompatActivity
         binding.cvWeatherCity.setMPresenter(mPresenter);
 
         horizontalWeatherAdapter = (HorizontalWeatherAdapter) dataMap.get(NEW_CITY_ADAPTER);
+
         mPresenter.attachActivity(this);
+        mPresenter.checkEndTask();
 
         if (saveBundle != null) {
             mPresenter.resumePresenter(saveBundle);

@@ -42,18 +42,18 @@
                 <include
                     android:id="@+id/cv_nothing_weather"
                     layout="@layout/card_weather_nothing_find"
-                    android:visibility="@{isFirstLaunch || cityView != null &amp;&amp; !isLoading ? v.INVISIBLE : v.VISIBLE}"/>
+                    android:visibility="@{isFirstLaunch || cityView != null &amp;&amp; !isLoading ? v.GONE : v.VISIBLE}"/>
 
                 <include
                     android:id="@+id/cv_weather_city"
                     layout="@layout/item_card_full_info_weather"
-                    android:visibility="@{cityView != null &amp;&amp; !isLoading ? v.VISIBLE : v.INVISIBLE}"
+                    android:visibility="@{cityView != null &amp;&amp; !isLoading ? v.VISIBLE : v.GONE}"
                     app:cityView="@{cityView}"/>
 
                 <include
                     android:id="@+id/cv_searching"
                     layout="@layout/card_weather_searching"
-                    android:visibility="@{isLoading ? v.VISIBLE : v.INVISIBLE}"/>
+                    android:visibility="@{isLoading ? v.VISIBLE : v.GONE}"/>
             </FrameLayout>
         </ScrollView>
 
