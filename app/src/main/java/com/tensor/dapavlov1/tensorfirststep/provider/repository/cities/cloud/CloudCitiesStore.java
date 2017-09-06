@@ -12,8 +12,6 @@ import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimCityInfo;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ public class CloudCitiesStore {
     private GsonToDbMap gsonToDbMap = GsonToDbMap.getInstance();
     private GsonFactory gsonFactory = GsonFactory.getInstance();
 
-    private List<String> cityNames = new ArrayList<>();
+//    private List<String> cityNames = new ArrayList<>();
 
     public Flowable<CityView> getCitiesRx(List<String> cityNames) {
         return weatherClient.getWeatherInCityRx(cityNames)
@@ -56,7 +54,7 @@ public class CloudCitiesStore {
 
     public Observable<CityView> getCity(String fullCityName) throws EmptyResponseException {
         return weatherClient
-                .getWeatherInCityRx(TrimCityInfo.getInstance().trimCityName(fullCityName))
+                .getWeatherInCityRx(trimCityName(fullCityName))
                 .map(response -> {
                     if (response == null || response.equals("")) {
                         throw new EmptyResponseException();
@@ -84,5 +82,13 @@ public class CloudCitiesStore {
     private void cachedCity(CityWeatherWrapper tempCity) {
         //запоминаем город в формате БД, для возможного добавления его в БД
         TempCity.getInstance().setCityWeatherWrapper(tempCity);
+    }
+
+    private String trimCityName(String fullCityName) {
+        if (fullCityName.indexOf(',') != -1) {
+            return fullCityName.substring(0, fullCityName.indexOf(','));
+        } else {
+            return fullCityName;
+        }
     }
 }
