@@ -1,14 +1,19 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud.CloudCitiesStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database.DbCitiesStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,24 +23,31 @@ import io.reactivex.schedulers.Schedulers;
  * Created by da.pavlov1 on 22.08.2017.
  */
 
-public class CitiesDataRepository implements CitiesRepository {
-    private CitiesDataStoreFactory citiesDataStoreFactory = CitiesDataStoreFactory.getInstance();
+public class CitiesDataRepository extends CheckConnect implements CitiesRepository {
+    private DbCitiesStore dbCitiesStore = new DbCitiesStore();
+    private CloudCitiesStore cloudCitiesStore = new CloudCitiesStore();
 
     @Override
     public void add(CityWeatherWrapper city) {
-        citiesDataStoreFactory.createCityDataStoreWorkDb().add(city);
+        dbCitiesStore.add(city);
     }
 
     @Override
     public void delete(Object city) {
-        citiesDataStoreFactory.createCityDataStoreWorkDb().delete(city);
+        dbCitiesStore.delete(city);
     }
+
 
     @Override
     public void getCity(String fullCityName, CityCallback<CityView> callbackCities) {
+        //здесь мы можем тянуть только из интернета
+        if (!isOnline(App.getContext())) {
+            callbackCities.onErrorConnect();
+            return;
+        }
+
         try {
-            CityDataStore cityDataStore = citiesDataStoreFactory.createCityDataStore();
-            cityDataStore.getCity(fullCityName)
+            cloudCitiesStore.getCity(fullCityName)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
@@ -56,25 +68,31 @@ public class CitiesDataRepository implements CitiesRepository {
                                     callbackCities.isEmpty();
                                 }
                             },
-                            () -> {});
+                            () -> {
+                            });
 //                            },
 //                            disposable -> DisposableManager.addDisposable(disposable));
-        } catch (NetworkConnectException e) {
-            callbackCities.onErrorConnect();
         } catch (EmptyResponseException e) {
             callbackCities.isEmpty();
         }
     }
 
+
     @Override
-    public Flowable<CityView> getCitiesRx() {
-        //определяем откуда тянуть информацию/ Из бд или из сети
-        CitiesDataStore citiesDataStore;
-        try {
-            citiesDataStore = citiesDataStoreFactory.createCitiesDataStore();
-        } catch (EmptyDbException e) {
-            return Flowable.empty();
+    public Flowable<CityView> getCitiesRx() throws EmptyDbException {
+        //1. Начинаем читать БД
+        //2.1. Если пусто, то возвращаем null
+        //2.2. Если не пусто, начинаем проверять интернет, и возвращаем либо старое, либо обновленное
+
+        //Здесь читаем БД, если пустая, то интернет нет смысла подключать
+        List<String> cityNames =
+                CreatorDbClient.getInstance().createNewDaoClient().getCityNames();
+
+//        Решаем откуда будем брать информацию
+        if (isOnline(App.getContext())) {
+            return cloudCitiesStore.getCitiesRx(cityNames);
+        } else {
+            return dbCitiesStore.getCitiesRx();
         }
-        return citiesDataStore.getCitiesRx();
     }
 }

@@ -11,6 +11,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         }
 
         @Override
+        public void onErrorConnect() {
+            activity.showMessage(R.string.str_error_connect_to_internet);
+        }
+
+        @Override
         public void isEmpty() {
             isLoading = true;
             activity.getBinding().setCities(null);
@@ -73,14 +79,18 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         cachedCities.clear();
         activity.getBinding().setIsLoading(true);
 
-        activity.getDisposableManager().addDisposable(
-                FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
-                new CitiesDataRepository().getCitiesRx()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                city -> citiesCallback.onUpdate(city),
-                                throwable -> citiesCallback.onComplete(),
-                                () -> citiesCallback.onComplete()));
+        try {
+            activity.getDisposableManager().addDisposable(
+                    FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
+                    new CitiesDataRepository().getCitiesRx()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    city -> citiesCallback.onUpdate(city),
+                                    throwable -> citiesCallback.onComplete(),
+                                    () -> citiesCallback.onComplete()));
+        } catch (EmptyDbException e) {
+            citiesCallback.isEmpty();
+        }
     }
 
     public void switchActivity() {

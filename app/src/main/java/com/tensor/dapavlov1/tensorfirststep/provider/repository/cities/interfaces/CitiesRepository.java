@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfac
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
@@ -19,7 +20,7 @@ public interface CitiesRepository {
 
     void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
 
-    Flowable<CityView> getCitiesRx();
+    Flowable<CityView> getCitiesRx() throws EmptyDbException;
 //    Observable<String> getCityView(String fullCityName) throws NetworkConnectException;
 
 //    void getCities(CitiesCallback<CityView> callbackCities);
