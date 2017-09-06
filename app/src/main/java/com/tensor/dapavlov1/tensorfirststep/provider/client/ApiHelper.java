@@ -5,12 +5,19 @@ import android.support.annotation.NonNull;
 import java.util.Map;
 
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by da.pavlov1 on 14.08.2017.
  */
 
 abstract class ApiHelper {
+    protected OkHttpClient okHttpClient;
+
+    protected ApiHelper() {
+        okHttpClient = new OkHttpClient();
+    }
+
     protected String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
         HttpUrl.Builder builder = new HttpUrl.Builder()
                 .scheme(scheme)

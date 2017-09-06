@@ -13,7 +13,6 @@ import java.util.Map;
 import io.reactivex.Observable;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -22,12 +21,6 @@ import okhttp3.Response;
  */
 
 public class WeatherApiClient extends ApiHelper {
-    private OkHttpClient okHttpClient;
-
-    public WeatherApiClient() {
-        okHttpClient = new OkHttpClient();
-    }
-
     private Map<String, String> createMapForWeatherApi(String cityName, String key, String localisation, int countDays) {
         Map<String, String> map = new HashMap<>();
         map.put("city", cityName);
