@@ -20,20 +20,27 @@ import java.util.concurrent.Executors;
 //по умолчанию  в одном экземпляре
 public class App extends Application {
     private static DaoSession daoSession;
-    private static Context context;
-//    private OkHttpClient okHttpClient;
-
     static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     public static ExecutorService getExecutorService(){
         return executorService;
     }
 
+    private static App instance;
+
+    public App() {
+        instance = this;
+    }
+
+    public static App getContext() {
+        return instance;
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
         setupLeakCanary();
-        context = this;
         initSession();
     }
 
@@ -44,18 +51,9 @@ public class App extends Application {
         return LeakCanary.install(this);
     }
 
-
     public static DaoSession getDaoSession() {
         return daoSession;
     }
-
-    public static Context getContext() {
-        return context;
-    }
-
-//    public OkHttpClient getOkHttpClient(){
-//        return okHttpClient;
-//    }
 
     private void initSession(){
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "weathers");
