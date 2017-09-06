@@ -43,10 +43,10 @@ public class HorizontalWeatherAdapter
         return (weatherViewNow != null) ? weatherViewNow.size() : 0;
     }
 
-    public class WeatherItemHolder extends RecyclerView.ViewHolder {
+    class WeatherItemHolder extends RecyclerView.ViewHolder {
         private ItemHorizontalRecyclerBinding binding;
 
-        public WeatherItemHolder(View itemView) {
+        private WeatherItemHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
         }

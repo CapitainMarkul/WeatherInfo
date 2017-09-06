@@ -29,11 +29,11 @@ import java.util.List;
  */
 
 public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHolder> {
-
     private List<CityView> cityViewWeathers = new ArrayList<>();
     private DelItemListener listener;
     private EmptyListener emptyListener;
 
+    private int lastAnimateElement = 0; //Не позволяет анимировать элементы, которые уже были показаны
     private boolean isAnimate = true;
 
     public void setListener(DelItemListener listener) {
@@ -61,6 +61,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     }
 
     public void setDefaultSetting() {
+        lastAnimateElement = 0; // позволяем анимации снова выполняться
         cityViewWeathers.clear();
     }
 
@@ -78,16 +79,16 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         holder.horizontalWeatherAdapter.setItems(cityViewWeathers.get(position).getWeatherViews());
 
         if (isAnimate) {
-            setAnimation(holder.binding.cardFullInfo, position, holder.getOldPosition(), R.anim.recycleradd);
+            setAnimation(holder.binding.cardFullInfo, position, R.anim.recycleradd);
         }
     }
 
-    private void setAnimation(View viewToAnimate, int position, int oldPosition, @AnimRes int animateRes) {
-        // FIXME: 05.09.2017 Зачем old position
-        if (position > oldPosition) {
+    private void setAnimation(View viewToAnimate, int position, @AnimRes int animateRes) {
+        if (position >= lastAnimateElement) {
             Animation animation = AnimationUtils.loadAnimation(App.getContext(),
                     animateRes);
             viewToAnimate.startAnimation(animation);
+            lastAnimateElement++;
         }
     }
 
@@ -119,7 +120,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             cityViewWeathers.remove(position);  //удаляем из листаАдаптера
             notifyItemRemoved(position);    //тправляем запрос на обновление списка
             notifyItemRangeChanged(getAdapterPosition(), cityViewWeathers.size());  //склеиваем новый список
-            setAnimation(binding.cardFullInfo, position, getOldPosition(), R.anim.recyclerdel);
+            setAnimation(binding.cardFullInfo, position, R.anim.recyclerdel);
             if (emptyListener != null && cityViewWeathers.isEmpty()) {
                 emptyListener.onEmpty();
             }

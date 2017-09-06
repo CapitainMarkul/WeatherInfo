@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 

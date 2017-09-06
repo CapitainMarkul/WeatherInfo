@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
 
+import org.jetbrains.annotations.Contract;
+
 /**
  * Created by da.pavlov1 on 08.08.2017.
  */
@@ -22,7 +24,7 @@ public class SwitchGradient {
     private SwitchGradient() {
     }
 
-    public Drawable getBackground(@Nullable String iconCode) {
+    public static Drawable getBackground(@Nullable String iconCode) {
         if (iconCode != null) {
             if (iconCode.contains("c01d")) {
                 return App.getContext().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);

@@ -16,7 +16,7 @@ public class TrimCityInfo {
     private TrimCityInfo() {
     }
     
-    public String trimCityName(String fullCityName) {
+    public static String trimCityName(String fullCityName) {
         if (fullCityName.indexOf(',') != -1) {
             return fullCityName.substring(0, fullCityName.indexOf(','));
         } else {

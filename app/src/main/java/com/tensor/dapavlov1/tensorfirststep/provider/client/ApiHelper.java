@@ -11,7 +11,7 @@ import okhttp3.HttpUrl;
  */
 
 abstract class ApiHelper {
-    String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
+    protected String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
         HttpUrl.Builder builder = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(host)

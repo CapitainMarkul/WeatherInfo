@@ -37,18 +37,17 @@ public class FavoriteActivity extends AppCompatActivity
         implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoriteActivity,
         DelItemListener, EmptyListener,
         LoaderManager.LoaderCallbacks<Map<String, Object>> {
-    private final static String FAVORITE_PRESENTER = "favorite_presenter";
-    private final static String FAVORITE_ADAPTER = "favorite_adapter";
-
-    public final static int ID_POOL_COMPOSITE_DISPOSABLE = 1;
-    private final static int LOADER_FAVORITE_ID = 1;
-
     private DisposableManager disposableManager;
     private FavoritePresenter mPresenter;
     private FavoriteAdapter favoriteAdapter;
     private FavoriteToAddCityRouter favoriteToAddCityRouter;
 
     private ActivityFavoriteBinding binding;
+
+    private final static String FAVORITE_PRESENTER = "favorite_presenter";
+    private final static String FAVORITE_ADAPTER = "favorite_adapter";
+    public final static int ID_POOL_COMPOSITE_DISPOSABLE = 1;
+    private final static int LOADER_FAVORITE_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,15 +97,12 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void setupListeners() {
-        binding.srRefresh.setOnRefreshListener(() -> {
-            launchUpdateWeatherInfo();
-        });
+        binding.srRefresh.setOnRefreshListener(() -> launchUpdateWeatherInfo());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("TAG", "smth");
     }
 
     @Override
@@ -117,7 +113,7 @@ public class FavoriteActivity extends AppCompatActivity
     public void setItemInAdapter(CityView cityViewWeather) {
         favoriteAdapter.setItem(cityViewWeather);
         //для работы анимации на 1 элементе
-        binding.recyclerViewFavorite.scrollToPosition(0);
+        binding.recyclerViewFavorite.scrollToPosition(favoriteAdapter.getItemCount());
     }
 
     @Override
@@ -206,12 +202,13 @@ public class FavoriteActivity extends AppCompatActivity
             if (binding.getCities() != null && binding.getCityView() != null) {
                 binding.setIsLoading(true);
             } else {
-                if(binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE){
+                if (binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE) {
                     binding.setIsLoading(true);
                 }
             }
         }
 
+        //debug
 //        binding.re.recyclerViewFavorite.setVisibility(View.INVISIBLE);
 //        //test
 //        if (binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE ) {

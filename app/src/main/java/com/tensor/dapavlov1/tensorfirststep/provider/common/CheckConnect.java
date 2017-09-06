@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
  */
 
 public abstract class CheckConnect {
-    public boolean isOnline(final Context context) {
+    protected boolean isOnline(final Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();

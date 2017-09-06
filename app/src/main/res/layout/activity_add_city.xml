@@ -19,7 +19,7 @@
             type="boolean"/>
 
         <variable
-            name="firstLaunch"
+            name="isFirstLaunch"
             type="boolean"/>
     </data>
 
@@ -42,7 +42,7 @@
                 <include
                     android:id="@+id/cv_nothing_weather"
                     layout="@layout/card_weather_nothing_find"
-                    android:visibility="@{firstLaunch || cityView != null &amp;&amp; !isLoading ? v.INVISIBLE : v.VISIBLE}"/>
+                    android:visibility="@{isFirstLaunch || cityView != null &amp;&amp; !isLoading ? v.INVISIBLE : v.VISIBLE}"/>
 
                 <include
                     android:id="@+id/cv_weather_city"

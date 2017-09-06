@@ -49,11 +49,11 @@ public class TrimDateSingleton {
 
     public String getNowTime() {
         Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM',' HH:mm", myDateFormatSymbols);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM',' HH:mm", dictionary);
         return dateFormat.format(currentDate);
     }
 
-    private DateFormatSymbols myDateFormatSymbols = new DateFormatSymbols() {
+    private DateFormatSymbols dictionary = new DateFormatSymbols() {
         @Override
         public String[] getMonths() {
             return new String[]{"января", "февраля", "марта", "апреля", "мая", "июня",

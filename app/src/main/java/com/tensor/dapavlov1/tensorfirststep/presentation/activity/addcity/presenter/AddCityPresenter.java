@@ -1,8 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -26,11 +24,8 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     //для созранения состояния при ConfigChange
     private boolean isLoading = false;
 
-    public final static String CITY_VIEW_MODEL = "city_view_model";
-    public final static String CITY_TEMP_DB_MODEL = "city_db_model";
-
-    //для связи с UI
-    private Handler sendMessageToUi;
+    private final static String CITY_VIEW_MODEL = "city_view_model";
+    private final static String CITY_TEMP_DB_MODEL = "city_db_model";
 
     private void cityIsFavorite(boolean isFavorite) {
         cachedCityView.setFavorite(isFavorite);
@@ -56,48 +51,36 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         return outState;
     }
 
-    public AddCityPresenter() {
-        sendMessageToUi = new Handler(Looper.getMainLooper());
-    }
-
     private CityCallback<CityView> cityCallback = new CityCallback<CityView>() {
         @Override
         public void isFavoriteCity(final CityView result) {
-//            sendMessageToUi.post(() -> {
-                activity.isFavoriteCity(true);
-                cachedInfo(result);
-                showInformation(cachedCityView);
-                stopAnimation();
-//            });
+            activity.isFavoriteCity(true);
+            cachedInfo(result);
+            showInformation(cachedCityView);
+            stopAnimation();
         }
 
         @Override
         public void isNotFavoriteCity(final CityView result) {
-//            sendMessageToUi.post(() -> {
-                activity.isFavoriteCity(false);
-                cachedInfo(result);
-                showInformation(cachedCityView);
-                stopAnimation();
-//            });
+            activity.isFavoriteCity(false);
+            cachedInfo(result);
+            showInformation(cachedCityView);
+            stopAnimation();
         }
 
         @Override
         public void onErrorConnect() {
-//            sendMessageToUi.post(() -> {
-                activity.showMessage(R.string.str_error_connect_to_internet);
-                activity.getBinding().setIsLoading(false);
-                stopAnimation();
-//            });
+            activity.showMessage(R.string.str_error_connect_to_internet);
+            activity.getBinding().setIsLoading(false);
+            stopAnimation();
         }
 
         @Override
         public void isEmpty() {
-//            sendMessageToUi.post(() -> {
-                isLoading = false;
-                showInformation(null);
-                activity.getBinding().setIsLoading(false);
-                stopAnimation();
-//            });
+            isLoading = false;
+            showInformation(null);
+            activity.getBinding().setIsLoading(false);
+            stopAnimation();
         }
 
         @Override

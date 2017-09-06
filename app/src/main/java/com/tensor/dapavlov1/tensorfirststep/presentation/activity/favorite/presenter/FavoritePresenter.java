@@ -24,8 +24,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private Router router;
-
     private List<CityView> cachedCities = new ArrayList<>();
+
     private boolean isLoading = false;
 
     private CityCallback<CityView> citiesCallback = new CityCallback<CityView>() {
@@ -45,16 +45,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
         @Override
         public void onOldFromDb(final CityView result) {
-//            sendMessageToUi.post(() -> {
-//            cachedInfo(result);
-//            showCity(result);
-//                showCachedCities();
-
-//                activity.getBinding().setCities(result);
-//                activity.getBinding().setIsLoading(false);
-
             activity.showMessage(R.string.str_error_connect_to_internet);
-//            });
         }
 
         @Override

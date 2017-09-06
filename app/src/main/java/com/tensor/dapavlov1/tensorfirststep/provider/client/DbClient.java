@@ -28,10 +28,6 @@ public class DbClient {
     private Query<CityDb> query;
     private DaoSession daoSession;
 
-    //    public DbClient(Query<CityDb> query, DaoSession daoSession) {
-//        this.query = query;
-//        this.daoSession = daoSession;
-//    }
     public DbClient() {
         daoSession = App.getDaoSession();
         query = App.getDaoSession().getCityDbDao().queryBuilder().orderAsc(CityDbDao.Properties.Name).build();

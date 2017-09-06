@@ -18,22 +18,6 @@ public class ApiFactory {
 
     private ApiFactory() {
     }
-//    private volatile ApiFactory instance;
-//
-    //
-//    public ApiFactory getInstance() {
-//        ApiFactory localInstance = instance;
-//        if (localInstance == null) {
-//            synchronized (this) {
-//                localInstance = instance;
-//                if (localInstance == null) {
-//                    instance = localInstance = new ApiFactory();
-//                }
-//                return instance;
-//            }
-//        }
-//        return localInstance;
-//    }
 
     public WeatherApiClient createClientWeatherApi() {
         return new WeatherApiClient();

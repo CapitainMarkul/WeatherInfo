@@ -11,8 +11,6 @@ import java.util.List;
  */
 
 public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterable {
-
-    //    private List<String> resultList;
     private Context context;
     private int resource;
 
@@ -25,10 +23,4 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
     public ArrayAdapter<String> setItems(List<String> list) {
         return new ArrayAdapter<>(context, resource, list);
     }
-
-//    public void setItemsa(List<String> list) {
-//        resultList = list;
-//        notifyDataSetChanged();
-////        notifyDataSetChanged();
-//    }
 }

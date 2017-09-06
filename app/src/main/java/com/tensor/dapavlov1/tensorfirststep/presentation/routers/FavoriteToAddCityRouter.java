@@ -12,14 +12,8 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
  */
 
 public class FavoriteToAddCityRouter implements Router {
-//    @Override
-//    public void goToActivity(@NotNull Activity favoriteActivity) {
-//        Intent intent = new Intent(favoriteActivity, AddCityActivity.class);
-//        favoriteActivity.startActivity(intent);
-//    }
-
     @Override
-    public void goToActivity(@NonNull Activity fromActivity, @NonNull Class toActivity) {
-        fromActivity.startActivity(new Intent(fromActivity, toActivity));
+    public void goToActivity(@NonNull Activity previousActivity, @NonNull Class nextActivity) {
+        previousActivity.startActivity(new Intent(previousActivity, nextActivity));
     }
 }

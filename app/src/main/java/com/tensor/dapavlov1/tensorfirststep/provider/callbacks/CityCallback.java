@@ -7,6 +7,7 @@ package com.tensor.dapavlov1.tensorfirststep.provider.callbacks;
 public class CityCallback<T> {
     public void isFavoriteCity(T result) {
     }
+
     public void isNotFavoriteCity(T result) {
     }
 
@@ -24,10 +25,9 @@ public class CityCallback<T> {
     }
 
     public void onOldFromDb(T result) {
-
     }
 
-    public void onComplete(){
+    public void onComplete() {
 
     }
 }

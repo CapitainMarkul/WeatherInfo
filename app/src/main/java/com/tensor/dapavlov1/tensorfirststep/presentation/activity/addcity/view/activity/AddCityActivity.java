@@ -49,14 +49,6 @@ import io.reactivex.schedulers.Schedulers;
 public class AddCityActivity extends AppCompatActivity
         implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityActivity,
         LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
-    private final static String NEW_CITY_PRESENTER = "new_city_presenter";
-    private final static String NEW_CITY_ADAPTER = "new_city_adapter";
-    private final static String IS_TEXT_CHANGED = "is_text_changed";
-    private final static String IS_CONFIG_CHANGE = "is_config_change";
-
-    private final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
-    private final static int ID_LOADER_NEW_CITY = 2;
-
     private AutoCompleteTextView autoText;
 
     private DisposableManager disposableManager;
@@ -71,13 +63,21 @@ public class AddCityActivity extends AppCompatActivity
     private boolean isTextChanged = true;
     private boolean isConfigChange = false;
 
+    private final static String NEW_CITY_PRESENTER = "new_city_presenter";
+    private final static String NEW_CITY_ADAPTER = "new_city_adapter";
+    private final static String IS_TEXT_CHANGED = "is_text_changed";
+    private final static String IS_CONFIG_CHANGE = "is_config_change";
+
+    private final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
+    private final static int ID_LOADER_NEW_CITY = 2;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.cvWeatherCity.setEvents(this);
         binding.cvWeatherCity.setSwitchGradient(SwitchGradient.getInstance());
-        binding.setFirstLaunch(true);
+        binding.setIsFirstLaunch(true);
 
         initDisposableManager();
 
@@ -146,7 +146,7 @@ public class AddCityActivity extends AppCompatActivity
                 .subscribe(
                         next -> {
                             runSearch();
-                            binding.setFirstLaunch(false);
+                            binding.setIsFirstLaunch(false);
                             isTextChanged = false;
                         },
                         throwable -> showMessage(R.string.unknown_error),
@@ -226,7 +226,7 @@ public class AddCityActivity extends AppCompatActivity
                         next -> {
                             if (next) {
                                 runSearch();
-                                binding.setFirstLaunch(false);
+                                binding.setIsFirstLaunch(false);
                                 isTextChanged = false;
                                 if (autoText.isPopupShowing()) {
                                     autoText.dismissDropDown();
@@ -237,7 +237,6 @@ public class AddCityActivity extends AppCompatActivity
                         () -> {
                         },
                         disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-//    Log.e("SIZEROOT:", String.valueOf(disposableManager.testSize(ID_POOL_COMPOSITE_DISPOSABLE)));
     }
 
     @Override

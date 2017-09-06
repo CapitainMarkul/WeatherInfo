@@ -22,7 +22,11 @@ public class DisposableManager {
         private static final DisposableManager INSTANCE = new DisposableManager();
     }
 
-    private Map<Integer, CompositeDisposable> mapCompositeDisposable = new HashMap<>();
+    private Map<Integer, CompositeDisposable> mapCompositeDisposable;
+
+    private DisposableManager() {
+        mapCompositeDisposable = new HashMap<>();
+    }
 
     public void addDisposable(int idPoolCompositeDisposable, Disposable disposable) {
         if (mapCompositeDisposable.get(idPoolCompositeDisposable) == null) {

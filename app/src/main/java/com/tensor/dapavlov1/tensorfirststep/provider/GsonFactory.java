@@ -33,6 +33,7 @@ public class GsonFactory {
         initGson();
         CityGson cityGson = gsonReader.fromJson(responceJson, CityGson.class);
         cityGson.setDateLastUpdate(TrimDateSingleton.getInstance().getNowTime());
+
         return cityGson;
     }
 
