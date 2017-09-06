@@ -24,7 +24,7 @@ public class SwitchGradient {
     private SwitchGradient() {
     }
 
-    public static Drawable getBackground(@Nullable String iconCode) {
+    public Drawable getBackground(@Nullable String iconCode) {
         if (iconCode != null) {
             if (iconCode.contains("c01d")) {
                 return App.getContext().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);
