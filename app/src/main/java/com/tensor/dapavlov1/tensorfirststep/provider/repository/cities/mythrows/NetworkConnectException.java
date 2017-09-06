@@ -1,6 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows;
 
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 
 import java.util.List;
 
@@ -9,16 +9,16 @@ import java.util.List;
  */
 
 public class NetworkConnectException extends Exception {
-    private List<City> oldCitiesInfo;
+    private List<CityView> oldCitiesInfo;
 
-    public NetworkConnectException(List<City> oldCitiesInfo) {
+    public NetworkConnectException(List<CityView> oldCitiesInfo) {
         this.oldCitiesInfo = oldCitiesInfo;
     }
 
     public NetworkConnectException() {
     }
 
-    public List<City> getOldCitiesInfo() {
+    public List<CityView> getOldCitiesInfo() {
         return oldCitiesInfo;
     }
 }

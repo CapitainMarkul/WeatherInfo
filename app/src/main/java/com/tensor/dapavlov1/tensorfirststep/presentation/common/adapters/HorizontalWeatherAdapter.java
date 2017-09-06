@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ItemHorizontalRecyclerBinding;
 
@@ -18,13 +18,13 @@ import java.util.List;
  * Created by da.pavlov1 on 04.08.2017.
  */
 
-public class AdapterHorizontalWeather
-        extends RecyclerView.Adapter<AdapterHorizontalWeather.WeatherItemHolder> {
+public class HorizontalWeatherAdapter
+        extends RecyclerView.Adapter<HorizontalWeatherAdapter.WeatherItemHolder> {
 
-    private List<Weather> weatherNow;
+    private List<WeatherView> weatherViewNow;
 
-    public void setItems(@NotNull final List<Weather> weathers) {
-        this.weatherNow = weathers;
+    public void setItems(@NotNull final List<WeatherView> weatherViews) {
+        this.weatherViewNow = weatherViews;
     }
 
     @Override
@@ -35,12 +35,12 @@ public class AdapterHorizontalWeather
 
     @Override
     public void onBindViewHolder(WeatherItemHolder holder, int position) {
-        holder.binding.setWeather(weatherNow.get(position));
+        holder.binding.setWeatherView(weatherViewNow.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return (weatherNow != null) ? weatherNow.size() : 0;
+        return (weatherViewNow != null) ? weatherViewNow.size() : 0;
     }
 
     public class WeatherItemHolder extends RecyclerView.ViewHolder {

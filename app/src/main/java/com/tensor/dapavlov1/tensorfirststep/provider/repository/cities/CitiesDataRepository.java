@@ -1,8 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
@@ -22,7 +22,7 @@ public class CitiesDataRepository implements CitiesRepository {
     private CitiesDataStoreFactory citiesDataStoreFactory = CitiesDataStoreFactory.getInstance();
 
     @Override
-    public void add(ModelCityWeather city) {
+    public void add(CityWeatherWrapper city) {
         citiesDataStoreFactory.createCityDataStoreWorkDb().add(city);
     }
 
@@ -32,7 +32,7 @@ public class CitiesDataRepository implements CitiesRepository {
     }
 
     @Override
-    public void getCity(String fullCityName, CallbackCity<City> callbackCities) {
+    public void getCity(String fullCityName, CityCallback<CityView> callbackCities) {
         try {
             CityDataStore cityDataStore = citiesDataStoreFactory.createCityDataStore();
             cityDataStore.getCity(fullCityName)
@@ -67,7 +67,7 @@ public class CitiesDataRepository implements CitiesRepository {
     }
 
     @Override
-    public Flowable<City> getCitiesRx() {
+    public Flowable<CityView> getCitiesRx() {
         //определяем откуда тянуть информацию/ Из бд или из сети
         CitiesDataStore citiesDataStore;
         try {

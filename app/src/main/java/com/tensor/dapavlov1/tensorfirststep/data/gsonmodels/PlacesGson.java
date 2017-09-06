@@ -8,10 +8,10 @@ import java.util.List;
  * Created by da.pavlov1 on 11.08.2017.
  */
 
-public class GsonPlaces {
-    @SerializedName("predictions") List<GsonPlace> gsonPlaces;
+public class PlacesGson {
+    @SerializedName("predictions") List<PlaceGson> placeGsons;
 
-    public List<GsonPlace> getGsonPlaces() {
-        return gsonPlaces;
+    public List<PlaceGson> getPlaceGsons() {
+        return placeGsons;
     }
 }

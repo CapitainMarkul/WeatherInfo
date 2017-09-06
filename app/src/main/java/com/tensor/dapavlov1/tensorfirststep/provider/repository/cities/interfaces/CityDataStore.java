@@ -1,12 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityFoundException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityNotFoundException;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 import io.reactivex.Observable;
 
@@ -15,9 +11,9 @@ import io.reactivex.Observable;
  */
 
 public interface CityDataStore {
-    void add(ModelCityWeather city);
+    void add(CityWeatherWrapper city);
 
     void delete(Object city);
 
-    Observable<City> getCity(String fullCityName) throws EmptyResponseException;
+    Observable<CityView> getCity(String fullCityName) throws EmptyResponseException;
 }

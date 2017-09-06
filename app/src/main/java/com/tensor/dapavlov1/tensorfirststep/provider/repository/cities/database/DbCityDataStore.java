@@ -1,16 +1,14 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.invokers.RemoteControlDb;
+import com.tensor.dapavlov1.tensorfirststep.provider.invokers.DbExecutor;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CityDataStore;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.CityFoundException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 import io.reactivex.Observable;
 
@@ -20,37 +18,37 @@ import io.reactivex.Observable;
 
 public class DbCityDataStore implements CityDataStore {
     private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
-    private RemoteControlDb remoteControlDb;
+    private DbExecutor dbExecutor;
 
     public DbCityDataStore() {
-        remoteControlDb = new RemoteControlDb();
+        dbExecutor = new DbExecutor();
     }
 
     @Override
-    public void add(ModelCityWeather city) {
-        remoteControlDb.setCommand(
+    public void add(CityWeatherWrapper city) {
+        dbExecutor.setCommand(
                 new AddCityInDbCommand(dbClient, city));
-        remoteControlDb.execute();
+        dbExecutor.execute();
     }
 
     @Override
     public void delete(Object city) {
         //удаление по индексу
         if (city instanceof Integer) {
-            remoteControlDb.setCommand(
+            dbExecutor.setCommand(
                     new DelCityByIndexCommand(dbClient, (Integer) city));
-            remoteControlDb.execute();
+            dbExecutor.execute();
         }
         //удаление по элементу
-        else if (city instanceof ModelCityWeather) {
-            remoteControlDb.setCommand(
-                    new AddCityInDbCommand(dbClient, (ModelCityWeather) city));
-            remoteControlDb.undo();
+        else if (city instanceof CityWeatherWrapper) {
+            dbExecutor.setCommand(
+                    new AddCityInDbCommand(dbClient, (CityWeatherWrapper) city));
+            dbExecutor.undo();
         }
     }
 
     @Override
-    public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
+    public Observable<CityView> getCity(String fullCityName) throws EmptyResponseException {
         return null;
     }
 }

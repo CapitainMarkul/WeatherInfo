@@ -2,9 +2,9 @@ package com.tensor.dapavlov1.tensorfirststep.provider;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
-import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlace;
-import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonPlaces;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.CityGson;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.PlaceGson;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.PlacesGson;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
 
 import java.util.ArrayList;
@@ -29,18 +29,18 @@ public class GsonFactory {
     private GsonBuilder gsonBuilder;
     private Gson gsonReader;
 
-    public GsonCity createGsonCityModel(String responceJson) {
+    public CityGson createGsonCityModel(String responceJson) {
         initGson();
-        GsonCity gsonCity = gsonReader.fromJson(responceJson, GsonCity.class);
-        gsonCity.setDateLastUpdate(TrimDateSingleton.getInstance().getNowTime());
-        return gsonCity;
+        CityGson cityGson = gsonReader.fromJson(responceJson, CityGson.class);
+        cityGson.setDateLastUpdate(TrimDateSingleton.getInstance().getNowTime());
+        return cityGson;
     }
 
     public List<String> getPlacesName(String responceJson) {
         initGson();
         List<String> resultTitles = new ArrayList<>();
-        List<GsonPlace> gsonPlaces = gsonReader.fromJson(responceJson, GsonPlaces.class).getGsonPlaces();
-        for (GsonPlace item : gsonPlaces) {
+        List<PlaceGson> placeGsons = gsonReader.fromJson(responceJson, PlacesGson.class).getPlaceGsons();
+        for (PlaceGson item : placeGsons) {
             resultTitles.add(
                     item.getTitlePlace());
         }

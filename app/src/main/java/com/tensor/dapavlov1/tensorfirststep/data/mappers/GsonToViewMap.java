@@ -1,10 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
-import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonCity;
-import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.GsonWeatherRoot;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.WeatherRootGson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,23 +11,23 @@ import java.util.List;
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class MapperGsonToView extends MapperHelp {
-    public static MapperGsonToView getInstance() {
+public class GsonToViewMap extends HelpMap {
+    public static GsonToViewMap getInstance() {
         return MapperGsonToViewLoader.INSTANCE;
     }
 
     private static final class MapperGsonToViewLoader{
-        private static final MapperGsonToView INSTANCE = new MapperGsonToView();
+        private static final GsonToViewMap INSTANCE = new GsonToViewMap();
     }
 
-    private MapperGsonToView() {
+    private GsonToViewMap() {
     }
 
-    private List<Weather> getWeathersFromGson(List<GsonWeatherRoot> gsonWeathers) {
-        List<Weather> viewWeathers = new ArrayList<>();
-        for (GsonWeatherRoot itemRoot : gsonWeathers) {
-            viewWeathers.add(
-                    new Weather(
+    private List<WeatherView> getWeathersFromGson(List<WeatherRootGson> gsonWeathers) {
+        List<WeatherView> viewWeatherViews = new ArrayList<>();
+        for (WeatherRootGson itemRoot : gsonWeathers) {
+            viewWeatherViews.add(
+                    new WeatherView(
                             itemRoot.getWindShort(),
                             itemRoot.getWindSpeed(),
                             itemRoot.getPressure(),
@@ -42,6 +40,6 @@ public class MapperGsonToView extends MapperHelp {
                     )
             );
         }
-        return viewWeathers;
+        return viewWeatherViews;
     }
 }

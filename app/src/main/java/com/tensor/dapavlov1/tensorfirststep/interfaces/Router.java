@@ -9,5 +9,5 @@ import android.support.annotation.NonNull;
  */
 
 public interface Router {
-    void goToNewActivity(@NonNull Activity fromActivity, @NonNull Class toActivity);
+    void goToActivity(@NonNull Activity fromActivity, @NonNull Class toActivity);
 }

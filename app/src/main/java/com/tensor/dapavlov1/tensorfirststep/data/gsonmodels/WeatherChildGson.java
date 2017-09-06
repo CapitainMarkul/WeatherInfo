@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by da.pavlov1 on 11.08.2017.
  */
 
-public class GsonWeatherChild {
+public class WeatherChildGson {
     @SerializedName("icon") String icon;
     @SerializedName("description") String description;
 

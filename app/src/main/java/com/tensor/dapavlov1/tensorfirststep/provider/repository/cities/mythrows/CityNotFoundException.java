@@ -1,19 +1,19 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows;
 
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 
 /**
  * Created by da.pavlov1 on 23.08.2017.
  */
 
 public class CityNotFoundException extends Exception {
-    private City city;
+    private CityView cityView;
 
-    public CityNotFoundException(City city) {
-        this.city = city;
+    public CityNotFoundException(CityView cityView) {
+        this.cityView = cityView;
     }
 
-    public City getCity() {
-        return city;
+    public CityView getCityView() {
+        return cityView;
     }
 }

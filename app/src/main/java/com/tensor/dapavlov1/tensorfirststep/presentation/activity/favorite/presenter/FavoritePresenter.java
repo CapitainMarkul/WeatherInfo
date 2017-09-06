@@ -1,17 +1,15 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCities;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CitiesCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 
 import java.util.ArrayList;
@@ -27,12 +25,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private Router router;
 
-    private List<City> cachedCities = new ArrayList<>();
+    private List<CityView> cachedCities = new ArrayList<>();
     private boolean isLoading = false;
 
-    private CallbackCities<City> callbackCities = new CallbackCities<City>() {
+    private CitiesCallback<CityView> citiesCallback = new CitiesCallback<CityView>() {
         @Override
-        public void onUpdate(final City result) {
+        public void onUpdate(final CityView result) {
             try {
                 if (activity != null) {
                     showCity(result);
@@ -46,7 +44,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         }
 
         @Override
-        public void onOldFromDb(final City result) {
+        public void onOldFromDb(final CityView result) {
 //            sendMessageToUi.post(() -> {
 //            cachedInfo(result);
 //            showCity(result);
@@ -63,7 +61,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         public void isEmpty() {
             isLoading = true;
             activity.getBinding().setCities(null);
-            activity.getBinding().setCity(null);
+            activity.getBinding().setCityView(null);
         }
 
         @Override
@@ -74,9 +72,9 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         }
     };
 
-    private void cachedInfo(City city) {
+    private void cachedInfo(CityView cityView) {
         isLoading = true;
-        cachedCities.add(city);
+        cachedCities.add(cityView);
     }
 
     public void updateWeathers() {
@@ -89,22 +87,22 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
                 new CitiesDataRepository().getCitiesRx()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                city -> callbackCities.onUpdate(city),
-                                throwable -> callbackCities.onComplete(),
-                                () -> callbackCities.onComplete()));
+                                city -> citiesCallback.onUpdate(city),
+                                throwable -> citiesCallback.onComplete(),
+                                () -> citiesCallback.onComplete()));
     }
 
     public void switchActivity() {
-        router.goToNewActivity(activity, AddCityActivity.class);
+        router.goToActivity(activity, AddCityActivity.class);
     }
 
     public void deleteCity(int position) {
         new CitiesDataRepository().delete(position);
     }
 
-    private void showCity(City city) {
-        activity.setItemInAdapter(city);
-        activity.getBinding().setCity(city);
+    private void showCity(CityView cityView) {
+        activity.setItemInAdapter(cityView);
+        activity.getBinding().setCityView(cityView);
     }
 
     public void clearCacheCities() {
@@ -113,7 +111,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
     public void showCachedCities() {
         if (cachedCities != null && !cachedCities.isEmpty()) {
-            activity.setItemsInAdapter(cachedCities);
+            activity.setItems(cachedCities);
         }
         activity.getBinding().setCities(cachedCities);
     }

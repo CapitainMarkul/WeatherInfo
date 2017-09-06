@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by da.pavlov1 on 11.08.2017.
  */
 
-public class GsonPlace {
+public class PlaceGson {
     @SerializedName("description") String titlePlace;
 
     public String getTitlePlace() {

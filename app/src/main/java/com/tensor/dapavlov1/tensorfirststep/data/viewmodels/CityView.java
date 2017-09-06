@@ -9,24 +9,24 @@ import java.util.List;
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class City implements Parcelable {
+public class CityView implements Parcelable {
     private String name;
     private String lastTimeUpdate;
-    private List<Weather> weathers;
+    private List<WeatherView> weatherViews;
     private boolean isFavorite;
 
 
-    public City(String name, String lastTimeUpdate, List<Weather> weathers, boolean isFavorite) {
+    public CityView(String name, String lastTimeUpdate, List<WeatherView> weatherViews, boolean isFavorite) {
         this.name = name;
         this.lastTimeUpdate = lastTimeUpdate;
-        this.weathers = weathers;
+        this.weatherViews = weatherViews;
         this.isFavorite = isFavorite;
     }
 
-    protected City(Parcel in) {
+    protected CityView(Parcel in) {
         name = in.readString();
         lastTimeUpdate = in.readString();
-        weathers = in.createTypedArrayList(Weather.CREATOR);
+        weatherViews = in.createTypedArrayList(WeatherView.CREATOR);
         isFavorite = in.readByte() != 0;
     }
 
@@ -38,8 +38,8 @@ public class City implements Parcelable {
         return lastTimeUpdate;
     }
 
-    public List<Weather> getWeathers() {
-        return weathers;
+    public List<WeatherView> getWeatherViews() {
+        return weatherViews;
     }
 
     public boolean isFavorite() {
@@ -50,15 +50,15 @@ public class City implements Parcelable {
         isFavorite = favorite;
     }
 
-    public static final Creator<City> CREATOR = new Creator<City>() {
+    public static final Creator<CityView> CREATOR = new Creator<CityView>() {
         @Override
-        public City createFromParcel(Parcel in) {
-            return new City(in);
+        public CityView createFromParcel(Parcel in) {
+            return new CityView(in);
         }
 
         @Override
-        public City[] newArray(int size) {
-            return new City[size];
+        public CityView[] newArray(int size) {
+            return new CityView[size];
         }
     };
 
@@ -71,7 +71,7 @@ public class City implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(name);
         parcel.writeString(lastTimeUpdate);
-        parcel.writeTypedList(weathers);
+        parcel.writeTypedList(weatherViews);
         parcel.writeByte((byte) (isFavorite ? 1 : 0));
     }
 }

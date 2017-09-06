@@ -7,27 +7,27 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class ApiFabric {
-    public static ApiFabric getInstance() {
+public class ApiFactory {
+    public static ApiFactory getInstance() {
         return ApiFabricLoader.INSTANCE;
     }
 
     private static final class ApiFabricLoader {
-        private static final ApiFabric INSTANCE = new ApiFabric();
+        private static final ApiFactory INSTANCE = new ApiFactory();
     }
 
-    private ApiFabric() {
+    private ApiFactory() {
     }
-//    private volatile ApiFabric instance;
+//    private volatile ApiFactory instance;
 //
     //
-//    public ApiFabric getInstance() {
-//        ApiFabric localInstance = instance;
+//    public ApiFactory getInstance() {
+//        ApiFactory localInstance = instance;
 //        if (localInstance == null) {
 //            synchronized (this) {
 //                localInstance = instance;
 //                if (localInstance == null) {
-//                    instance = localInstance = new ApiFabric();
+//                    instance = localInstance = new ApiFactory();
 //                }
 //                return instance;
 //            }

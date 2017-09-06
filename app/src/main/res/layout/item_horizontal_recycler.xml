@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="weather"
-            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather"/>
+            name="weatherView"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView"/>
     </data>
 
     <LinearLayout
@@ -30,7 +30,7 @@
                 style="@style/mTvSingleLine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{Double.toString(weather.temperature)}"
+                android:text="@{Double.toString(weatherView.temperature)}"
                 android:textSize="35sp"
                 android:textStyle="bold"
                 tools:text="19"/>
@@ -56,7 +56,7 @@
             android:layout_width="@dimen/item_horizontal_recycler_weather_icon_size"
             android:layout_height="@dimen/item_horizontal_recycler_weather_icon_size"
             app:errorImage="@{@drawable/ic_cloud_error}"
-            app:iconUrl="@{weather.iconUrl}"
+            app:iconUrl="@{weatherView.iconUrl}"
             tools:src="@drawable/test_image"/>
 
         <TextView
@@ -64,7 +64,7 @@
             style="@style/mTvSingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{weather.time}"
+            android:text="@{weatherView.time}"
             android:textSize="17sp"
             android:textStyle="italic"
             tools:text="15.00"/>
@@ -74,7 +74,7 @@
             style="@style/mTvSingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{weather.date}"
+            android:text="@{weatherView.date}"
             android:textSize="17sp"
             android:textStyle="italic"
             tools:text="04 августа"/>

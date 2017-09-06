@@ -12,8 +12,8 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-@Entity(nameInDb = "Weather")
-public class DbWeather implements Parcelable {
+@Entity(nameInDb = "WeatherView")
+public class WeatherDb implements Parcelable {
     @Id
     private Long id;
 
@@ -42,7 +42,7 @@ public class DbWeather implements Parcelable {
     @NotNull
     private Long cityId;
 
-    public DbWeather(@NotNull String windShort, double windSpeed,
+    public WeatherDb(@NotNull String windShort, double windSpeed,
                      double pressure, double temperature, @NotNull String date,
                      @NotNull String time, @NotNull String iconUrl, @NotNull String iconCode,
                      @NotNull String description) {
@@ -57,11 +57,23 @@ public class DbWeather implements Parcelable {
         this.description = description;
     }
 
-    @Generated(hash = 1024540776)
-    public DbWeather(Long id, @NotNull String windShort, double windSpeed, double pressure,
-                     double temperature, @NotNull String date, @NotNull String time,
-                     @NotNull String iconUrl, @NotNull String iconCode, @NotNull String description,
-                     @NotNull Long cityId) {
+    protected WeatherDb(Parcel in) {
+        windShort = in.readString();
+        windSpeed = in.readDouble();
+        pressure = in.readDouble();
+        temperature = in.readDouble();
+        date = in.readString();
+        time = in.readString();
+        iconUrl = in.readString();
+        iconCode = in.readString();
+        description = in.readString();
+    }
+
+    @Generated(hash = 1791781359)
+    public WeatherDb(Long id, @NotNull String windShort, double windSpeed, double pressure,
+            double temperature, @NotNull String date, @NotNull String time,
+            @NotNull String iconUrl, @NotNull String iconCode, @NotNull String description,
+            @NotNull Long cityId) {
         this.id = id;
         this.windShort = windShort;
         this.windSpeed = windSpeed;
@@ -75,8 +87,41 @@ public class DbWeather implements Parcelable {
         this.cityId = cityId;
     }
 
-    @Generated(hash = 245265253)
-    public DbWeather() {
+    @Generated(hash = 273700809)
+    public WeatherDb() {
+    }
+
+    public static final Creator<WeatherDb> CREATOR = new Creator<WeatherDb>() {
+        @Override
+        public WeatherDb createFromParcel(Parcel in) {
+            return new WeatherDb(in);
+        }
+
+        @Override
+        public WeatherDb[] newArray(int size) {
+            return new WeatherDb[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeLong(id);
+        parcel.writeString(windShort);
+        parcel.writeDouble(windSpeed);
+        parcel.writeDouble(pressure);
+        parcel.writeDouble(temperature);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(iconUrl);
+        parcel.writeString(iconCode);
+        parcel.writeString(description);
+//        parcel.writeLong(cityId);
+
     }
 
     public Long getId() {
@@ -165,51 +210,5 @@ public class DbWeather implements Parcelable {
 
     public void setCityId(Long cityId) {
         this.cityId = cityId;
-    }
-
-
-    protected DbWeather(Parcel in) {
-        windShort = in.readString();
-        windSpeed = in.readDouble();
-        pressure = in.readDouble();
-        temperature = in.readDouble();
-        date = in.readString();
-        time = in.readString();
-        iconUrl = in.readString();
-        iconCode = in.readString();
-        description = in.readString();
-    }
-
-    public static final Creator<DbWeather> CREATOR = new Creator<DbWeather>() {
-        @Override
-        public DbWeather createFromParcel(Parcel in) {
-            return new DbWeather(in);
-        }
-
-        @Override
-        public DbWeather[] newArray(int size) {
-            return new DbWeather[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeLong(id);
-        parcel.writeString(windShort);
-        parcel.writeDouble(windSpeed);
-        parcel.writeDouble(pressure);
-        parcel.writeDouble(temperature);
-        parcel.writeString(date);
-        parcel.writeString(time);
-        parcel.writeString(iconUrl);
-        parcel.writeString(iconCode);
-        parcel.writeString(description);
-//        parcel.writeLong(cityId);
-
     }
 }

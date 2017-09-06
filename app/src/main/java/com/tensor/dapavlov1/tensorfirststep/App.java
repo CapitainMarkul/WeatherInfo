@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep;
 
 import android.app.Application;
-import android.app.FragmentManager;
 import android.content.Context;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -13,8 +12,6 @@ import org.greenrobot.greendao.database.Database;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import okhttp3.OkHttpClient;
 
 
 /**

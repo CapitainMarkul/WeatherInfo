@@ -1,12 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DbCity;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.ApiFabric;
+import com.tensor.dapavlov1.tensorfirststep.provider.ApiFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
@@ -22,11 +22,11 @@ import io.reactivex.Observable;
  */
 
 public class CloudCityDataStore implements CityDataStore {
-    private WeatherApiClient weatherClient = ApiFabric.getInstance().createClientWeatherApi();
+    private WeatherApiClient weatherClient = ApiFactory.getInstance().createClientWeatherApi();
     private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
 
     @Override
-    public void add(ModelCityWeather city) {
+    public void add(CityWeatherWrapper city) {
 
     }
 
@@ -36,7 +36,7 @@ public class CloudCityDataStore implements CityDataStore {
     }
 
     @Override
-    public Observable<City> getCity(String fullCityName) throws EmptyResponseException {
+    public Observable<CityView> getCity(String fullCityName) throws EmptyResponseException {
         return weatherClient
                 .getWeatherInCityRx(TrimCityInfo.getInstance().trimCityName(fullCityName))
                 .map(response -> {
@@ -46,25 +46,25 @@ public class CloudCityDataStore implements CityDataStore {
                     return response;
                 })
                 .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-                .map(gsonCity -> MapperGsonToDb.getInstance().convertGsonModelToDaoModel(gsonCity))
+                .map(gsonCity -> GsonToDbMap.getInstance().convertGsonModelToDaoModel(gsonCity))
                 .map(mapper -> {
                     cachedCity(mapper);
-                    return MapperDbToView.getInstance().convertDbModelToViewModel(mapper.getDbCity(), mapper.getWeathers(), false);
+                    return DbToViewMap.getInstance().convertDbModelToViewModel(mapper.getCityDb(), mapper.getWeathers(), false);
                 })
                 .map(viewCity -> {
-                    DbCity dbCity = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
-                    if (dbCity == null) {
+                    CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
+                    if (cityDb == null) {
                         viewCity.setFavorite(false);
                         return viewCity;
                     }
-                    cachedCity(new ModelCityWeather(dbCity, dbCity.getWeathers()));
+                    cachedCity(new CityWeatherWrapper(cityDb, cityDb.getWeathers()));
                     viewCity.setFavorite(true);
                     return viewCity;
                 });
     }
 
-    private void cachedCity(ModelCityWeather tempCity) {
+    private void cachedCity(CityWeatherWrapper tempCity) {
         //запоминаем город в формате БД, для возможного добавления его в БД
-        TempCity.getInstance().setModelCityWeather(tempCity);
+        TempCity.getInstance().setCityWeatherWrapper(tempCity);
     }
 }

@@ -6,13 +6,13 @@ import com.google.gson.annotations.SerializedName;
  * Created by da.pavlov1 on 11.08.2017.
  */
 
-public class GsonWeatherRoot {
+public class WeatherRootGson {
     @SerializedName("wind_cdir") String windShort;
     @SerializedName("wind_spd") double windSpeed;
     @SerializedName("pres") double pressure;
     @SerializedName("temp") double temperature;
     @SerializedName("datetime") String date;
-    @SerializedName("weather") GsonWeatherChild gsonWeatherChild;
+    @SerializedName("weather") WeatherChildGson weatherChildGson;
 
     public String getWindShort() {
         return windShort;
@@ -34,7 +34,7 @@ public class GsonWeatherRoot {
         return date;
     }
 
-    public GsonWeatherChild getGsonWeatherChild() {
-        return gsonWeatherChild;
+    public WeatherChildGson getWeatherChildGson() {
+        return weatherChildGson;
     }
 }

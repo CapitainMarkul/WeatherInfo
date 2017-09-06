@@ -7,13 +7,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CallbackCity;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 
 /**
@@ -22,7 +22,7 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDat
 
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity> {
-    private City cachedCity;
+    private CityView cachedCityView;
     //для созранения состояния при ConfigChange
     private boolean isLoading = false;
 
@@ -33,26 +33,26 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private Handler sendMessageToUi;
 
     private void cityIsFavorite(boolean isFavorite) {
-        cachedCity.setFavorite(isFavorite);
+        cachedCityView.setFavorite(isFavorite);
     }
 
     public void resumePresenter(Bundle saveDataBundle) {
-        cachedCity = (City) saveDataBundle.get(CITY_VIEW_MODEL);
-        if (cachedCity != null) {
-            TempCity.getInstance().setModelCityWeather(
-                    (ModelCityWeather) saveDataBundle.get(CITY_TEMP_DB_MODEL));
+        cachedCityView = (CityView) saveDataBundle.get(CITY_VIEW_MODEL);
+        if (cachedCityView != null) {
+            TempCity.getInstance().setCityWeatherWrapper(
+                    (CityWeatherWrapper) saveDataBundle.get(CITY_TEMP_DB_MODEL));
         }
-        showInformation(cachedCity);
+        showInformation(cachedCityView);
     }
 
     public Bundle saveData(Bundle outState) {
         //объект для отображения
         //ситуация с TerminateApp, презентер пересоздается, и не имеет кешированной информации
-        if (cachedCity != null) {
-            outState.putParcelable(CITY_VIEW_MODEL, cachedCity);
+        if (cachedCityView != null) {
+            outState.putParcelable(CITY_VIEW_MODEL, cachedCityView);
         }
         //объект для работы с Бд (Удаления/Добавления)
-        outState.putParcelable(CITY_TEMP_DB_MODEL, TempCity.getInstance().getModelCityWeather());
+        outState.putParcelable(CITY_TEMP_DB_MODEL, TempCity.getInstance().getCityWeatherWrapper());
         return outState;
     }
 
@@ -60,23 +60,23 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         sendMessageToUi = new Handler(Looper.getMainLooper());
     }
 
-    private CallbackCity<City> cityCallback = new CallbackCity<City>() {
+    private CityCallback<CityView> cityCallback = new CityCallback<CityView>() {
         @Override
-        public void isFavoriteCity(final City result) {
+        public void isFavoriteCity(final CityView result) {
 //            sendMessageToUi.post(() -> {
-                activity.cityIsFavorite(true);
+                activity.isFavoriteCity(true);
                 cachedInfo(result);
-                showInformation(cachedCity);
+                showInformation(cachedCityView);
                 stopAnimation();
 //            });
         }
 
         @Override
-        public void isNotFavoriteCity(final City result) {
+        public void isNotFavoriteCity(final CityView result) {
 //            sendMessageToUi.post(() -> {
-                activity.cityIsFavorite(false);
+                activity.isFavoriteCity(false);
                 cachedInfo(result);
-                showInformation(cachedCity);
+                showInformation(cachedCityView);
                 stopAnimation();
 //            });
         }
@@ -110,9 +110,9 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         activity.clearInputText();
     }
 
-    private void cachedInfo(City city) {
+    private void cachedInfo(CityView cityView) {
         isLoading = false;
-        cachedCity = city;
+        cachedCityView = cityView;
     }
 
     private void startAnimation() {
@@ -135,14 +135,14 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     private void addToFavorite() {
         new CitiesDataRepository().add(
-                TempCity.getInstance().getModelCityWeather());
+                TempCity.getInstance().getCityWeatherWrapper());
         cityIsFavorite(true);
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
     private void deleteFromFavorite() {
         new CitiesDataRepository().delete(
-                TempCity.getInstance().getModelCityWeather());
+                TempCity.getInstance().getCityWeatherWrapper());
         cityIsFavorite(false);
         showMessage(R.string.activity_favorite_del_from_favorite);
     }
@@ -152,17 +152,17 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             activity.getBinding().setIsLoading(true);
         } else {
 //            hideViewLoading();
-//            if (cachedCity != null) {
-            showInformation(cachedCity);
+//            if (cachedCityView != null) {
+            showInformation(cachedCityView);
 //            }
         }
     }
 
-    public void showInformation(City city) {
-        activity.getBinding().setCity(city);
+    public void showInformation(CityView cityView) {
+        activity.getBinding().setCityView(cityView);
         activity.getBinding().setIsLoading(false);
-        if (city != null) {
-            activity.refreshWeathers(cachedCity.getWeathers());
+        if (cityView != null) {
+            activity.refreshWeathers(cachedCityView.getWeatherViews());
         }
     }
 

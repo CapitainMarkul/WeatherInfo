@@ -1,11 +1,11 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperDbToView;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.MapperGsonToDb;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
-import com.tensor.dapavlov1.tensorfirststep.provider.ApiFabric;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.provider.ApiFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
@@ -25,10 +25,10 @@ import io.reactivex.FlowableOnSubscribe;
 
 public class CloudCitiesDataStore implements CitiesDataStore {
     private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
-    private WeatherApiClient weatherClient = ApiFabric.getInstance().createClientWeatherApi();
+    private WeatherApiClient weatherClient = ApiFactory.getInstance().createClientWeatherApi();
 
-    private MapperDbToView dbToViewMap = MapperDbToView.getInstance();
-    private MapperGsonToDb gsonToDbMap = MapperGsonToDb.getInstance();
+    private DbToViewMap dbToViewMap = DbToViewMap.getInstance();
+    private GsonToDbMap gsonToDbMap = GsonToDbMap.getInstance();
     private GsonFactory gsonFactory = GsonFactory.getInstance();
 
     private List<String> cityNames = new ArrayList<>();
@@ -38,18 +38,18 @@ public class CloudCitiesDataStore implements CitiesDataStore {
     }
 
     @Override
-    public Flowable<City> getCitiesRx() {
+    public Flowable<CityView> getCitiesRx() {
         return weatherClient.getWeatherInCityRx(cityNames)
                 .map(string -> gsonFactory.createGsonCityModel(string))
                 .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .switchMap(modelCityWeather -> {
                     //        //set Update weather info in DB
-                    List<ModelCityWeather> list = new ArrayList<>();
+                    List<CityWeatherWrapper> list = new ArrayList<>();
                     list.add(modelCityWeather);
                     App.getExecutorService().execute(() -> dbClient.updateAllCities(list));
-                    return Flowable.create((FlowableOnSubscribe<City>) e ->
-                                    e.onNext(dbToViewMap.convertDbModelToViewModel(modelCityWeather.getDbCity(), modelCityWeather.getWeathers(), true)),
+                    return Flowable.create((FlowableOnSubscribe<CityView>) e ->
+                                    e.onNext(dbToViewMap.convertDbModelToViewModel(modelCityWeather.getCityDb(), modelCityWeather.getWeathers(), true)),
                             BackpressureStrategy.BUFFER);
                 });
     }

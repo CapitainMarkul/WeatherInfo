@@ -12,13 +12,13 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ItemCardFullInfoWeatherBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
-import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 
 import java.util.ArrayList;
@@ -28,31 +28,31 @@ import java.util.List;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHolder> {
+public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHolder> {
 
-    private List<City> cityWeathers = new ArrayList<>();
-    private RecyclerViewItemClickListener listener;
-    private RecyclerEmptyListener emptyListener;
+    private List<CityView> cityViewWeathers = new ArrayList<>();
+    private DelItemListener listener;
+    private EmptyListener emptyListener;
 
     private boolean isAnimate = true;
 
-    public void setListener(RecyclerViewItemClickListener listener) {
+    public void setListener(DelItemListener listener) {
         this.listener = listener;
     }
 
-    public void setEmptyListener(RecyclerEmptyListener listener) {
+    public void setEmptyListener(EmptyListener listener) {
         emptyListener = listener;
     }
 
-    public void setItems(List<City> cityWeathers) {
-        this.cityWeathers.clear();
-        this.cityWeathers.addAll(cityWeathers);
+    public void setItems(List<CityView> cityViewWeathers) {
+        this.cityViewWeathers.clear();
+        this.cityViewWeathers.addAll(cityViewWeathers);
         notifyDataSetChanged();
     }
 
-    public void setItem(City cityWeather) {
+    public void setItem(CityView cityViewWeather) {
         notifyItemInserted(getItemCount());
-        cityWeathers.add(cityWeather);
+        cityViewWeathers.add(cityViewWeather);
         isAnimate = true;
     }
 
@@ -61,21 +61,21 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
     }
 
     public void setDefaultSetting() {
-        cityWeathers.clear();
+        cityViewWeathers.clear();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new AdapterFavorite.ViewHolder(LayoutInflater.from(parent.getContext())
+        return new FavoriteAdapter.ViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_card_full_info_weather, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.e("City:", cityWeathers.get(position).getName());
+        Log.e("CityView:", cityViewWeathers.get(position).getName());
 
-        holder.binding.setCity(cityWeathers.get(position));
-        holder.adapterHorizontalWeather.setItems(cityWeathers.get(position).getWeathers());
+        holder.binding.setCityView(cityViewWeathers.get(position));
+        holder.horizontalWeatherAdapter.setItems(cityViewWeathers.get(position).getWeatherViews());
 
         if (isAnimate) {
             setAnimation(holder.binding.cardFullInfo, position, holder.getOldPosition(), R.anim.recycleradd);
@@ -93,11 +93,11 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
 
     @Override
     public int getItemCount() {
-        return (cityWeathers != null) ? cityWeathers.size() : 0;
+        return (cityViewWeathers != null) ? cityViewWeathers.size() : 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick {
-        private AdapterHorizontalWeather adapterHorizontalWeather;
+        private HorizontalWeatherAdapter horizontalWeatherAdapter;
         private ItemCardFullInfoWeatherBinding binding;
 
         public ViewHolder(View itemView) {
@@ -111,16 +111,16 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         private void setupViews() {
             binding.rvWeatherOnOtherTime.setLayoutManager(
                     new LinearLayoutManager(App.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            adapterHorizontalWeather = new AdapterHorizontalWeather();
-            binding.rvWeatherOnOtherTime.setAdapter(adapterHorizontalWeather);
+            horizontalWeatherAdapter = new HorizontalWeatherAdapter();
+            binding.rvWeatherOnOtherTime.setAdapter(horizontalWeatherAdapter);
         }
 
         private void removeCard(int position) {
-            cityWeathers.remove(position);  //удаляем из листаАдаптера
+            cityViewWeathers.remove(position);  //удаляем из листаАдаптера
             notifyItemRemoved(position);    //тправляем запрос на обновление списка
-            notifyItemRangeChanged(getAdapterPosition(), cityWeathers.size());  //склеиваем новый список
+            notifyItemRangeChanged(getAdapterPosition(), cityViewWeathers.size());  //склеиваем новый список
             setAnimation(binding.cardFullInfo, position, getOldPosition(), R.anim.recyclerdel);
-            if (emptyListener != null && cityWeathers.isEmpty()) {
+            if (emptyListener != null && cityViewWeathers.isEmpty()) {
                 emptyListener.onEmpty();
             }
         }
@@ -128,7 +128,7 @@ public class AdapterFavorite extends RecyclerView.Adapter<AdapterFavorite.ViewHo
         @Override
         public void onItemClick() {
             if (listener != null) {
-                listener.onClickDelCityFromDb(getPosition());
+                listener.onItemClick(getPosition());
                 removeCard(getAdapterPosition());
             }
         }

@@ -1,6 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.commands;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 
@@ -10,22 +10,22 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 
 public class AddCityInDbCommand implements Command {
     private DbClient dbClient;
-    private ModelCityWeather modelCityWeather;
+    private CityWeatherWrapper cityWeatherWrapper;
 
-    public AddCityInDbCommand(DbClient dbClient, ModelCityWeather modelCityWeather) {
+    public AddCityInDbCommand(DbClient dbClient, CityWeatherWrapper cityWeatherWrapper) {
         this.dbClient = dbClient;
-        this.modelCityWeather = modelCityWeather;
+        this.cityWeatherWrapper = cityWeatherWrapper;
     }
 
     @Override
     public void execute() {
         dbClient.setInDataBase(
-                modelCityWeather.getDbCity(),
-                modelCityWeather.getWeathers());
+                cityWeatherWrapper.getCityDb(),
+                cityWeatherWrapper.getWeathers());
     }
 
     @Override
     public void undo() {
-        dbClient.deleteCity(modelCityWeather.getDbCity());
+        dbClient.deleteCity(cityWeatherWrapper.getCityDb());
     }
 }

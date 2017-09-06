@@ -14,15 +14,15 @@ import android.view.View;
 
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
-import com.tensor.dapavlov1.tensorfirststep.RootLoader;
+import com.tensor.dapavlov1.tensorfirststep.BaseLoader;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerEmptyListener;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter.AdapterFavorite;
+import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter.FavoriteAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter.FavoritePresenter;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.RecyclerViewItemClickListener;
-import com.tensor.dapavlov1.tensorfirststep.presentation.routers.RouterToAddCity;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
+import com.tensor.dapavlov1.tensorfirststep.presentation.routers.FavoriteToAddCityRouter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +34,8 @@ import java.util.Map;
  */
 
 public class FavoriteActivity extends AppCompatActivity
-        implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoritePresenter,
-        RecyclerViewItemClickListener, RecyclerEmptyListener,
+        implements com.tensor.dapavlov1.tensorfirststep.interfaces.FavoriteActivity,
+        DelItemListener, EmptyListener,
         LoaderManager.LoaderCallbacks<Map<String, Object>> {
     private final static String FAVORITE_PRESENTER = "favorite_presenter";
     private final static String FAVORITE_ADAPTER = "favorite_adapter";
@@ -45,8 +45,8 @@ public class FavoriteActivity extends AppCompatActivity
 
     private DisposableManager disposableManager;
     private FavoritePresenter mPresenter;
-    private AdapterFavorite adapterFavorite;
-    private RouterToAddCity routerToAddCity;
+    private FavoriteAdapter favoriteAdapter;
+    private FavoriteToAddCityRouter favoriteToAddCityRouter;
 
     private ActivityFavoriteBinding binding;
 
@@ -82,8 +82,8 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void setupRouter() {
-        routerToAddCity = new RouterToAddCity();
-        mPresenter.setRouter(routerToAddCity);
+        favoriteToAddCityRouter = new FavoriteToAddCityRouter();
+        mPresenter.setRouter(favoriteToAddCityRouter);
     }
 
     private void setupPresenter() {
@@ -93,7 +93,7 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void launchUpdateWeatherInfo() {
-        adapterFavorite.setDefaultSetting();
+        favoriteAdapter.setDefaultSetting();
         mPresenter.updateWeathers();
     }
 
@@ -110,12 +110,12 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    public void setItemsInAdapter(final List<City> weathers) {
-        adapterFavorite.setItems(weathers);
+    public void setItems(final List<CityView> weathers) {
+        favoriteAdapter.setItems(weathers);
     }
 
-    public void setItemInAdapter(City cityWeather) {
-        adapterFavorite.setItem(cityWeather);
+    public void setItemInAdapter(CityView cityViewWeather) {
+        favoriteAdapter.setItem(cityViewWeather);
         //для работы анимации на 1 элементе
         binding.recyclerViewFavorite.scrollToPosition(0);
     }
@@ -126,14 +126,14 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    public void errorMessage(@StringRes final int message) {
+    public void showErrorMessage(@StringRes final int message) {
         Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_LONG).show();
     }
 
     private Map<String, Object> createConfigMap() {
         Map<String, Object> values = new HashMap<>();
         values.put(FAVORITE_PRESENTER, mPresenter);
-        values.put(FAVORITE_ADAPTER, adapterFavorite);
+        values.put(FAVORITE_ADAPTER, favoriteAdapter);
         return values;
     }
 
@@ -153,7 +153,7 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClickDelCityFromDb(int position) {
+    public void onItemClick(int position) {
         mPresenter.deleteCity(position);
     }
 
@@ -163,9 +163,9 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void setupRecyclerAdapter() {
-        adapterFavorite = new AdapterFavorite();
-        adapterFavorite.setListener(FavoriteActivity.this);
-        adapterFavorite.setEmptyListener(FavoriteActivity.this);
+        favoriteAdapter = new FavoriteAdapter();
+        favoriteAdapter.setListener(FavoriteActivity.this);
+        favoriteAdapter.setEmptyListener(FavoriteActivity.this);
     }
 
     @Override
@@ -175,13 +175,13 @@ public class FavoriteActivity extends AppCompatActivity
         setupRecyclerView();
 
         launchUpdateWeatherInfo();
-        return new RootLoader(getBaseContext(), createConfigMap());
+        return new BaseLoader(getBaseContext(), createConfigMap());
     }
 
     private void setupRecyclerView() {
         binding.recyclerViewFavorite.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        binding.recyclerViewFavorite.setAdapter(adapterFavorite);
+        binding.recyclerViewFavorite.setAdapter(favoriteAdapter);
         binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
 
@@ -193,17 +193,17 @@ public class FavoriteActivity extends AppCompatActivity
         binding.setMPresenter(mPresenter);
 
         //восстаансливаем прошлый адаптер
-        adapterFavorite = (AdapterFavorite) dataMap.get(FAVORITE_ADAPTER);
+        favoriteAdapter = (FavoriteAdapter) dataMap.get(FAVORITE_ADAPTER);
         setupRecyclerView();
 
         mPresenter.attachActivity(this);
 
         //если ответ от сервера уже пришел, то показываем результат
         if (mPresenter.isLoadingComplete()) {
-            adapterFavorite.setAnimate(isChangingConfigurations());
+            favoriteAdapter.setAnimate(isChangingConfigurations());
             mPresenter.showCachedCities();
         } else {
-            if (binding.getCities() != null && binding.getCity() != null) {
+            if (binding.getCities() != null && binding.getCityView() != null) {
                 binding.setIsLoading(true);
             } else {
                 if(binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE){
@@ -242,13 +242,13 @@ public class FavoriteActivity extends AppCompatActivity
         //чистим последний cachedCity, чтобы он не показывался при повороте экрана
         mPresenter.clearCacheCities();
 
-//        Log.e("City:", String.valueOf(getBinding().getCities()));
-//        Log.e("Cities:", String.valueOf(getBinding().getCity()));
+//        Log.e("CityView:", String.valueOf(getBinding().getCities()));
+//        Log.e("Cities:", String.valueOf(getBinding().getCityView()));
 //        Log.e("Loading:", String.valueOf(getBinding().getIsLoading()));
 
         binding.setIsLoading(false);
         binding.setCities(null);
-        binding.setCity(null);
+        binding.setCityView(null);
 
 //// FIXME: 05.09.2017 Когда RecyclerView становится пуст приветственная Карточка не появляется, хотя выражение в Биндинге вроде как верное и в логах
         //Update: если не переворачивать экран, то все появится, но если во время обновления повернуть, а потом удалить, то нет
@@ -256,8 +256,8 @@ public class FavoriteActivity extends AppCompatActivity
 //        binding.recyclerViewFavorite.setVisibility(View.INVISIBLE);
 //        binding.cardWeatherDefault.cvDefault.setVisibility(View.VISIBLE);
 //        //        binding.setIsLoading(true);
-//        Log.e("City:", String.valueOf(getBinding().getCities()));
-//        Log.e("Cities:", String.valueOf(getBinding().getCity()));
+//        Log.e("CityView:", String.valueOf(getBinding().getCities()));
+//        Log.e("Cities:", String.valueOf(getBinding().getCityView()));
 //        Log.e("Loading:", String.valueOf(getBinding().getIsLoading()));
     }
 }

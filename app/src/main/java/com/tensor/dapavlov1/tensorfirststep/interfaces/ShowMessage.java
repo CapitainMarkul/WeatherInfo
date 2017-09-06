@@ -7,7 +7,7 @@ import android.support.annotation.StringRes;
  */
 
 public interface ShowMessage {
-//    void showMessage(String message);
     void showMessage(@StringRes int message);
-    void errorMessage(@StringRes int message);
+
+    void showErrorMessage(@StringRes int message);
 }

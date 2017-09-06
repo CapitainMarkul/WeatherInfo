@@ -11,8 +11,8 @@
         <import type="java.util.List"/>
 
         <!--<variable-->
-        <!--name="city"-->
-        <!--type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City"/>-->
+        <!--name="cityView"-->
+        <!--type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityViewView"/>-->
 
         <variable
             name="isLoading"
@@ -20,11 +20,11 @@
 
         <variable
             name="cities"
-            type="List&lt;com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City&gt;"/> <!-- generic List<Item> -->
+            type="List&lt;com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView&gt;"/> <!-- generic List<Item> -->
 
         <variable
-            name="city"
-            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.City"/>
+            name="cityView"
+            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView"/>
 
         <variable
             name="mPresenter"
@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
-                    android:visibility="@{city != null || cities!= null ? v.VISIBLE : v.INVISIBLE}"/>
+                    android:visibility="@{cityView != null || cities!= null ? v.VISIBLE : v.INVISIBLE}"/>
             </android.support.v4.widget.SwipeRefreshLayout>
 
             <LinearLayout
@@ -104,9 +104,9 @@
                 <include
                     android:id="@+id/card_weather_default"
                     layout="@layout/card_weather_default"
-                    android:visibility="@{isLoading || city != null || cities != null ? v.INVISIBLE : v.VISIBLE }"/>
-                <!--|| (!isLoading &amp;&amp; (city == null &amp;&amp; cities == null))-->
-                <!--android:visibility="@{isLoading || (!isLoading &amp;&amp; (city != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>-->
+                    android:visibility="@{isLoading || cityView != null || cities != null ? v.INVISIBLE : v.VISIBLE }"/>
+                <!--|| (!isLoading &amp;&amp; (cityView == null &amp;&amp; cities == null))-->
+                <!--android:visibility="@{isLoading || (!isLoading &amp;&amp; (cityView != null || cities != null)) ? v.INVISIBLE : v.VISIBLE }"/>-->
                 <!--android:visibility="@{cities == null  || cities.size() == 0 ? v.VISIBLE : v.INVISIBLE }"/>-->
             </LinearLayout>
 

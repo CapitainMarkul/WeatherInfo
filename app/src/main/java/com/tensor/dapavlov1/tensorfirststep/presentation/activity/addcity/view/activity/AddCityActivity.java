@@ -20,13 +20,13 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.RootLoader;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.Weather;
+import com.tensor.dapavlov1.tensorfirststep.BaseLoader;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
-import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.AdapterHorizontalWeather;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
@@ -47,7 +47,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class AddCityActivity extends AppCompatActivity
-        implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityPresenter,
+        implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityActivity,
         LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
     private final static String NEW_CITY_PRESENTER = "new_city_presenter";
     private final static String NEW_CITY_ADAPTER = "new_city_adapter";
@@ -62,7 +62,7 @@ public class AddCityActivity extends AppCompatActivity
     private DisposableManager disposableManager;
     private PlacesAutoComplete placesAutoComplete;
     private AddCityPresenter mPresenter;
-    private AdapterHorizontalWeather adapterHorizontalWeather;
+    private HorizontalWeatherAdapter horizontalWeatherAdapter;
 
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
     private Bundle saveBundle;
@@ -246,7 +246,7 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     public void runSearch() {
-        binding.cvWeatherCity.setCity(null);
+        binding.cvWeatherCity.setCityView(null);
         mPresenter.getWeatherInCity(autoText.getText().toString());
     }
 
@@ -260,7 +260,7 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     @Override
-    public void cityIsFavorite(final Boolean checked) {
+    public void isFavoriteCity(final Boolean checked) {
         if (checked) {
             binding.cvWeatherCity.cbAddToFavorite.setChecked(true);
         } else {
@@ -268,9 +268,9 @@ public class AddCityActivity extends AppCompatActivity
         }
     }
 
-    public void refreshWeathers(final List<Weather> weathers) {
-        adapterHorizontalWeather.setItems(weathers);
-        adapterHorizontalWeather.notifyDataSetChanged();
+    public void refreshWeathers(final List<WeatherView> weatherViews) {
+        horizontalWeatherAdapter.setItems(weatherViews);
+        horizontalWeatherAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -279,18 +279,18 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     @Override
-    public void errorMessage(@StringRes final int message) {
+    public void showErrorMessage(@StringRes final int message) {
         Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     private void setupRecyclerView() {
         binding.cvWeatherCity.rvWeatherOnOtherTime.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.cvWeatherCity.rvWeatherOnOtherTime.setAdapter(adapterHorizontalWeather);
+        binding.cvWeatherCity.rvWeatherOnOtherTime.setAdapter(horizontalWeatherAdapter);
     }
 
     private void setupRecyclerAdapter() {
-        adapterHorizontalWeather = new AdapterHorizontalWeather();
+        horizontalWeatherAdapter = new HorizontalWeatherAdapter();
     }
 
     @Override
@@ -307,13 +307,13 @@ public class AddCityActivity extends AppCompatActivity
         createPresenter();
         setupRecyclerAdapter();
         setupRecyclerView();
-        return new RootLoader(getBaseContext(), createConfigMap());
+        return new BaseLoader(getBaseContext(), createConfigMap());
     }
 
     private Map<String, Object> createConfigMap() {
         Map<String, Object> values = new HashMap<>();
         values.put(NEW_CITY_PRESENTER, mPresenter);
-        values.put(NEW_CITY_ADAPTER, adapterHorizontalWeather);
+        values.put(NEW_CITY_ADAPTER, horizontalWeatherAdapter);
         return values;
     }
 
@@ -328,7 +328,7 @@ public class AddCityActivity extends AppCompatActivity
         binding.toolBar.setActivity(this);
         binding.cvWeatherCity.setMPresenter(mPresenter);
 
-        adapterHorizontalWeather = (AdapterHorizontalWeather) dataMap.get(NEW_CITY_ADAPTER);
+        horizontalWeatherAdapter = (HorizontalWeatherAdapter) dataMap.get(NEW_CITY_ADAPTER);
         mPresenter.attachActivity(this);
 
         if (saveBundle != null) {

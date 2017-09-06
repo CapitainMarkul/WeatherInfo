@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.provider.ApiFabric;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud.CloudCitiesDataStore;

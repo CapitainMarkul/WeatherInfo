@@ -7,7 +7,6 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.greenrobot.greendao.annotation.Generated;
@@ -18,8 +17,8 @@ import org.greenrobot.greendao.annotation.ToMany;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-@Entity(active = true, nameInDb = "City")
-public class DbCity implements Parcelable {
+@Entity(active = true, nameInDb = "CityView")
+public class CityDb implements Parcelable {
     @Id
     private Long id;
 
@@ -30,26 +29,45 @@ public class DbCity implements Parcelable {
     private String lastTimeUpdate;
 
     @ToMany(referencedJoinProperty = "cityId")
-    private List<DbWeather> weathers;
+    private List<WeatherDb> weathers;
 
 
-    protected DbCity(Parcel in) {
+    protected CityDb(Parcel in) {
         name = in.readString();
         lastTimeUpdate = in.readString();
-        weathers = in.createTypedArrayList(DbWeather.CREATOR);
+        weathers = in.createTypedArrayList(WeatherDb.CREATOR);
     }
 
-    public static final Creator<DbCity> CREATOR = new Creator<DbCity>() {
+    @Generated(hash = 1593918692)
+    public CityDb(Long id, @NotNull String name, @NotNull String lastTimeUpdate) {
+        this.id = id;
+        this.name = name;
+        this.lastTimeUpdate = lastTimeUpdate;
+    }
+
+    @Generated(hash = 48884886)
+    public CityDb() {
+    }
+
+    public static final Creator<CityDb> CREATOR = new Creator<CityDb>() {
         @Override
-        public DbCity createFromParcel(Parcel in) {
-            return new DbCity(in);
+        public CityDb createFromParcel(Parcel in) {
+            return new CityDb(in);
         }
 
         @Override
-        public DbCity[] newArray(int size) {
-            return new DbCity[size];
+        public CityDb[] newArray(int size) {
+            return new CityDb[size];
         }
     };
+
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+
+    /** Used for active entity operations. */
+    @Generated(hash = 1650035712)
+    private transient CityDbDao myDao;
 
     @Override
     public int describeContents() {
@@ -61,29 +79,6 @@ public class DbCity implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(lastTimeUpdate);
         parcel.writeTypedList(weathers);
-    }
-
-    /**
-     * Used to resolve relations
-     */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
-
-    /**
-     * Used for active entity operations.
-     */
-    @Generated(hash = 1507836013)
-    private transient DbCityDao myDao;
-
-    @Generated(hash = 457832615)
-    public DbCity(Long id, @NotNull String name, @NotNull String lastTimeUpdate) {
-        this.id = id;
-        this.name = name;
-        this.lastTimeUpdate = lastTimeUpdate;
-    }
-
-    @Generated(hash = 1720623914)
-    public DbCity() {
     }
 
     public Long getId() {
@@ -114,15 +109,15 @@ public class DbCity implements Parcelable {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 1065597217)
-    public List<DbWeather> getWeathers() {
+    @Generated(hash = 1482753015)
+    public List<WeatherDb> getWeathers() {
         if (weathers == null) {
             final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
-            DbWeatherDao targetDao = daoSession.getDbWeatherDao();
-            List<DbWeather> weathersNew = targetDao._queryDbCity_Weathers(id);
+            WeatherDbDao targetDao = daoSession.getWeatherDbDao();
+            List<WeatherDb> weathersNew = targetDao._queryCityDb_Weathers(id);
             synchronized (this) {
                 if (weathers == null) {
                     weathers = weathersNew;
@@ -132,9 +127,7 @@ public class DbCity implements Parcelable {
         return weathers;
     }
 
-    /**
-     * Resets a to-many relationship, making the next get call to query for a fresh result.
-     */
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 883555496)
     public synchronized void resetWeathers() {
         weathers = null;
@@ -176,12 +169,11 @@ public class DbCity implements Parcelable {
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 47395212)
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1176901720)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getDbCityDao() : null;
+        myDao = daoSession != null ? daoSession.getCityDbDao() : null;
     }
+
 }

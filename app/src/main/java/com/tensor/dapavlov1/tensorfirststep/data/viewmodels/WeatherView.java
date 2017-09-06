@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class Weather implements Parcelable {
+public class WeatherView implements Parcelable {
     private String windShort;
     private double windSpeed;
     private double pressure;
@@ -23,7 +23,7 @@ public class Weather implements Parcelable {
     private String iconCode;
     private String description;
 
-    public Weather(String windShort, double windSpeed, double pressure, double temperature, String date, String time, String iconUrl, String iconCode, String description) {
+    public WeatherView(String windShort, double windSpeed, double pressure, double temperature, String date, String time, String iconUrl, String iconCode, String description) {
         this.windShort = windShort;
         this.windSpeed = windSpeed;
         this.pressure = pressure;
@@ -35,7 +35,7 @@ public class Weather implements Parcelable {
         this.description = description;
     }
 
-    protected Weather(Parcel in) {
+    protected WeatherView(Parcel in) {
         windShort = in.readString();
         windSpeed = in.readDouble();
         pressure = in.readDouble();
@@ -47,15 +47,15 @@ public class Weather implements Parcelable {
         description = in.readString();
     }
 
-    public static final Creator<Weather> CREATOR = new Creator<Weather>() {
+    public static final Creator<WeatherView> CREATOR = new Creator<WeatherView>() {
         @Override
-        public Weather createFromParcel(Parcel in) {
-            return new Weather(in);
+        public WeatherView createFromParcel(Parcel in) {
+            return new WeatherView(in);
         }
 
         @Override
-        public Weather[] newArray(int size) {
-            return new Weather[size];
+        public WeatherView[] newArray(int size) {
+            return new WeatherView[size];
         }
     };
 

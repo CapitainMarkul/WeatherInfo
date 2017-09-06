@@ -1,6 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.data.viewmodels;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.ModelCityWeather;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 
 /**
  * Created by da.pavlov1 on 15.08.2017.
@@ -19,13 +19,13 @@ public class TempCity {
     }
 
 
-    private ModelCityWeather modelCityWeather;
+    private CityWeatherWrapper cityWeatherWrapper;
 
-    public void setModelCityWeather(ModelCityWeather modelCityWeather) {
-        this.modelCityWeather = modelCityWeather;
+    public void setCityWeatherWrapper(CityWeatherWrapper cityWeatherWrapper) {
+        this.cityWeatherWrapper = cityWeatherWrapper;
     }
 
-    public ModelCityWeather getModelCityWeather(){
-        return modelCityWeather;
+    public CityWeatherWrapper getCityWeatherWrapper(){
+        return cityWeatherWrapper;
     }
 }

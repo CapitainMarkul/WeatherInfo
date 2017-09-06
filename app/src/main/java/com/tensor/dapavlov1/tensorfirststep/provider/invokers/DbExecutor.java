@@ -6,7 +6,7 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
  * Created by da.pavlov1 on 16.08.2017.
  */
 
-public class RemoteControlDb {
+public class DbExecutor {
     private Command command;
 
     public void setCommand(Command command) {
