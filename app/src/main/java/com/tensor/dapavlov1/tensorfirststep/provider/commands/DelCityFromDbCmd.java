@@ -7,18 +7,18 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
  * Created by da.pavlov1 on 16.08.2017.
  */
 
-public class DelCityByIndexCommand implements Command {
+public class DelCityFromDbCmd implements Command {
     private DbClient dbClient;
-    private int index;
+    private String cityName;
 
-    public DelCityByIndexCommand(DbClient dbClient, int index) {
+    public DelCityFromDbCmd(DbClient dbClient, String cityName) {
         this.dbClient = dbClient;
-        this.index = index;
+        this.cityName = cityName;
     }
 
     @Override
     public void execute() {
-        dbClient.deleteCity(index);
+        dbClient.deleteCity(cityName);
     }
 
     @Override

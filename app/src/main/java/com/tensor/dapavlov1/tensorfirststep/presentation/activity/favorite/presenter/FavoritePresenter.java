@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
@@ -57,8 +58,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         @Override
         public void isEmpty() {
             isLoading = true;
-            activity.getBinding().setCities(null);
-            activity.getBinding().setCityView(null);
+            Log.e("Visible", String.valueOf(activity.getBinding().cardWeatherDefault.cvDefault.getVisibility()));
+            activity.getBinding().setIsLoading(false);
+            Log.e("isLoading", String.valueOf(activity.getBinding().getIsLoading()));
+            Log.e("City", String.valueOf(activity.getBinding().getCityView()));
+            Log.e("Cities", String.valueOf(activity.getBinding().getCities()));
+            Log.e("VisibleTotal", String.valueOf(activity.getBinding().cardWeatherDefault.cvDefault.getVisibility()));
+
+//            activity.showMessage(R.string.activity_favorite_update_success);
+//            activity.getBinding().setCities(null);
+//            activity.getBinding().setCityView(null);
         }
 
         @Override
@@ -97,8 +106,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
         router.goToActivity(activity, AddCityActivity.class);
     }
 
-    public void deleteCity(int position) {
-        new CitiesDataRepository().delete(position);
+    public void deleteCity(String cityName) {
+        new CitiesDataRepository().delete(cityName);
     }
 
     private void showCity(CityView cityView) {

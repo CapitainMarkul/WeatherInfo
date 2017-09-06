@@ -33,8 +33,8 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
     }
 
     @Override
-    public void delete(Object city) {
-        dbCitiesStore.delete(city);
+    public void delete(String cityName) {
+        dbCitiesStore.delete(cityName);
     }
 
 
@@ -92,6 +92,7 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
         if (isOnline(App.getContext())) {
             return cloudCitiesStore.getCitiesRx(cityNames);
         } else {
+            // TODO: 06.09.2017 А как отсюда дать пользователю понять, что сеть отсутствует? Здесь нет CallBack который можно вызвать
             return dbCitiesStore.getCitiesRx();
         }
     }

@@ -65,7 +65,7 @@ public class FavoriteActivity extends AppCompatActivity
 
     private void checkUpdateInOtherActivity() {
         if (CheckUpdateInOtherActivity.getInstance().isUpdate()) {
-            launchUpdateWeatherInfo();
+            startUpdateWeatherInfo();
             CheckUpdateInOtherActivity.getInstance().setUpdate(false);
         }
     }
@@ -91,13 +91,13 @@ public class FavoriteActivity extends AppCompatActivity
         setupRouter();
     }
 
-    private void launchUpdateWeatherInfo() {
+    private void startUpdateWeatherInfo() {
         favoriteAdapter.setDefaultSetting();
         mPresenter.updateWeathers();
     }
 
     private void setupListeners() {
-        binding.srRefresh.setOnRefreshListener(() -> launchUpdateWeatherInfo());
+        binding.srRefresh.setOnRefreshListener(() -> startUpdateWeatherInfo());
     }
 
     @Override
@@ -149,8 +149,8 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClick(int position) {
-        mPresenter.deleteCity(position);
+    public void onItemClick(String cityName) {
+        mPresenter.deleteCity(cityName);
     }
 
     //Loaders
@@ -170,7 +170,7 @@ public class FavoriteActivity extends AppCompatActivity
         setupRecyclerAdapter();
         setupRecyclerView();
 
-        launchUpdateWeatherInfo();
+        startUpdateWeatherInfo();
         return new BaseLoader(getBaseContext(), createConfigMap());
     }
 
@@ -239,13 +239,18 @@ public class FavoriteActivity extends AppCompatActivity
         //чистим последний cachedCity, чтобы он не показывался при повороте экрана
         mPresenter.clearCacheCities();
 
-//        Log.e("CityView:", String.valueOf(getBinding().getCities()));
-//        Log.e("Cities:", String.valueOf(getBinding().getCityView()));
-//        Log.e("Loading:", String.valueOf(getBinding().getIsLoading()));
+        Log.e("Visible", String.valueOf(binding.cardWeatherDefault.cvDefault.getVisibility()));
 
         binding.setIsLoading(false);
         binding.setCities(null);
         binding.setCityView(null);
+
+        Log.e("isLoading", String.valueOf(binding.getIsLoading()));
+        Log.e("City", String.valueOf(binding.getCityView()));
+        Log.e("Cities", String.valueOf(binding.getCities()));
+        Log.e("VisibleTotal", String.valueOf(binding.cardWeatherDefault.cvDefault.getVisibility()));
+
+
 
 //// FIXME: 05.09.2017 Когда RecyclerView становится пуст приветственная Карточка не появляется, хотя выражение в Биндинге вроде как верное и в логах
         //Update: если не переворачивать экран, то все появится, но если во время обновления повернуть, а потом удалить, то нет

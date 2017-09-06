@@ -6,8 +6,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityByIndexCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCmd;
+import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityFromDbCmd;
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.DbExecutor;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 
@@ -45,24 +45,17 @@ public class DbCitiesStore implements CitiesDataStore {
         dbExecutor = new DbExecutor();
     }
 
+    @Override
     public void add(CityWeatherWrapper city) {
         dbExecutor.setCommand(
-                new AddCityInDbCommand(dbClient, city));
+                new AddCityInDbCmd(dbClient, city));
         dbExecutor.execute();
     }
 
-    public void delete(Object city) {
-        //удаление по индексу
-        if (city instanceof Integer) {
-            dbExecutor.setCommand(
-                    new DelCityByIndexCommand(dbClient, (Integer) city));
-            dbExecutor.execute();
-        }
-        //удаление по элементу
-        else if (city instanceof CityWeatherWrapper) {
-            dbExecutor.setCommand(
-                    new AddCityInDbCommand(dbClient, (CityWeatherWrapper) city));
-            dbExecutor.undo();
-        }
+    @Override
+    public void delete(String cityName) {
+        dbExecutor.setCommand(
+                new DelCityFromDbCmd(dbClient, cityName));
+        dbExecutor.execute();
     }
 }

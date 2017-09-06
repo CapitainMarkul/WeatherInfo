@@ -15,5 +15,7 @@ public interface CitiesDataStore {
 
     void add(CityWeatherWrapper city);
 
-    void delete(Object city);
+//    void delete(Object city);
+
+    void delete(String cityName);
 }

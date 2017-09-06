@@ -5,6 +5,6 @@ package com.tensor.dapavlov1.tensorfirststep.interfaces;
  */
 
 public interface DelItemListener {
-    void onItemClick(final int position);
+    void onItemClick(String cityName);
 }
 

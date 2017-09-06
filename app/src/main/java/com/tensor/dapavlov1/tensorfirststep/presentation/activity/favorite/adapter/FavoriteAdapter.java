@@ -129,7 +129,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         @Override
         public void onItemClick() {
             if (listener != null) {
-                listener.onItemClick(getPosition());
+                listener.onItemClick(binding.tvCity.getText().toString());
                 removeCard(getAdapterPosition());
             }
         }

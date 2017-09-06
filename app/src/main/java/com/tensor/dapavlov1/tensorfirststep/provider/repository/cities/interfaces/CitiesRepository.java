@@ -16,7 +16,7 @@ import io.reactivex.Flowable;
 public interface CitiesRepository {
     void add(CityWeatherWrapper city);
 
-    void delete(Object city);
+    void delete(String cityName);
 
     void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
 

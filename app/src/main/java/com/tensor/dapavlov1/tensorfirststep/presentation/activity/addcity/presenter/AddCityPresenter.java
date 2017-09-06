@@ -126,7 +126,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     private void deleteFromFavorite() {
         new CitiesDataRepository().delete(
-                TempCity.getInstance().getCityWeatherWrapper());
+                TempCity.getInstance().getCityWeatherWrapper().getCityDb().getName());
         cityIsFavorite(false);
         showMessage(R.string.activity_favorite_del_from_favorite);
     }

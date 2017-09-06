@@ -11,6 +11,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 
 import org.greenrobot.greendao.query.Query;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -154,27 +155,33 @@ public class DbClient {
         return weatherDbs;
     }
 
-    private CityDb getDaoCity(int index) {
-        try {
-            return query.forCurrentThread().list().get(index);
-        } catch (IndexOutOfBoundsException e) {
-            return null;
-        }
+//    private CityDb getDaoCity(int index) {
+//        try {
+//            return query.forCurrentThread().list().get(index);
+//        } catch (IndexOutOfBoundsException e) {
+//            return null;
+//        }
+//    }
+
+//    public void deleteCity(final int position) {
+//        App.getExecutorService().execute(() -> deleteCity(getDaoCity(position)));
+//    }
+
+    public void deleteCity(@NotNull String cityName){
+        CityDb temp = searchCity(cityName);
+        App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
+        temp.delete();
     }
 
-    public void deleteCity(final int position) {
-        App.getExecutorService().execute(() -> deleteCity(getDaoCity(position)));
-    }
-
-    public void deleteCity(@Nullable CityDb cityDb) {
-        if (cityDb != null) {
-            //Информация о сессии с БД, не переживает Terminate (приходится вот так восстанавливать)
-
-            CityDb temp = searchCity(cityDb.getName());
-            App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
-            temp.delete();
-        }
-    }
+//    public void deleteCity(@Nullable CityDb cityDb) {
+//        if (cityDb != null) {
+//            //Информация о сессии с БД, не переживает Terminate (приходится вот так восстанавливать)
+//
+//            CityDb temp = searchCity(cityDb.getName());
+//            App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
+//            temp.delete();
+//        }
+//    }
 
     private CityDb searchCity(String cityName) {
         return daoSession.getCityDbDao().queryBuilder()

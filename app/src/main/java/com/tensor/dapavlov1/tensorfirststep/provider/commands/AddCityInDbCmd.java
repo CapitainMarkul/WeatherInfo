@@ -8,11 +8,11 @@ import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
  * Created by da.pavlov1 on 16.08.2017.
  */
 
-public class AddCityInDbCommand implements Command {
+public class AddCityInDbCmd implements Command {
     private DbClient dbClient;
     private CityWeatherWrapper cityWeatherWrapper;
 
-    public AddCityInDbCommand(DbClient dbClient, CityWeatherWrapper cityWeatherWrapper) {
+    public AddCityInDbCmd(DbClient dbClient, CityWeatherWrapper cityWeatherWrapper) {
         this.dbClient = dbClient;
         this.cityWeatherWrapper = cityWeatherWrapper;
     }
@@ -26,6 +26,6 @@ public class AddCityInDbCommand implements Command {
 
     @Override
     public void undo() {
-        dbClient.deleteCity(cityWeatherWrapper.getCityDb());
+        dbClient.deleteCity(cityWeatherWrapper.getCityDb().getName());
     }
 }
