@@ -69,7 +69,7 @@ public class CloudCitiesStore {
                 })
                 .map(viewCity -> {
 //                    CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
-                    CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
+                    CityDb cityDb = dbClient.searchCity(viewCity.getName());
                     if (cityDb == null) {
                         viewCity.setFavorite(false);
                         return viewCity;

@@ -12,7 +12,7 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-@Entity(nameInDb = "WeatherView")
+@Entity(nameInDb = "Weather")
 public class WeatherDb implements Parcelable {
     @Id
     private Long id;
@@ -90,6 +90,7 @@ public class WeatherDb implements Parcelable {
     @Generated(hash = 273700809)
     public WeatherDb() {
     }
+
 
     public static final Creator<WeatherDb> CREATOR = new Creator<WeatherDb>() {
         @Override

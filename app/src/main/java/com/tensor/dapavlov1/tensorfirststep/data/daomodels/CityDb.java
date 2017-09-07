@@ -17,7 +17,7 @@ import org.greenrobot.greendao.annotation.ToMany;
  * Created by da.pavlov1 on 07.08.2017.
  */
 
-@Entity(active = true, nameInDb = "CityView")
+@Entity(active = true, nameInDb = "City")
 public class CityDb implements Parcelable {
     @Id
     private Long id;
@@ -49,6 +49,8 @@ public class CityDb implements Parcelable {
     public CityDb() {
     }
 
+
+
     public static final Creator<CityDb> CREATOR = new Creator<CityDb>() {
         @Override
         public CityDb createFromParcel(Parcel in) {
@@ -68,6 +70,8 @@ public class CityDb implements Parcelable {
     /** Used for active entity operations. */
     @Generated(hash = 1650035712)
     private transient CityDbDao myDao;
+
+
 
     @Override
     public int describeContents() {
@@ -175,5 +179,4 @@ public class CityDb implements Parcelable {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getCityDbDao() : null;
     }
-
 }

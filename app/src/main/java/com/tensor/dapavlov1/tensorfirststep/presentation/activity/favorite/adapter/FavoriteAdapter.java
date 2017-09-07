@@ -110,6 +110,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             public void result(boolean isSuccess) {
                 if (isSuccess) {
                     removeCard(getAdapterPosition());
+                    ConnectorDeleteListener.getInstance().setCallBack(null);
                 } else {
                     Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
                 }

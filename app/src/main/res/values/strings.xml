@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WeatherView Info</string>
+    <string name="app_name">Weather Info</string>
     <!--<string name="str_simple_name">Город добавлен в избранное</string>-->
 
     <string name="activity_favorite_add_to_favorite">Город добавлен в избранное</string>
