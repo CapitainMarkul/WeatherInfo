@@ -11,13 +11,12 @@ public class TempCity {
         return TempCityLoader.INSTANCE;
     }
 
-    private static final class TempCityLoader{
+    private static final class TempCityLoader {
         private static final TempCity INSTANCE = new TempCity();
     }
 
     private TempCity() {
     }
-
 
     private CityWeatherWrapper cityWeatherWrapper;
 
@@ -25,7 +24,7 @@ public class TempCity {
         this.cityWeatherWrapper = cityWeatherWrapper;
     }
 
-    public CityWeatherWrapper getCityWeatherWrapper(){
+    public CityWeatherWrapper getCityWeatherWrapper() {
         return cityWeatherWrapper;
     }
 }

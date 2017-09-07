@@ -26,7 +26,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     private boolean isLoading = false;
 
     private final static String CITY_VIEW_MODEL = "city_view_model";
-    private final static String CITY_TEMP_DB_MODEL = "city_db_model";
 
     private void cityIsFavorite(boolean isFavorite) {
         cachedCityView.setFavorite(isFavorite);
@@ -34,10 +33,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     public void resumePresenter(Bundle saveDataBundle) {
         cachedCityView = (CityView) saveDataBundle.get(CITY_VIEW_MODEL);
-        if (cachedCityView != null) {
-            TempCity.getInstance().setCityWeatherWrapper(
-                    (CityWeatherWrapper) saveDataBundle.get(CITY_TEMP_DB_MODEL));
-        }
         showInformation(cachedCityView);
     }
 
@@ -47,8 +42,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         if (cachedCityView != null) {
             outState.putParcelable(CITY_VIEW_MODEL, cachedCityView);
         }
-        //объект для работы с Бд (Удаления/Добавления)
-        outState.putParcelable(CITY_TEMP_DB_MODEL, TempCity.getInstance().getCityWeatherWrapper());
         return outState;
     }
 
@@ -118,15 +111,15 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     }
 
     private void addToFavorite() {
-        new CitiesDataRepository().add(
-                TempCity.getInstance().getCityWeatherWrapper());
+        new CitiesDataRepository().add(cachedCityView);
         cityIsFavorite(true);
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
     private void deleteFromFavorite() {
         new CitiesDataRepository().delete(
-                TempCity.getInstance().getCityWeatherWrapper().getCityDb().getName());
+                cachedCityView.getName()
+        );
         cityIsFavorite(false);
         showMessage(R.string.activity_favorite_del_from_favorite);
     }
@@ -137,10 +130,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
             activity.getBinding().setIsLoading(true);
             Log.e("EndPres", String.valueOf(activity.getBinding().getIsLoading()));
         } else {
-//            hideViewLoading();
-//            if (cachedCityView != null) {
             showInformation(cachedCityView);
-//            }
         }
     }
 

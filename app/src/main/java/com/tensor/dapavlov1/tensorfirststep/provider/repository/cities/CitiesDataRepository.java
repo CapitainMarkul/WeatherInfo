@@ -1,7 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.ViewToDbMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
@@ -28,8 +28,9 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
     private CloudCitiesStore cloudCitiesStore = new CloudCitiesStore();
 
     @Override
-    public void add(CityWeatherWrapper city) {
-        dbCitiesStore.add(city);
+    public void add(CityView city) {
+        dbCitiesStore.add(city.getName(), city.getLastTimeUpdate(),
+                ViewToDbMap.convertWeathersToDbType(city.getWeatherViews()));
     }
 
     @Override

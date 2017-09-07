@@ -1,7 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 
@@ -13,9 +15,7 @@ public interface CitiesDataStore {
 
     Flowable<CityView> getCitiesRx();
 
-    void add(CityWeatherWrapper city);
-
-//    void delete(Object city);
+    void add(String cityName, String lastTimeUpdate, List<WeatherDb> weathers);
 
     void delete(String cityName);
 }

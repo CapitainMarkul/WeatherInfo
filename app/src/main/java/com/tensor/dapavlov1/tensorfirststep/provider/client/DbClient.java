@@ -80,8 +80,10 @@ public class DbClient {
 
     //Сначала в БД заносится город, узнаем его ID,  прикрепляем к нему Лист с погодой
     //на текущий момент сущности Weather существуют, но без привязки к городу
-    public void setInDataBase(CityDb city, List<WeatherDb> weathers) {
-        long cityId = App.getDaoSession().getCityDbDao().insert(city);
+    public void setInDataBase(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
+//        CityDb cityDb = new CityDb(null, cityName, lastTimeUpdate);
+        long cityId = App.getDaoSession().getCityDbDao().insert(
+                new CityDb(null, cityName, lastTimeUpdate));
         App.getDaoSession().getWeatherDbDao().insertInTx(
                 attachWeatherToCity(weathers, cityId, false));
     }

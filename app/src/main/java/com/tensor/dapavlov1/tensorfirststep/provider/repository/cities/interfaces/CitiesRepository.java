@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
@@ -14,7 +13,7 @@ import io.reactivex.Flowable;
  */
 
 public interface CitiesRepository {
-    void add(CityWeatherWrapper city);
+    void add(CityView city);
 
     void delete(String cityName);
 

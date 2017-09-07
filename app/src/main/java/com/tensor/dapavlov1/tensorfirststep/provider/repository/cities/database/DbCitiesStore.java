@@ -2,14 +2,18 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCmd;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityFromDbCmd;
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.DbExecutor;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
+
+import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -46,9 +50,9 @@ public class DbCitiesStore implements CitiesDataStore {
     }
 
     @Override
-    public void add(CityWeatherWrapper city) {
+    public void add(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
         dbExecutor.setCommand(
-                new AddCityInDbCmd(dbClient, city));
+                new AddCityInDbCmd(dbClient, cityName, lastTimeUpdate, weathers));
         dbExecutor.execute();
     }
 
