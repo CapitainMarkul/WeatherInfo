@@ -6,11 +6,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
@@ -117,9 +115,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
     }
 
     private void deleteFromFavorite() {
-        new CitiesDataRepository().delete(
-                cachedCityView.getName()
-        );
+        new CitiesDataRepository().delete(cachedCityView.getName());
         cityIsFavorite(false);
         showMessage(R.string.activity_favorite_del_from_favorite);
     }

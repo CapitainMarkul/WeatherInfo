@@ -6,7 +6,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.TempCity;
 import com.tensor.dapavlov1.tensorfirststep.provider.ApiFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
@@ -64,7 +63,7 @@ public class CloudCitiesStore {
                 .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
                 .map(gsonCity -> GsonToDbMap.getInstance().convertGsonModelToDaoModel(gsonCity))
                 .map(mapper -> {
-                    cachedCity(mapper);
+//                    cachedCity(mapper);
                     return DbToViewMap.getInstance().convertDbModelToViewModel(mapper.getCityDb(), mapper.getWeathers(), false);
                 })
                 .map(viewCity -> {
@@ -74,16 +73,16 @@ public class CloudCitiesStore {
                         viewCity.setFavorite(false);
                         return viewCity;
                     }
-                    cachedCity(new CityWeatherWrapper(cityDb, cityDb.getWeathers()));
+//                    cachedCity(new CityWeatherWrapper(cityDb, cityDb.getWeathers()));
                     viewCity.setFavorite(true);
                     return viewCity;
                 });
     }
 
-    private void cachedCity(CityWeatherWrapper tempCity) {
-        //запоминаем город в формате БД, для возможного добавления его в БД
-        TempCity.getInstance().setCityWeatherWrapper(tempCity);
-    }
+//    private void cachedCity(CityWeatherWrapper tempCity) {
+//        //запоминаем город в формате БД, для возможного добавления его в БД
+//        TempCity.getInstance().setCityWeatherWrapper(tempCity);
+//    }
 
     private String trimCityName(String fullCityName) {
         if (fullCityName.indexOf(',') != -1) {
