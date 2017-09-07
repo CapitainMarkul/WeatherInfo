@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -142,9 +141,7 @@ public class AddCityActivity extends AppCompatActivity
         RxAutoCompleteTextView.itemClickEvents(autoText)
                 .subscribe(
                         next -> {
-                            Log.e("StartAct", String.valueOf(binding.getIsLoading()));
                             startSearchingCity();
-                            Log.e("EndAct", String.valueOf(binding.getIsLoading()));
                             binding.setIsFirstLaunch(false);
                             isTextChanged = false;
                         },

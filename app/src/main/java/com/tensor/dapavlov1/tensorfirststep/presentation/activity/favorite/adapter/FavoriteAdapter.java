@@ -76,8 +76,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.e("CityView:", cityViewWeathers.get(position).getName());
-
         holder.binding.setCityView(cityViewWeathers.get(position));
         holder.horizontalWeatherAdapter.setItems(cityViewWeathers.get(position).getWeatherViews());
 

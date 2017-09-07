@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
@@ -122,9 +121,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     public void checkEndTask() {
         if (isLoading) {
-            Log.e("StartPres", String.valueOf(activity.getBinding().getIsLoading()));
             activity.getBinding().setIsLoading(true);
-            Log.e("EndPres", String.valueOf(activity.getBinding().getIsLoading()));
         } else {
             showInformation(cachedCityView);
         }

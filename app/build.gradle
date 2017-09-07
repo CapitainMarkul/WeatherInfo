@@ -43,8 +43,9 @@ android {
         debug {
             buildConfigField "String", "WEATHER_API_URL_TO_LOAD_IMAGE", '"https://www.weatherbit.io/static/img/icons/"'
             buildConfigField "String", "WEATHER_API_EXPANSION_LOAD_IMAGE", '".png"'
-            buildConfigField "String", "WEATHER_API_KEY", '"7b63f5890d0249838f05a367e209029c"'
+//            buildConfigField "String", "WEATHER_API_KEY", '"7b63f5890d0249838f05a367e209029c"'
 //            buildConfigField "String", "WEATHER_API_KEY", '"41cfb8d689b342a5b48a728ff82cc18f"'
+            buildConfigField "String", "WEATHER_API_KEY", '"e55d7eb8807a4898aec2ae029af1cd04"'
             buildConfigField "String", "WEATHER_API_LANGUAGE", '"ru"'
             buildConfigField "String", "WEATHER_API_SCHEME", '"https"'
             buildConfigField "String", "WEATHER_API_HOST", '"api.weatherbit.io"'

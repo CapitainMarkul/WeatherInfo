@@ -41,6 +41,7 @@ public class FavoriteActivity extends AppCompatActivity
     private FavoritePresenter mPresenter;
     private FavoriteAdapter favoriteAdapter;
     private FavoriteToAddCityRouter favoriteToAddCityRouter;
+    private CheckUpdateInOtherActivity checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
 
     private ActivityFavoriteBinding binding;
 
@@ -64,9 +65,9 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     private void checkUpdateInOtherActivity() {
-        if (CheckUpdateInOtherActivity.getInstance().isUpdate()) {
+        if (checkUpdateInOtherActivity.isUpdate()) {
             startUpdateWeatherInfo();
-            CheckUpdateInOtherActivity.getInstance().setUpdate(false);
+            checkUpdateInOtherActivity.setUpdate(false);
         }
     }
 
@@ -74,11 +75,6 @@ public class FavoriteActivity extends AppCompatActivity
         return disposableManager;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkUpdateInOtherActivity();
-    }
 
     private void setupRouter() {
         favoriteToAddCityRouter = new FavoriteToAddCityRouter();
@@ -137,6 +133,7 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        checkUpdateInOtherActivity();
     }
 
     @Override
@@ -170,7 +167,14 @@ public class FavoriteActivity extends AppCompatActivity
         setupRecyclerAdapter();
         setupRecyclerView();
 
-        startUpdateWeatherInfo();
+        //Ситуация, на другом экране делаем Terminate, потом добавляем город в избранное.
+        // Возвращаемся и получаем, что лоадер создается новый и вызывает этот метод
+        // + были изменения на другом экране, следовательно метод checkUpdateInOtherActivity() тоже начнет обновление списка.
+        // В итоге мы получаем дублирующиеся результаты.
+        // Решение: если был Terminate, не обновляем информацию при создании Лоадера
+        if (!checkUpdateInOtherActivity.isUpdate()) {
+            startUpdateWeatherInfo();
+        }
         return new BaseLoader(getBaseContext(), createConfigMap());
     }
 
@@ -249,7 +253,6 @@ public class FavoriteActivity extends AppCompatActivity
         Log.e("City", String.valueOf(binding.getCityView()));
         Log.e("Cities", String.valueOf(binding.getCities()));
         Log.e("VisibleTotal", String.valueOf(binding.cardWeatherDefault.cvDefault.getVisibility()));
-
 
 
 //// FIXME: 05.09.2017 Когда RecyclerView становится пуст приветственная Карточка не появляется, хотя выражение в Биндинге вроде как верное и в логах

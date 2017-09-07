@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 
@@ -55,7 +54,6 @@ public class WeatherApiClient extends ApiHelper {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     source.setCancellable(call::cancel);
-                    Log.e("call:", "cancel");
 //                    source.onError(e);
                 }
 
