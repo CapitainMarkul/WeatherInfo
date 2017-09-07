@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 
@@ -68,29 +69,26 @@ public class WeatherApiClient extends ApiHelper {
 
     //WeatherApiClient
     public Observable<String> getWeatherInCityRx(@NonNull List<String> cityNames) {
+        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCity(city))
+                .doOnComplete(() -> Log.d("Observable", "Completed"));
+    }
+
+    private Observable<String> getWeatherByCity(String city) {
         return Observable.create(source -> {
-            for (String cityName : cityNames) {
-                Call call = okHttpClient.newCall(createRequest(cityName));
-                //отменяем запрос, если произошла отписка
-//                source.setCancellable(call::cancel);
+            Call call = okHttpClient.newCall(createRequest(city));
 
-                call.enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        source.onError(e);
-                    }
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    source.onError(e);
+                }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        source.onNext(response.body().string());
-//                        source.onComplete();
-                    }
-                });
-            }
-
-            // TODO: 31.08.2017 В какой момент отправлять onComplete ?
-            // Если отправить отсюда, то данные не успевают отобразиться
-//            source.onComplete();
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    source.onNext(response.body().string());
+                    source.onComplete();
+                }
+            });
         });
     }
 }
