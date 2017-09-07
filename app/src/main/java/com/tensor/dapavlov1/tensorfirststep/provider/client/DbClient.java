@@ -1,8 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
-import android.support.annotation.Nullable;
-
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.provider.common.ConnectorDeleteListener;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
@@ -167,11 +166,28 @@ public class DbClient {
 //        App.getExecutorService().execute(() -> deleteCity(getDaoCity(position)));
 //    }
 
-    public void deleteCity(@NotNull String cityName){
-        CityDb temp = searchCity(cityName);
-        App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
-        temp.delete();
+    public void deleteCity(@NotNull String cityName) {
+        try {
+            CityDb temp = searchCity(cityName);
+            App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
+            temp.delete();
+            ConnectorDeleteListener.getInstance().getDelCityCallBack().result(true);
+        } catch (Exception e) {
+            ConnectorDeleteListener.getInstance().getDelCityCallBack().result(false);
+        }
     }
+
+//    public boolean deleteCity(@NotNull String cityName) {
+//        try {
+//            CityDb temp = searchCity(cityName);
+//            App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
+//            temp.delete();
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+
 
 //    public void deleteCity(@Nullable CityDb cityDb) {
 //        if (cityDb != null) {

@@ -1,5 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.common;
 
+import android.support.annotation.Nullable;
+
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,7 +11,7 @@ import java.util.Locale;
 /**
  * Created by da.pavlov1 on 04.08.2017.
  */
-
+// FIXME: 07.09.2017 Разобраться со Static Content
 public class TrimDateSingleton {
     public static TrimDateSingleton getInstance() {
         return TrimDateSingletonLoader.INSTANCE;
@@ -22,8 +24,8 @@ public class TrimDateSingleton {
     private TrimDateSingleton() {
     }
 
-
-    public String trimTime(String date) {
+    @Nullable
+    public static String trimTime(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         try {
             return formatter.format(createDate(date));
@@ -32,7 +34,8 @@ public class TrimDateSingleton {
         }
     }
 
-    public String trimDate(String date) {
+    @Nullable
+    public static String trimDate(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
         try {
             return formatter.format(createDate(date));
@@ -41,19 +44,19 @@ public class TrimDateSingleton {
         }
     }
 
-    private Date createDate(String dateString) throws ParseException {
+    private static Date createDate(String dateString) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HH", Locale.US);
         Date date = formatter.parse(dateString);
         return date;
     }
 
-    public String getNowTime() {
+    public static String getNowTime() {
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM',' HH:mm", dictionary);
         return dateFormat.format(currentDate);
     }
 
-    private DateFormatSymbols dictionary = new DateFormatSymbols() {
+    private static DateFormatSymbols dictionary = new DateFormatSymbols() {
         @Override
         public String[] getMonths() {
             return new String[]{"января", "февраля", "марта", "апреля", "мая", "июня",

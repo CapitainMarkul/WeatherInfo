@@ -11,6 +11,8 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
+import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.DelCityCallBack;
+import com.tensor.dapavlov1.tensorfirststep.provider.common.ConnectorDeleteListener;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 
@@ -108,6 +110,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
     public void deleteCity(String cityName) {
         new CitiesDataRepository().delete(cityName);
+        // FIXME: 07.09.2017 Чистить из кеша нужно только после того, как произошло удаление по факту
+        for(CityView item : cachedCities){
+            if (item.getName().equals(cityName)){
+                cachedCities.remove(item);
+                break;
+            }
+        }
+//        cachedCities.remove(cachedCities.indexOf(cachedCities));
     }
 
     private void showCity(CityView cityView) {

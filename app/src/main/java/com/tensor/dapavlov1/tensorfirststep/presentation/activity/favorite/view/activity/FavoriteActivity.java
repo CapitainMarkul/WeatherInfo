@@ -54,6 +54,9 @@ public class FavoriteActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
 
+//        TestStart testStart = new TestStart();
+//        testStart.del();
+
         initDisposableManager();
         setupLoaders();
         setupListeners();
