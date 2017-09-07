@@ -68,6 +68,7 @@ public class CloudCitiesStore {
                     return DbToViewMap.getInstance().convertDbModelToViewModel(mapper.getCityDb(), mapper.getWeathers(), false);
                 })
                 .map(viewCity -> {
+//                    CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
                     CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
                     if (cityDb == null) {
                         viewCity.setFavorite(false);

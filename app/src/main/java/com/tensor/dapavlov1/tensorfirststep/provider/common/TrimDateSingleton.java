@@ -25,7 +25,7 @@ public class TrimDateSingleton {
     }
 
     @Nullable
-    public static String trimTime(String date) {
+    public String trimTime(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
         try {
             return formatter.format(createDate(date));
@@ -35,7 +35,7 @@ public class TrimDateSingleton {
     }
 
     @Nullable
-    public static String trimDate(String date) {
+    public String trimDate(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
         try {
             return formatter.format(createDate(date));
@@ -44,19 +44,19 @@ public class TrimDateSingleton {
         }
     }
 
-    private static Date createDate(String dateString) throws ParseException {
+    private Date createDate(String dateString) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HH", Locale.US);
         Date date = formatter.parse(dateString);
         return date;
     }
 
-    public static String getNowTime() {
+    public String getNowTime() {
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM',' HH:mm", dictionary);
         return dateFormat.format(currentDate);
     }
 
-    private static DateFormatSymbols dictionary = new DateFormatSymbols() {
+    private DateFormatSymbols dictionary = new DateFormatSymbols() {
         @Override
         public String[] getMonths() {
             return new String[]{"января", "февраля", "марта", "апреля", "мая", "июня",
