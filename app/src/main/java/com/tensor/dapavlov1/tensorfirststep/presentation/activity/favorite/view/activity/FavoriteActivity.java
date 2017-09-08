@@ -236,7 +236,7 @@ public class FavoriteActivity extends AppCompatActivity
     @Override
     public void onEmpty() {
         //чистим последний cachedCity, чтобы он не показывался при повороте экрана
-        mPresenter.clearCacheCities();
+//        mPresenter.clearCacheCities();
 
         Log.e("Visible", String.valueOf(binding.cardWeatherDefault.cvDefault.getVisibility()));
 

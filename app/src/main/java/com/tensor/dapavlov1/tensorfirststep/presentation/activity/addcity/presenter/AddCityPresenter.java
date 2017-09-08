@@ -148,9 +148,12 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> implements 
     }
 
     @Override
-    public void deleteResult(boolean isSuccess) {
-        cityIsFavorite(!isSuccess);
-        showMessage(R.string.activity_favorite_del_from_favorite);
-        DbClient.getInstance().unsubscribe(this);
+    public void deleteResult(boolean isSuccess, String deletedCityName) {
+        if (isSuccess) {
+            cityIsFavorite(!isSuccess);
+            showMessage(R.string.activity_favorite_del_from_favorite);
+        } else {
+            showMessage(R.string.unknown_error);
+        }
     }
 }

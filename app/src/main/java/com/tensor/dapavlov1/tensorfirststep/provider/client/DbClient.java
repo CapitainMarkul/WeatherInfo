@@ -116,9 +116,9 @@ public class DbClient implements DelObservable {
             App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
             temp.delete();
 
-            notifyAllObservers(true);
+            notifyAllObservers(true, cityName);
         } catch (Exception e) {
-            notifyAllObservers(false);
+            notifyAllObservers(false, cityName);
         }
     }
 
@@ -134,15 +134,23 @@ public class DbClient implements DelObservable {
         observers.add(observer);
     }
 
+    //Сам всех отпишет от уведомлений
     @Override
-    public void unsubscribe(DelObserver observer) {
+    public void unSubscribe(DelObserver observer) {
         observers.remove(observer);
     }
 
     @Override
-    public void notifyAllObservers(boolean isSuccess) {
+    public void unSubscribeAll() {
+        observers.clear();
+    }
+
+    //Иначе, кто-то отписывается, и мы получаем Ошибку модификации списка
+    @Override
+    public void notifyAllObservers(boolean isSuccess, String deletedCityName) {
         for (DelObserver item : observers) {
-            item.deleteResult(isSuccess);
+            item.deleteResult(isSuccess, deletedCityName);
         }
+        unSubscribeAll();
     }
 }

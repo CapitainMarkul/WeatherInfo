@@ -12,7 +12,9 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interface
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -23,9 +25,41 @@ import io.reactivex.schedulers.Schedulers;
  * Created by da.pavlov1 on 22.08.2017.
  */
 
-public class CitiesDataRepository extends CheckConnect implements CitiesRepository {
-    private DbCitiesStore dbCitiesStore = new DbCitiesStore();
-    private CloudCitiesStore cloudCitiesStore = new CloudCitiesStore();
+public class CitiesDataRepository extends CheckConnect implements CitiesRepository, DelObserver {
+    private DbCitiesStore dbCitiesStore;
+    private CloudCitiesStore cloudCitiesStore;
+    private List<CityView> cachedCitiesView;
+
+    public CitiesDataRepository() {
+        dbCitiesStore = new DbCitiesStore();
+        cloudCitiesStore = new CloudCitiesStore();
+        cachedCitiesView = new ArrayList<>();
+    }
+
+    public List<CityView> getCacheCitiesView() {
+        return cachedCitiesView;
+    }
+
+    public void cacheCityView(CityView cityView) {
+        cachedCitiesView.add(cityView);
+    }
+
+    public void clearCacheCitiesView() {
+        cachedCitiesView.clear();
+    }
+
+    @Override
+    public void deleteResult(boolean isSuccess, String deleteCityName) {
+        if (isSuccess) {
+            List<CityView> cachedCities = getCacheCitiesView();
+            for (CityView item : cachedCities) {
+                if (item.getName().equals(deleteCityName)) {
+                    cachedCities.remove(item);
+                    break;
+                }
+            }
+        }
+    }
 
     @Override
     public void add(CityView city) {
@@ -35,6 +69,7 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
 
     @Override
     public void delete(String cityName) {
+        DbClient.getInstance().subscribe(this);
         dbCitiesStore.delete(cityName);
     }
 

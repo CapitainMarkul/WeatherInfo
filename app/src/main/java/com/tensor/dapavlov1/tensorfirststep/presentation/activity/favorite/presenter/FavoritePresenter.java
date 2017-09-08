@@ -26,12 +26,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoritePresenter extends BasePresenter<FavoriteActivity> implements DelObserver {
+public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     private Router router;
-    private List<CityView> cachedCities = new ArrayList<>();
-
+    private CitiesDataRepository citiesDataRepository;
     private boolean isLoading = false;
-    private String delCityName = "";
+
+    public FavoritePresenter() {
+        citiesDataRepository = new CitiesDataRepository();
+    }
 
     private CityCallback<CityView> citiesCallback = new CityCallback<CityView>() {
         @Override
@@ -83,18 +85,18 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> implement
 
     private void cachedInfo(CityView cityView) {
         isLoading = true;
-        cachedCities.add(cityView);
+        citiesDataRepository.cacheCityView(cityView);
     }
 
     public void updateWeathers() {
         isLoading = false;
-        cachedCities.clear();
+        citiesDataRepository.clearCacheCitiesView();
         activity.getBinding().setIsLoading(true);
 
         try {
             activity.getDisposableManager().addDisposable(
                     FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
-                    new CitiesDataRepository().getCitiesRx()
+                    citiesDataRepository.getCitiesRx()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     city -> citiesCallback.onUpdate(city),
@@ -110,9 +112,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> implement
     }
 
     public void deleteCity(String cityName) {
-        delCityName = cityName;
-        DbClient.getInstance().subscribe(this);
-        new CitiesDataRepository().delete(delCityName);
+        citiesDataRepository.delete(cityName);
     }
 
     private void showCity(CityView cityView) {
@@ -120,11 +120,13 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> implement
         activity.getBinding().setCityView(cityView);
     }
 
-    public void clearCacheCities() {
-        cachedCities.clear();
-    }
+    // TODO: 08.09.2017 Проверить
+//    public void clearCacheCities() {
+//        cachedCities.clear();
+//    }
 
     public void showCachedCities() {
+        List<CityView> cachedCities = citiesDataRepository.getCacheCitiesView();
         if (cachedCities != null && !cachedCities.isEmpty()) {
             activity.setItems(cachedCities);
         }
@@ -137,16 +139,5 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> implement
 
     public void setRouter(Router router) {
         this.router = router;
-    }
-
-    @Override
-    public void deleteResult(boolean isSuccess) {
-        for (CityView item : cachedCities) {
-            if (item.getName().equals(delCityName)) {
-                cachedCities.remove(item);
-                break;
-            }
-        }
-        DbClient.getInstance().unsubscribe(this);
     }
 }

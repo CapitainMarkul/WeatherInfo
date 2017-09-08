@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.AnimRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,11 +53,6 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     }
 
     public void setItem(CityView cityViewWeather) {
-//        Log.d("CountItem", String.valueOf(getItemCount()));
-//        notifyItemInserted(getItemCount());
-//        notifyItemChanged(getItemCount());    //частичное решение,
-
-//        notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         cityViewWeathers.add(cityViewWeather);
         isAnimate = true;
@@ -147,10 +141,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         }
 
         @Override
-        public void deleteResult(boolean isSuccess) {
+        public void deleteResult(boolean isSuccess, String deletedCityName) {
             if (isSuccess) {
                 removeCard(getAdapterPosition());
-                DbClient.getInstance().unsubscribe(this);
             } else {
                 Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
             }

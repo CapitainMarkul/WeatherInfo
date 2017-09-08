@@ -5,5 +5,5 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservabl
  */
 
 public interface DelObserver {
-    void deleteResult(boolean isSuccess);
+    void deleteResult(boolean isSuccess, String deletedCityName);
 }

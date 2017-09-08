@@ -7,7 +7,9 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservabl
 public interface DelObservable {
     void subscribe(DelObserver observer);
 
-    void unsubscribe(DelObserver observer);
+    void unSubscribe(DelObserver observer);
 
-    void notifyAllObservers(boolean isSuccess);
+    void unSubscribeAll();
+
+    void notifyAllObservers(boolean isSuccess, String deletedCityName);
 }
