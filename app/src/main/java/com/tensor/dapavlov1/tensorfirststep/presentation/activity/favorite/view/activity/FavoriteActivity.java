@@ -97,11 +97,6 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void setItems(final List<CityView> weathers) {
         favoriteAdapter.setItems(weathers);
     }

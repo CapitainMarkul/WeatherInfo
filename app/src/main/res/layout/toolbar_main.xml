@@ -4,7 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-<import alias="acv" type="android.widget.AutoCompleteTextView"/>
+
+        <import
+            alias="acv"
+            type="android.widget.AutoCompleteTextView"/>
+
         <variable
             name="activity"
             type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity"/>
@@ -36,8 +40,8 @@
                     android:layout_centerInParent="true"
                     android:gravity="center"
                     android:hint="@string/activity_add_city_text_hint"/>
-                    <!--app:onItemClick="@{() -> mPresenter.onItemClick()}"/>-->
-                    <!--app:onKeyListener="@{mPresenter.onItemPlaceClick()}"/>-->
+                <!--app:onItemClick="@{() -> mPresenter.onItemClick()}"/>-->
+                <!--app:onKeyListener="@{mPresenter.onItemPlaceClick()}"/>-->
 
                 <!--bind:onKeyListener="@{activity.setOnKeyListener}"-->
             </android.support.design.widget.TextInputLayout>
