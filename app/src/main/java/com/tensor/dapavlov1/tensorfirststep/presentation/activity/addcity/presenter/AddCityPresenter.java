@@ -10,14 +10,16 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.R;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
  */
 
 
-public class AddCityPresenter extends BasePresenter<AddCityActivity> {
+public class AddCityPresenter extends BasePresenter<AddCityActivity> implements DelObserver {
     private CityView cachedCityView;
     //для созранения состояния при ConfigChange
     private boolean isLoading = false;
@@ -115,8 +117,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
 
     private void deleteFromFavorite() {
         new CitiesDataRepository().delete(cachedCityView.getName());
-        cityIsFavorite(false);
-        showMessage(R.string.activity_favorite_del_from_favorite);
     }
 
     public void checkEndTask() {
@@ -143,7 +143,15 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> {
         if (activity.isCheckedNow()) {
             addToFavorite();
         } else {
+            DbClient.getInstance().subscribe(this);
             deleteFromFavorite();
         }
+    }
+
+    @Override
+    public void deleteResult(boolean isSuccess) {
+        cityIsFavorite(!isSuccess);
+        showMessage(R.string.activity_favorite_del_from_favorite);
+        DbClient.getInstance().unsubscribe(this);
     }
 }

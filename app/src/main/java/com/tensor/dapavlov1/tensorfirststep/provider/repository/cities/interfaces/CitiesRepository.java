@@ -20,7 +20,7 @@ public interface CitiesRepository {
     void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
 
     Flowable<CityView> getCitiesRx() throws EmptyDbException;
-//    Observable<String> getCityView(String fullCityName) throws NetworkConnectException;
+//    DelObservable<String> getCityView(String fullCityName) throws NetworkConnectException;
 
 //    void getCities(CitiesCallback<CityView> callbackCities);
 }

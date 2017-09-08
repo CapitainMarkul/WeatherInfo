@@ -11,8 +11,10 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +26,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
+public class FavoritePresenter extends BasePresenter<FavoriteActivity> implements DelObserver {
     private Router router;
     private List<CityView> cachedCities = new ArrayList<>();
 
     private boolean isLoading = false;
+    private String delCityName = "";
 
     private CityCallback<CityView> citiesCallback = new CityCallback<CityView>() {
         @Override
@@ -107,15 +110,9 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
     }
 
     public void deleteCity(String cityName) {
-        new CitiesDataRepository().delete(cityName);
-        // FIXME: 07.09.2017 Чистить из кеша нужно только после того, как произошло удаление по факту
-        for(CityView item : cachedCities){
-            if (item.getName().equals(cityName)){
-                cachedCities.remove(item);
-                break;
-            }
-        }
-//        cachedCities.remove(cachedCities.indexOf(cachedCities));
+        delCityName = cityName;
+        DbClient.getInstance().subscribe(this);
+        new CitiesDataRepository().delete(delCityName);
     }
 
     private void showCity(CityView cityView) {
@@ -140,5 +137,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity> {
 
     public void setRouter(Router router) {
         this.router = router;
+    }
+
+    @Override
+    public void deleteResult(boolean isSuccess) {
+        for (CityView item : cachedCities) {
+            if (item.getName().equals(delCityName)) {
+                cachedCities.remove(item);
+                break;
+            }
+        }
+        DbClient.getInstance().unsubscribe(this);
     }
 }

@@ -70,7 +70,7 @@ public class WeatherApiClient extends ApiHelper {
     //WeatherApiClient
     public Observable<String> getWeatherInCityRx(@NonNull List<String> cityNames) {
         return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCity(city))
-                .doOnComplete(() -> Log.d("Observable", "Completed"));
+                .doOnComplete(() -> Log.d("DelObservable", "Completed"));
     }
 
     private Observable<String> getWeatherByCity(String city) {

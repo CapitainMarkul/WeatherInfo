@@ -14,7 +14,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.databinding.CardWeatherFullInfoBinding;
-import com.tensor.dapavlov1.tensorfirststep.provider.common.ConnectorDeleteListener;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
@@ -22,7 +21,8 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.DelCityCallBack;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,22 +107,10 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         return (cityViewWeathers != null) ? cityViewWeathers.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick {
+    public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick, DelObserver {
         private HorizontalWeatherAdapter horizontalWeatherAdapter;
         private CardWeatherFullInfoBinding binding;
         private Context context;
-
-        private DelCityCallBack delCityCallBack = new DelCityCallBack() {
-            @Override
-            public void result(boolean isSuccess) {
-                if (isSuccess) {
-                    removeCard(getAdapterPosition());
-                    ConnectorDeleteListener.getInstance().setCallBack(null);
-                } else {
-                    Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -153,9 +141,20 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         @Override
         public void onItemClick() {
             if (listener != null) {
-                ConnectorDeleteListener.getInstance().setCallBack(delCityCallBack);
+//                ConnectorDeleteListener.getInstance().setCallBack(delCityCallBack);
+                DbClient.getInstance().subscribe(this);
                 listener.onItemClick(binding.tvCity.getText().toString());
 //                removeCard(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public void deleteResult(boolean isSuccess) {
+            if (isSuccess) {
+                removeCard(getAdapterPosition());
+                DbClient.getInstance().unsubscribe(this);
+            } else {
+                Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -5,13 +5,13 @@ import android.support.annotation.Nullable;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.DelCityCallBack;
-import com.tensor.dapavlov1.tensorfirststep.provider.common.ConnectorDeleteListener;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObservable;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 import org.greenrobot.greendao.query.Query;
 import org.jetbrains.annotations.NotNull;
@@ -26,14 +26,24 @@ import io.reactivex.Flowable;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class DbClient {
+public class DbClient implements DelObservable {
+
+    public static DbClient getInstance() {
+        return DbClientLoader.INSTANCE;
+    }
+
+    private static final class DbClientLoader {
+        private static final DbClient INSTANCE = new DbClient();
+    }
+
     private Query<CityDb> query;
     private DaoSession daoSession;
-    private DelCityCallBack delCityCallBack;
+    private List<DelObserver> observers;
 
-    public DbClient() {
+    private DbClient() {
         daoSession = App.getDaoSession();
         query = App.getDaoSession().getCityDbDao().queryBuilder().build();
+        observers = new ArrayList<>();
     }
 
     public Flowable<CityDb> loadListAllCitiesRx() {
@@ -101,19 +111,14 @@ public class DbClient {
     }
 
     public void deleteCity(@NotNull String cityName) {
-        delCityCallBack = ConnectorDeleteListener.getInstance().getDelCityCallBack();
         try {
             CityDb temp = searchCity(cityName);
             App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
             temp.delete();
 
-            if (delCityCallBack != null) {
-                delCityCallBack.result(true);
-            }
+            notifyAllObservers(true);
         } catch (Exception e) {
-            if (delCityCallBack != null) {
-                delCityCallBack.result(false);
-            }
+            notifyAllObservers(false);
         }
     }
 
@@ -122,5 +127,22 @@ public class DbClient {
         return daoSession.getCityDbDao().queryBuilder()
                 .where(CityDbDao.Properties.Name.eq(cityName))
                 .unique();
+    }
+
+    @Override
+    public void subscribe(DelObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void unsubscribe(DelObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyAllObservers(boolean isSuccess) {
+        for (DelObserver item : observers) {
+            item.deleteResult(isSuccess);
+        }
     }
 }
