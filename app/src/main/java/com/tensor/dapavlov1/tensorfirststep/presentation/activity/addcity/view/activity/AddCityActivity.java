@@ -128,9 +128,7 @@ public class AddCityActivity extends AppCompatActivity
 
     private void setupViews() {
         autoText = binding.toolBar.tvAutocompleteText;
-
         binding.cvWeatherCity.cardFullInfo.setVisibility(View.INVISIBLE);
-
         placesAutoComplete = new PlacesAutoComplete(this, R.layout.item_auto_complete);
         autoText.setAdapter(placesAutoComplete);
     }

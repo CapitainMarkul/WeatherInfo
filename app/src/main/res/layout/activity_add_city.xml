@@ -46,7 +46,7 @@
 
                 <include
                     android:id="@+id/cv_weather_city"
-                    layout="@layout/item_card_full_info_weather"
+                    layout="@layout/card_weather_full_info"
                     android:visibility="@{cityView != null &amp;&amp; !isLoading ? v.VISIBLE : v.GONE}"
                     app:cityView="@{cityView}"/>
 

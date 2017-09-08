@@ -76,7 +76,7 @@ public class WeatherApiClient extends ApiHelper {
     private Observable<String> getWeatherByCity(String city) {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(city));
-
+            source.setCancellable(call::isCanceled);
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

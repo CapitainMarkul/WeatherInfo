@@ -2,6 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.tensor.dapavlov1.tensorfirststep.databinding.ItemHorizontalRecyclerBi
 
 import org.greenrobot.greendao.annotation.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class HorizontalWeatherAdapter
     private List<WeatherView> weatherViewNow;
 
     public void setItems(@NotNull final List<WeatherView> weatherViews) {
-        this.weatherViewNow = weatherViews;
+        weatherViewNow = weatherViews;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class HorizontalWeatherAdapter
 
     @Override
     public void onBindViewHolder(WeatherItemHolder holder, int position) {
+        Log.e("WeatherCityChild:", String.valueOf(weatherViewNow.get(0).getTemperature()));
         holder.binding.setWeatherView(weatherViewNow.get(position));
     }
 

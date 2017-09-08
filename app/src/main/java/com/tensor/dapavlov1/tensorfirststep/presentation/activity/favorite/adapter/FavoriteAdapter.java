@@ -13,10 +13,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.tensor.dapavlov1.tensorfirststep.databinding.CardWeatherFullInfoBinding;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.ConnectorDeleteListener;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.databinding.ItemCardFullInfoWeatherBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
@@ -54,6 +54,11 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     }
 
     public void setItem(CityView cityViewWeather) {
+//        Log.d("CountItem", String.valueOf(getItemCount()));
+//        notifyItemInserted(getItemCount());
+//        notifyItemChanged(getItemCount());    //частичное решение,
+
+//        notifyDataSetChanged();
         notifyItemInserted(getItemCount());
         cityViewWeathers.add(cityViewWeather);
         isAnimate = true;
@@ -71,17 +76,21 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new FavoriteAdapter.ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_card_full_info_weather, parent, false));
+                .inflate(R.layout.card_weather_full_info, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.binding.setCityView(cityViewWeathers.get(position));
-        holder.horizontalWeatherAdapter.setItems(cityViewWeathers.get(position).getWeatherViews());
+        CityView cityView = cityViewWeathers.get(position);
+        holder.binding.setCityView(cityView);
+
+        holder.horizontalWeatherAdapter.setItems(cityView.getWeatherViews());
+        holder.horizontalWeatherAdapter.notifyDataSetChanged();
 
         if (isAnimate) {
             setAnimation(holder.binding.cardFullInfo, position, R.anim.recycleradd);
         }
+
     }
 
     private void setAnimation(View viewToAnimate, int position, @AnimRes int animateRes) {
@@ -100,7 +109,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick {
         private HorizontalWeatherAdapter horizontalWeatherAdapter;
-        private ItemCardFullInfoWeatherBinding binding;
+        private CardWeatherFullInfoBinding binding;
         private Context context;
 
         private DelCityCallBack delCityCallBack = new DelCityCallBack() {
