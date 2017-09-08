@@ -7,7 +7,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.ApiFactory;
-import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.WeatherApiClient;
@@ -26,7 +25,7 @@ import io.reactivex.Observable;
  */
 
 public class CloudCitiesStore {
-    private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
+    private DbClient dbClient = DbClient.getInstance();
     private WeatherApiClient weatherClient = ApiFactory.getInstance().createClientWeatherApi();
 
     private DbToViewMap dbToViewMap = DbToViewMap.getInstance();

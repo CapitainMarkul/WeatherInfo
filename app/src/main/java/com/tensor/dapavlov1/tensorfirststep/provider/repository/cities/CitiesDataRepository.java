@@ -3,8 +3,8 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.ViewToDbMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud.CloudCitiesStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database.DbCitiesStore;
@@ -87,7 +87,7 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
 
         //Здесь читаем БД, если пустая, то интернет нет смысла подключать
         List<String> cityNames =
-                CreatorDbClient.getInstance().createNewDaoClient().getCityNames();
+                DbClient.getInstance().getCityNames();
 
 //        Решаем откуда будем брать информацию
         if (isOnline(App.getContext())) {

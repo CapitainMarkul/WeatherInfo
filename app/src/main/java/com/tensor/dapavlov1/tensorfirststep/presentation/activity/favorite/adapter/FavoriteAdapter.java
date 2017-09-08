@@ -141,10 +141,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         @Override
         public void onItemClick() {
             if (listener != null) {
-//                ConnectorDeleteListener.getInstance().setCallBack(delCityCallBack);
                 DbClient.getInstance().subscribe(this);
                 listener.onItemClick(binding.tvCity.getText().toString());
-//                removeCard(getAdapterPosition());
             }
         }
 

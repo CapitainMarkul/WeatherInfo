@@ -1,12 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
-import com.tensor.dapavlov1.tensorfirststep.provider.CreatorDbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCmd;
 import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityFromDbCmd;
@@ -24,7 +21,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class DbCitiesStore implements CitiesDataStore {
-    private DbClient dbClient = CreatorDbClient.getInstance().createNewDaoClient();
+    private DbClient dbClient = DbClient.getInstance();
     private DbExecutor dbExecutor;
 
     @Override

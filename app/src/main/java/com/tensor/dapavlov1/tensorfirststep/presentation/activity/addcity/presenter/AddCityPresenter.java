@@ -94,7 +94,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> implements 
     private void startAnimation() {
         Animation anim = AnimationUtils.loadAnimation(App.getContext(), R.anim.alpha);
         activity.getBinding().cvSearching.tvSearching.startAnimation(anim);
-
     }
 
     private void stopAnimation() {
