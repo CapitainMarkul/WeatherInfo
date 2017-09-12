@@ -1,7 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.repository.places.interfaces;
 
-import java.util.List;
-
 import io.reactivex.Observable;
 
 /**

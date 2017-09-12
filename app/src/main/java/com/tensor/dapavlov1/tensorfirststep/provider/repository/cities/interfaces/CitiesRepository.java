@@ -17,10 +17,7 @@ public interface CitiesRepository {
 
     void delete(String cityName);
 
-    void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
+    void getCity(String fullNameCity, CityCallback<CityView> callbackCities);
 
     Flowable<CityView> getCitiesRx() throws EmptyDbException;
-//    DelObservable<String> getCityView(String fullCityName) throws NetworkConnectException;
-
-//    void getCities(CitiesCallback<CityView> callbackCities);
 }

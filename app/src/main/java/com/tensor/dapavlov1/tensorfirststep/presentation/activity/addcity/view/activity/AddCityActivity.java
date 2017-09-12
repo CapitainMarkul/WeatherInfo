@@ -30,6 +30,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.Horizon
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.interfaces.PlacesRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public class AddCityActivity extends AppCompatActivity
         LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
     private AutoCompleteTextView autoText;
 
+    private PlacesRepository placesRepository = PlacesDataRepository.getInstance();
     private DisposableManager disposableManager;
     private PlacesAutoComplete placesAutoComplete;
     private AddCityPresenter mPresenter;
@@ -100,11 +102,6 @@ public class AddCityActivity extends AppCompatActivity
         outState.putBoolean(IS_CONFIG_CHANGE, isChangingConfigurations());
         outState.putBoolean(IS_TEXT_CHANGED, isTextChanged);
         super.onSaveInstanceState(mPresenter.saveData(outState));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     private void setupSingleton() {
@@ -174,7 +171,7 @@ public class AddCityActivity extends AppCompatActivity
                 .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
                     @Override
                     public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                        return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
+                        return placesRepository.getPlaces(charSequence.toString())
                                 .map(s -> GsonFactory.getInstance().getPlacesName(s));
                     }
                 })
@@ -183,7 +180,9 @@ public class AddCityActivity extends AppCompatActivity
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         result -> {
-                            autoText.setAdapter(placesAutoComplete.setItems(result));
+//                            autoText.setAdapter(placesAutoComplete.setItems(result));
+                            placesAutoComplete.setItems(result);
+                            placesAutoComplete.notifyDataSetChanged();
                             autoText.showDropDown();
                         },
                         throwable -> showMessage(R.string.unknown_error),

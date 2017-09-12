@@ -12,6 +12,7 @@ import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 /**
@@ -21,10 +22,15 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity> implements DelObserver {
     private CityView cachedCityView;
+    private CitiesRepository citiesRepository;
     //для созранения состояния при ConfigChange
     private boolean isLoading = false;
 
     private final static String CITY_VIEW_MODEL = "city_view_model";
+
+    public AddCityPresenter() {
+        citiesRepository = new CitiesDataRepository();
+    }
 
     private void cityIsFavorite(boolean isFavorite) {
         cachedCityView.setFavorite(isFavorite);
@@ -105,17 +111,17 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> implements 
         activity.getBinding().setIsLoading(true);
         startAnimation();
 
-        new CitiesDataRepository().getCity(fullCityName, cityCallback);
+        citiesRepository.getCity(fullCityName, cityCallback);
     }
 
     private void addToFavorite() {
-        new CitiesDataRepository().add(cachedCityView);
+        citiesRepository.add(cachedCityView);
         cityIsFavorite(true);
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
     private void deleteFromFavorite() {
-        new CitiesDataRepository().delete(cachedCityView.getName());
+        citiesRepository.delete(cachedCityView.getName());
     }
 
     public void checkEndTask() {
@@ -149,8 +155,9 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> implements 
 
     @Override
     public void deleteResult(boolean isSuccess, String deletedCityName) {
+        //isSuccess - Подтверждение об удалении
         if (isSuccess) {
-            cityIsFavorite(!isSuccess);
+            cityIsFavorite(!isSuccess); // Убираем галочку избранного
             showMessage(R.string.activity_favorite_del_from_favorite);
         } else {
             showMessage(R.string.unknown_error);

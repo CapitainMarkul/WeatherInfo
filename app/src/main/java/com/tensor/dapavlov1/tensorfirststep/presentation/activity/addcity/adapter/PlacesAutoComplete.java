@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 import android.widget.Filterable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,7 @@ import java.util.List;
 public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterable {
     private Context context;
     private int resource;
+    private List<String> arrayList;
 
     public PlacesAutoComplete(Context context, int resource) {
         super(context, resource);
@@ -20,7 +22,12 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
         this.resource = resource;
     }
 
-    public ArrayAdapter<String> setItems(List<String> list) {
-        return new ArrayAdapter<>(context, resource, list);
+//    public ArrayAdapter<String> setItems(List<String> list) {
+//        return new ArrayAdapter<>(context, resource, list);
+//    }
+
+    public void setItems(List<String> list) {
+        arrayList = list;
+//        notifyDataSetChanged();
     }
 }
