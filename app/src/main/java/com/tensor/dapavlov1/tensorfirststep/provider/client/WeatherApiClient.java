@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Cancellable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -54,8 +55,7 @@ public class WeatherApiClient extends ApiHelper {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    source.setCancellable(call::cancel);
-//                    source.onError(e);
+                    source.onError(e);
                 }
 
                 @Override
@@ -69,14 +69,16 @@ public class WeatherApiClient extends ApiHelper {
 
     //WeatherApiClient
     public Observable<String> getWeatherInCityRx(@NonNull List<String> cityNames) {
-        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCity(city))
-                .doOnComplete(() -> Log.d("DelObservable", "Completed"));
+        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCity(city));
     }
 
     private Observable<String> getWeatherByCity(String city) {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(city));
-            source.setCancellable(call::isCanceled);
+
+            //отменяем запрос, если произошла отписка
+            source.setCancellable(call::cancel);
+
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {

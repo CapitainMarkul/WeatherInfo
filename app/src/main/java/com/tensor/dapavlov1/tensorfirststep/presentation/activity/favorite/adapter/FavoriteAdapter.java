@@ -144,6 +144,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         public void deleteResult(boolean isSuccess, String deletedCityName) {
             if (isSuccess) {
                 removeCard(getAdapterPosition());
+                DbClient.getInstance().unSubscribe(this);
             } else {
                 Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
             }

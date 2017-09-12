@@ -1,5 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 
+import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.CityGson;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.WeatherRootGson;
@@ -16,11 +18,16 @@ public class GsonToViewMap extends HelpMap {
         return MapperGsonToViewLoader.INSTANCE;
     }
 
-    private static final class MapperGsonToViewLoader{
+    private static final class MapperGsonToViewLoader {
         private static final GsonToViewMap INSTANCE = new GsonToViewMap();
     }
 
     private GsonToViewMap() {
+    }
+
+
+    public CityView convertGsonToViewModel(CityGson cityGson) {
+        return new CityView(cityGson.getName(), cityGson.getDateLastUpdate(), getWeathersFromGson(cityGson.getWeathers()), false);
     }
 
     private List<WeatherView> getWeathersFromGson(List<WeatherRootGson> gsonWeathers) {

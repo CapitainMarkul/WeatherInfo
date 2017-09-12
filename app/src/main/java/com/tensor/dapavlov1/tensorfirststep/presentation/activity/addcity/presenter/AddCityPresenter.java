@@ -155,5 +155,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity> implements 
         } else {
             showMessage(R.string.unknown_error);
         }
+        DbClient.getInstance().unSubscribe(this);
     }
 }

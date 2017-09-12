@@ -5,6 +5,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.ApiFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
@@ -32,21 +33,17 @@ public class CloudCitiesStore {
     private GsonToDbMap gsonToDbMap = GsonToDbMap.getInstance();
     private GsonFactory gsonFactory = GsonFactory.getInstance();
 
-//    private List<String> cityNames = new ArrayList<>();
 
+    // FIXME: 12.09.2017 Методы возвращают одинаковое, подумать как склеить
     public Flowable<CityView> getCitiesRx(List<String> cityNames) {
         return weatherClient.getWeatherInCityRx(cityNames)
                 .map(string -> gsonFactory.createGsonCityModel(string))
                 .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
                 .toFlowable(BackpressureStrategy.BUFFER)
-                .switchMap(modelCityWeather -> {
-                    //        //set Update weather info in DB
-                    List<CityWeatherWrapper> list = new ArrayList<>();
-                    list.add(modelCityWeather);
-                    App.getExecutorService().execute(() -> dbClient.updateAllCities(list));
-                    return Flowable.create((FlowableOnSubscribe<CityView>) e ->
-                                    e.onNext(dbToViewMap.convertDbModelToViewModel(modelCityWeather.getCityDb(), modelCityWeather.getWeathers(), true)),
-                            BackpressureStrategy.BUFFER);
+                .switchMap(cityWeatherWrapper -> {
+                    //set Update weather info in DB
+                    App.getExecutorService().execute(() -> dbClient.updateCity(cityWeatherWrapper));
+                    return Flowable.just(dbToViewMap.convertDbModelToViewModel(cityWeatherWrapper.getCityDb(), cityWeatherWrapper.getWeathers(), true));
                 });
     }
 
@@ -60,28 +57,17 @@ public class CloudCitiesStore {
                     return response;
                 })
                 .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-                .map(gsonCity -> GsonToDbMap.getInstance().convertGsonModelToDaoModel(gsonCity))
-                .map(mapper -> {
-//                    cachedCity(mapper);
-                    return DbToViewMap.getInstance().convertDbModelToViewModel(mapper.getCityDb(), mapper.getWeathers(), false);
-                })
+                .map(cityGson -> GsonToViewMap.getInstance().convertGsonToViewModel(cityGson))
                 .map(viewCity -> {
-//                    CityDb cityDb = dbClient.isAdd(viewCity.getName(), viewCity.getLastTimeUpdate());
                     CityDb cityDb = dbClient.searchCity(viewCity.getName());
                     if (cityDb == null) {
                         viewCity.setFavorite(false);
                         return viewCity;
                     }
-//                    cachedCity(new CityWeatherWrapper(cityDb, cityDb.getWeathers()));
                     viewCity.setFavorite(true);
                     return viewCity;
                 });
     }
-
-//    private void cachedCity(CityWeatherWrapper tempCity) {
-//        //запоминаем город в формате БД, для возможного добавления его в БД
-//        TempCity.getInstance().setCityWeatherWrapper(tempCity);
-//    }
 
     private String trimCityName(String fullCityName) {
         if (fullCityName.indexOf(',') != -1) {

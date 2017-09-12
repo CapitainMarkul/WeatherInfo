@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Cancellable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -44,6 +45,9 @@ public class GoogleApiClient extends ApiHelper {
     public Observable<String> observableGooglePlaceRx(@NonNull String inputText) {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(inputText));
+//            //отменяем запрос, если произошла отписка
+            source.setCancellable(call::cancel);
+            // FIXME: 12.09.2017 Здесь ошибка ранней отмены запроса (Когда начинаем стирать символы)
 
             call.enqueue(new Callback() {
                 @Override

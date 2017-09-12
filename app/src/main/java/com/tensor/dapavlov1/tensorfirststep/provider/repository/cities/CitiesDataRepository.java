@@ -59,6 +59,7 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
                 }
             }
         }
+        DbClient.getInstance().unSubscribe(this);
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -46,20 +47,32 @@ public class DbClient implements DelObservable {
         observers = new ArrayList<>();
     }
 
-    public Flowable<CityDb> loadListAllCitiesRx() {
-        return Flowable.create(e -> {
+//    public Flowable<CityDb> loadListAllCitiesRxd() {
+//        return Flowable.create(e -> {
+//            try {
+//                for (CityDb item : loadListAllCities()) {
+//                    e.onNext(item);
+//                }
+//                e.onComplete();
+//            } catch (EmptyDbException e1) {
+//                e1.printStackTrace();
+//            }
+//        }, BackpressureStrategy.BUFFER);
+//    }
+
+    public Flowable<List<CityDb>> loadListAllCitiesRx() {
+        return Flowable.fromCallable(() -> {
             try {
-                for (CityDb item : loadListAllCities()) {
-                    e.onNext(item);
-                }
-                e.onComplete();
-            } catch (EmptyDbException e1) {
-                e1.printStackTrace();
+                return loadListAllCities();
+            } catch (EmptyDbException e) {
+                //возвращаем пустоту
+                return new ArrayList<CityDb>();
             }
-        }, BackpressureStrategy.BUFFER);
+        });
     }
 
-    public List<CityDb> loadListAllCities() throws EmptyDbException {
+
+    private List<CityDb> loadListAllCities() throws EmptyDbException {
         List<CityDb> resultList = query.forCurrentThread().list();
         if (resultList.isEmpty()) {
             throw new EmptyDbException();
@@ -77,6 +90,7 @@ public class DbClient implements DelObservable {
 
     public void updateAllCities(List<CityWeatherWrapper> cityWeatherWrappers) {
         //выгружаем старую информацию о погоде
+        // FIXME: 12.09.2017 Подумать над использованием запроса
         for (CityWeatherWrapper newItem : cityWeatherWrappers) {
             CityDb cityDb = daoSession.getCityDbDao().queryBuilder()
                     .where(CityDbDao.Properties.Name.eq(newItem.getCityDb().getName()))
@@ -86,6 +100,16 @@ public class DbClient implements DelObservable {
             cityDb.getWeathers().addAll(attachWeatherToCity(newItem.getWeathers(), cityDb.getId(), true));
             cityDb.update();
         }
+    }
+
+    public void updateCity(CityWeatherWrapper cityWeatherWrapper) {
+        CityDb cityDb = daoSession.getCityDbDao().queryBuilder()
+                .where(CityDbDao.Properties.Name.eq(cityWeatherWrapper.getCityDb().getName()))
+                .unique();
+        cityDb.setLastTimeUpdate(TrimDateSingleton.getInstance().getNowTime());
+        cityDb.getWeathers().clear();
+        cityDb.getWeathers().addAll(attachWeatherToCity(cityWeatherWrapper.getWeathers(), cityDb.getId(), true));
+        cityDb.update();
     }
 
     //Сначала в БД заносится город, узнаем его ID,  прикрепляем к нему Лист с погодой
@@ -148,9 +172,11 @@ public class DbClient implements DelObservable {
     //Иначе, кто-то отписывается, и мы получаем Ошибку модификации списка
     @Override
     public void notifyAllObservers(boolean isSuccess, String deletedCityName) {
-        for (DelObserver item : observers) {
+        DelObserver[] delObserversArray = new DelObserver[observers.size()];
+        delObserversArray = observers.toArray(delObserversArray);
+
+        for (DelObserver item : delObserversArray) {
             item.deleteResult(isSuccess, deletedCityName);
         }
-        unSubscribeAll();
     }
 }
