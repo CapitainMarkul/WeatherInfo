@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.client;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Cancellable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -45,36 +43,14 @@ public class WeatherApiClient extends ApiHelper {
                         ))).build();
     }
 
-    public Observable<String> getWeatherInCityRx(@NonNull String cityName) {
+    //WeatherApiClient
+    public Observable<String> getWeatherByCitiesRx(@NonNull List<String> cityNames) {
+        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCityRx(city));
+    }
+
+    public Observable<String> getWeatherByCityRx(@NonNull String cityName) {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(cityName));
-
-            //отменяем запрос, если произошла отписка
-            source.setCancellable(call::cancel);
-
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    source.onError(e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    source.onNext(response.body().string());
-                    source.onComplete();
-                }
-            });
-        });
-    }
-
-    //WeatherApiClient
-    public Observable<String> getWeatherInCityRx(@NonNull List<String> cityNames) {
-        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCity(city));
-    }
-
-    private Observable<String> getWeatherByCity(String city) {
-        return Observable.create(source -> {
-            Call call = okHttpClient.newCall(createRequest(city));
 
             //отменяем запрос, если произошла отписка
             source.setCancellable(call::cancel);

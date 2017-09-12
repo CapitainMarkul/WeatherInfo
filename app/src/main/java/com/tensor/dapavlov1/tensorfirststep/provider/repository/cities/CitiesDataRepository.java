@@ -6,8 +6,9 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloud.CloudCitiesStore;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database.DbCitiesStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloudstore.CloudCitiesStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.cloudstore.CloudCityStore;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.dbstore.DbCitiesStore;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesRepository;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
@@ -28,11 +29,13 @@ import io.reactivex.schedulers.Schedulers;
 public class CitiesDataRepository extends CheckConnect implements CitiesRepository, DelObserver {
     private DbCitiesStore dbCitiesStore;
     private CloudCitiesStore cloudCitiesStore;
+    private CloudCityStore cloudCityStore;
     private List<CityView> cachedCitiesView;
 
     public CitiesDataRepository() {
         dbCitiesStore = new DbCitiesStore();
         cloudCitiesStore = new CloudCitiesStore();
+        cloudCityStore = new CloudCityStore();
         cachedCitiesView = new ArrayList<>();
     }
 
@@ -84,7 +87,7 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
         }
 
         try {
-            cloudCitiesStore.getCity(fullCityName)
+            cloudCityStore.getCity(fullCityName)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

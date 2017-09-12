@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.database;
+package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.dbstore;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
