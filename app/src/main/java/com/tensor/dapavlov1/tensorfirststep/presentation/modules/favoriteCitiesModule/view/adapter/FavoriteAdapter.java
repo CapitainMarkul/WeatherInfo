@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter;
+package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

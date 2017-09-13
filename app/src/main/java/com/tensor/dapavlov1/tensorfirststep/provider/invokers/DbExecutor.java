@@ -1,15 +1,15 @@
 package com.tensor.dapavlov1.tensorfirststep.provider.invokers;
 
-import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DbCommand;
 
 /**
  * Created by da.pavlov1 on 16.08.2017.
  */
 
 public class DbExecutor {
-    private Command command;
+    private DbCommand command;
 
-    public void setCommand(Command command) {
+    public void setCommand(DbCommand command) {
         this.command = command;
     }
 

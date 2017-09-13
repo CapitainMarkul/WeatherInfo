@@ -1,8 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep;
 
-import android.support.annotation.IntegerRes;
-import android.support.v7.app.AppCompatActivity;
-
 import java.util.HashMap;
 import java.util.Map;
 

@@ -14,7 +14,7 @@ import io.reactivex.Observable;
  */
 
 public class CloudCityStore extends CloudStoreHelper {
-    public Observable<CityView> getCity(String fullCityName) throws EmptyResponseException {
+    public Observable<CityView> getCity(String fullCityName) {
         return weatherClient.getWeatherByCityRx(trimCityName(fullCityName))
                 .map(response -> {
                     if (response == null || response.equals("")) {

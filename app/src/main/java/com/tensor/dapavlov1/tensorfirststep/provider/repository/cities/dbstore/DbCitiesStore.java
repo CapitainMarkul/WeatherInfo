@@ -6,8 +6,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.commands.AddCityInDbCmd;
-import com.tensor.dapavlov1.tensorfirststep.provider.commands.DelCityFromDbCmd;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.AddCityInDbCmd;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCmd;
 import com.tensor.dapavlov1.tensorfirststep.provider.invokers.DbExecutor;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 

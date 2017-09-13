@@ -28,7 +28,7 @@
 
         <variable
             name="mPresenter"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter.FavoritePresenter"/>
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter"/>
     </data>
 
     <RelativeLayout

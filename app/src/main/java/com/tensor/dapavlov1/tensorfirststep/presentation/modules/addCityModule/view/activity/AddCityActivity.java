@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.view.activity;
+package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -24,8 +24,8 @@ import com.tensor.dapavlov1.tensorfirststep.BaseLoader;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
-import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter.PlacesAutoComplete;
-import com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
@@ -68,7 +68,7 @@ public class AddCityActivity extends AppCompatActivity
     private final static String IS_TEXT_CHANGED = "is_text_changed";
     private final static String IS_CONFIG_CHANGE = "is_config_change";
 
-    private final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
+    public final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
     private final static int ID_LOADER_NEW_CITY = 2;
 
     @Override

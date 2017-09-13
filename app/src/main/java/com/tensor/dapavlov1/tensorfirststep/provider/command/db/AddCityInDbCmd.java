@@ -1,8 +1,8 @@
-package com.tensor.dapavlov1.tensorfirststep.provider.commands;
+package com.tensor.dapavlov1.tensorfirststep.provider.command.db;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.CloudCommand;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Created by da.pavlov1 on 16.08.2017.
  */
 
-public class AddCityInDbCmd implements Command {
+public class AddCityInDbCmd implements DbCommand {
     private DbClient dbClient;
     private String cityName;
     private String lastTimeUpdate;

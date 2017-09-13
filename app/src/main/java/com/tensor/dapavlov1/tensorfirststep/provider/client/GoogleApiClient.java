@@ -46,8 +46,8 @@ public class GoogleApiClient extends ApiHelper {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(createRequest(inputText));
 //            //отменяем запрос, если произошла отписка
-            source.setCancellable(call::cancel);
-            // FIXME: 12.09.2017 Здесь ошибка ранней отмены запроса (Когда начинаем стирать символы)
+//            source.setCancellable(call::cancel);
+            // FIXME: 12.09.2017 Здесь ошибка ранней отмены запроса (Когда начинаем стирать символы) (Ошибка, если приходит пустота?)
 
             call.enqueue(new Callback() {
                 @Override

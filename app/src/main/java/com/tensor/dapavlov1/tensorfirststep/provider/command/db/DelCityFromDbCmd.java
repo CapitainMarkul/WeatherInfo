@@ -1,13 +1,12 @@
-package com.tensor.dapavlov1.tensorfirststep.provider.commands;
+package com.tensor.dapavlov1.tensorfirststep.provider.command.db;
 
-import com.tensor.dapavlov1.tensorfirststep.interfaces.Command;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 
 /**
  * Created by da.pavlov1 on 16.08.2017.
  */
 
-public class DelCityFromDbCmd implements Command {
+public class DelCityFromDbCmd implements DbCommand {
     private DbClient dbClient;
     private String cityName;
 

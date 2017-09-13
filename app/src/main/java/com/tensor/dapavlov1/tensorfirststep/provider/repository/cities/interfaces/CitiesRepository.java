@@ -7,6 +7,7 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * Created by da.pavlov1 on 22.08.2017.
@@ -17,9 +18,10 @@ public interface CitiesRepository {
 
     void delete(String cityName);
 
-    void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
-
-    Flowable<CityView> getCitiesRx() throws EmptyDbException;
+    //    void getCity(String fullNameCity, CityCallback<CityView> callbackCities) throws EmptyResponseException, NetworkConnectException;
+//    Observable<CityView> getCity(String fullNameCity) throws EmptyResponseException, NetworkConnectException;
+//
+//    Flowable<CityView> getCitiesRx() throws EmptyDbException;
 //    DelObservable<String> getCityView(String fullCityName) throws NetworkConnectException;
 
 //    void getCities(CitiesCallback<CityView> callbackCities);

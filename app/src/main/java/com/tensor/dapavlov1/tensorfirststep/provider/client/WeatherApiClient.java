@@ -53,7 +53,7 @@ public class WeatherApiClient extends ApiHelper {
             Call call = okHttpClient.newCall(createRequest(cityName));
 
             //отменяем запрос, если произошла отписка
-            source.setCancellable(call::cancel);
+//            source.setCancellable(call::cancel);
 
             call.enqueue(new Callback() {
                 @Override

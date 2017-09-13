@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.ViewToDbMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.CheckConnect;
@@ -17,8 +18,10 @@ import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -77,63 +80,31 @@ public class CitiesDataRepository extends CheckConnect implements CitiesReposito
         dbCitiesStore.delete(cityName);
     }
 
-
-    @Override
-    public void getCity(String fullCityName, CityCallback<CityView> callbackCities) {
-        //здесь мы можем тянуть только из интернета
+    public ResultWrapper<Observable<CityView>> getCity(String fullCityName) {
+        //  здесь мы можем тянуть только из интернета
         if (!isOnline(App.getContext())) {
-            callbackCities.onErrorConnect();
-            return;
+            return new ResultWrapper<>(null, new NetworkConnectException());
         }
-
-        try {
-            cloudCityStore.getCity(fullCityName)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            result -> {
-                                if (result.isFavorite()) {
-                                    callbackCities.isFavoriteCity(result);
-                                } else {
-                                    callbackCities.isNotFavoriteCity(result);
-                                }
-                            },
-                            error -> {
-                                if (error instanceof EmptyDbException) {
-                                    callbackCities.isEmpty();
-                                } else if (error instanceof NetworkConnectException) {
-                                    callbackCities.onErrorConnect();
-                                } else {
-                                    // если случилось что-то непредусмотренное, показываем карточку "Город не найден"
-                                    callbackCities.isEmpty();
-                                }
-                            },
-                            () -> {
-                            });
-//                            },
-//                            disposable -> DisposableManager.addDisposable(disposable));
-        } catch (EmptyResponseException e) {
-            callbackCities.isEmpty();
-        }
+        return new ResultWrapper<>(cloudCityStore.getCity(fullCityName), null);
     }
 
-
-    @Override
-    public Flowable<CityView> getCitiesRx() throws EmptyDbException {
+    public ResultWrapper<Flowable<CityView>> getCitiesRx() {
         //1. Начинаем читать БД
         //2.1. Если пусто, то возвращаем null
         //2.2. Если не пусто, начинаем проверять интернет, и возвращаем либо старое, либо обновленное
 
         //Здесь читаем БД, если пустая, то интернет нет смысла подключать
-        List<String> cityNames =
-                DbClient.getInstance().getCityNames();
+        List<String> cityNames;
+        try {
+            cityNames = DbClient.getInstance().getCityNames();
+        } catch (EmptyDbException e) {
+            return new ResultWrapper<>(null, e);
+        }
 
-//        Решаем откуда будем брать информацию
         if (isOnline(App.getContext())) {
-            return cloudCitiesStore.getCitiesRx(cityNames);
+            return new ResultWrapper<>(cloudCitiesStore.getCitiesRx(cityNames), null);
         } else {
-            // TODO: 06.09.2017 А как отсюда дать пользователю понять, что сеть отсутствует? Здесь нет CallBack который можно вызвать
-            return dbCitiesStore.getCitiesRx();
+            return new ResultWrapper<>(dbCitiesStore.getCitiesRx(), new NetworkConnectException());
         }
     }
 }

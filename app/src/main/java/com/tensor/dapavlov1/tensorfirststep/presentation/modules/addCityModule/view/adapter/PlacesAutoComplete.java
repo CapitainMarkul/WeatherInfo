@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.adapter;
+package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter;
 
 import android.content.Context;
 import android.widget.ArrayAdapter;

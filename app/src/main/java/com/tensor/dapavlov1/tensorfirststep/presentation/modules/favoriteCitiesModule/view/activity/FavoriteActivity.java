@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.view.activity;
+package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.adapter.FavoriteAdapter;
-import com.tensor.dapavlov1.tensorfirststep.presentation.activity.favorite.presenter.FavoritePresenter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter.FavoriteAdapter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.routers.FavoriteToAddCityRouter;
 
@@ -179,7 +179,6 @@ public class FavoriteActivity extends AppCompatActivity
         binding.recyclerViewFavorite.setAdapter(favoriteAdapter);
         binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {

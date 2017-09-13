@@ -7,7 +7,7 @@
 
         <variable
             name="mPresenter"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.activity.addcity.presenter.AddCityPresenter"/>
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter"/>
 
         <variable
             name="events"
