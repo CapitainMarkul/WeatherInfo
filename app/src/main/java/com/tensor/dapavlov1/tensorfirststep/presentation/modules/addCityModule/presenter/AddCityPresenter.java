@@ -34,13 +34,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class AddCityPresenter extends BasePresenter<AddCityActivity>
         implements DelObserver, AddCityInteractorPresenterContract.Presenter {
-    private CityView cachedCityView;
 
     //Temp Answer
     // TODO: 12.09.2017 В будущем -  Dagger 2
     private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
-
-
+    private CityView cachedCityView;
     //для созранения состояния при ConfigChange
     private boolean isLoading = false;
 
@@ -81,63 +79,23 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity>
         activity.getBinding().cvSearching.tvSearching.clearAnimation();
     }
 
-    private CityCallback<CityView> cityCallback = new CityCallback<CityView>() {
-//        @Override
-//        public void isFavoriteCity(final CityView result) {
-//            activity.isFavoriteCity(true);
-//            cachedInfo(result);
-//            showInformation(cachedCityView);
-//            stopAnimation();
-//        }
-//
-//        @Override
-//        public void isNotFavoriteCity(final CityView result) {
-//            activity.isFavoriteCity(false);
-//            cachedInfo(result);
-//            showInformation(cachedCityView);
-//            stopAnimation();
-//        }
-//
-//        @Override
-//        public void onErrorConnect() {
-//            activity.showMessage(R.string.str_error_connect_to_internet);
-//            activity.getBinding().setIsLoading(false);
-//            stopAnimation();
-//        }
-//
-//        @Override
-//        public void isEmpty() {
-//            isLoading = false;
-//            sho(null);
-//            activity.getBinding().setIsLoading(false);
-//            stopAnimation();
-//        }
-//
-//        @Override
-//        public void apiKeyError() {
-//            // TODO: 04.09.2017 Можно сделать, если потребуется
-//        }
-    };
-
     public void getWeatherInCity(final String fullCityName) {
         isLoading = true;
         activity.getBinding().setIsLoading(true);
         startAnimation();
 
-        // TODO: 12.09.2017 Работа с Interactor'ом
         interactor.setListener(this);
-
         interactor.obtainCityWeather(fullCityName);
     }
 
     private void addToFavorite() {
-        new CitiesDataRepository().add(cachedCityView);
+        interactor.addCityInDb(cachedCityView);
         cityIsFavorite(true);
         showMessage(R.string.activity_favorite_add_to_favorite);
     }
 
     private void deleteFromFavorite() {
-        new CitiesDataRepository().delete(cachedCityView.getName());
+        interactor.delCityFromDb(cachedCityView);
     }
 
     public void checkEndTask() {
@@ -161,17 +119,6 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity>
             DbClient.getInstance().subscribe(this);
             deleteFromFavorite();
         }
-    }
-
-    @Override
-    public void deleteResult(boolean isSuccess, String deletedCityName) {
-        if (isSuccess) {
-            cityIsFavorite(!isSuccess);
-            showMessage(R.string.activity_favorite_del_from_favorite);
-        } else {
-            showMessage(R.string.unknown_error);
-        }
-        DbClient.getInstance().unSubscribe(this);
     }
 
     private void showCityView(CityView city) {
@@ -215,5 +162,16 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity>
                 showErrorView(R.string.unknown_error);
             }
         }
+    }
+
+    @Override
+    public void deleteResult(boolean isSuccess, CityView deletedCity) {
+        if (isSuccess) {
+            cityIsFavorite(!isSuccess);
+            showMessage(R.string.activity_favorite_del_from_favorite);
+        } else {
+            showMessage(R.string.unknown_error);
+        }
+        DbClient.getInstance().unSubscribe(this);
     }
 }

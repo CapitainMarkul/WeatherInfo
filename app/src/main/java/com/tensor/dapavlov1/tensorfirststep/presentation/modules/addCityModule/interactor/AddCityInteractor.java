@@ -5,6 +5,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.c
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.GetWeatherByCityCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.AddCityInDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCommand;
 
 import io.reactivex.Observable;
 
@@ -19,5 +21,15 @@ public class AddCityInteractor extends CommonInteractor<AddCityInteractorPresent
     public void obtainCityWeather(String fullCityName) {
         getListener().onObtainCityWeather(
                 executeCommand(new GetWeatherByCityCommand(fullCityName)));
+    }
+
+    @Override
+    public void addCityInDb(CityView city) {
+        executeVoidCommand(new AddCityInDbCommand(city));
+    }
+
+    @Override
+    public void delCityFromDb(CityView city) {
+        executeVoidCommand(new DelCityFromDbCommand(city));
     }
 }

@@ -19,10 +19,11 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityRouterPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter.FavoriteAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
-import com.tensor.dapavlov1.tensorfirststep.presentation.routers.FavoriteToAddCityRouter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.router.FavoriteToAddCityRouter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class FavoriteActivity extends AppCompatActivity
     private DisposableManager disposableManager;
     private FavoritePresenter mPresenter;
     private FavoriteAdapter favoriteAdapter;
-    private FavoriteToAddCityRouter favoriteToAddCityRouter;
+
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
 
     private ActivityFavoriteBinding binding;
@@ -76,15 +77,15 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
 
-    private void setupRouter() {
-        favoriteToAddCityRouter = new FavoriteToAddCityRouter();
-        mPresenter.setRouter(favoriteToAddCityRouter);
-    }
+//    private void setupRouter() {
+//        favoriteToAddCityRouter = new FavoriteToAddCityRouter();
+//        mPresenter.setRouter(favoriteToAddCityRouter);
+//    }
 
     private void setupPresenter() {
         mPresenter = new FavoritePresenter();
         mPresenter.attachActivity(this);
-        setupRouter();
+//        setupRouter();
     }
 
     private void startUpdateWeatherInfo() {
@@ -141,9 +142,34 @@ public class FavoriteActivity extends AppCompatActivity
     }
 
     @Override
-    public void onItemClick(String cityName) {
-        mPresenter.deleteCity(cityName);
+    public void onItemClick(CityView city) {
+        mPresenter.deleteCity(city);
     }
+
+    public void delCityFromAdapter(CityView deletedCity){
+        int deletedPosition = favoriteAdapter.getItems().indexOf(deletedCity);
+        favoriteAdapter.getItems().remove(deletedPosition);
+        favoriteAdapter.notifyItemRemoved(deletedPosition);
+        // TODO: 13.09.2017 Подумать насчет анимации
+//        favoriteAdapter.notifyItemRangeChanged(deletedPosition, favoriteAdapter.getItemCount());
+//        favoriteAdapter.setAnimation(binding.cardFullInfo, position, R.anim.recyclerdel);
+        if(favoriteAdapter.getItems().isEmpty()){
+            onEmpty();
+        }
+    }
+
+//    private void removeCard(int position) {
+//            cityViewWeathers.remove(position);  //удаляем из листаАдаптера
+//            notifyItemRemoved(position);    //тправляем запрос на обновление списка
+//            notifyItemRangeChanged(getAdapterPosition(), cityViewWeathers.size());  //склеиваем новый список
+//            setAnimation(binding.cardFullInfo, position, R.anim.recyclerdel);
+//            if (emptyListener != null && cityViewWeathers.isEmpty()) {
+//                emptyListener.onEmpty();
+//            }
+//        }
+
+
+
 
     //Loaders
     private void setupLoaders() {
@@ -153,7 +179,7 @@ public class FavoriteActivity extends AppCompatActivity
     private void setupRecyclerAdapter() {
         favoriteAdapter = new FavoriteAdapter();
         favoriteAdapter.setListener(FavoriteActivity.this);
-        favoriteAdapter.setEmptyListener(FavoriteActivity.this);
+//        favoriteAdapter.setEmptyListener(FavoriteActivity.this);
     }
 
     @Override

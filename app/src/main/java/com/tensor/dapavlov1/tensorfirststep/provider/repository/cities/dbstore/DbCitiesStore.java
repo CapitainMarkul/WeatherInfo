@@ -2,13 +2,9 @@ package com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.dbstore;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.AddCityInDbCmd;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCmd;
-import com.tensor.dapavlov1.tensorfirststep.provider.invokers.DbExecutor;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.interfaces.CitiesDataStore;
 
 import org.reactivestreams.Publisher;
@@ -27,7 +23,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class DbCitiesStore implements CitiesDataStore {
     private DbClient dbClient = DbClient.getInstance();
-    private DbExecutor dbExecutor;
 
     @Override
     public Flowable<CityView> getCitiesRx() {
@@ -50,25 +45,5 @@ public class DbCitiesStore implements CitiesDataStore {
                                 },
                                 e::onError,
                                 e::onComplete), BackpressureStrategy.BUFFER);
-    }
-
-
-    // TODO: 06.09.2017 Паттерн команда, понять как его здесь правильно применить
-    public DbCitiesStore() {
-        dbExecutor = new DbExecutor();
-    }
-
-    @Override
-    public void add(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
-        dbExecutor.setCommand(
-                new AddCityInDbCmd(dbClient, cityName, lastTimeUpdate, weathers));
-        dbExecutor.execute();
-    }
-
-    @Override
-    public void delete(String cityName) {
-        dbExecutor.setCommand(
-                new DelCityFromDbCmd(dbClient, cityName));
-        dbExecutor.execute();
     }
 }

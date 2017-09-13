@@ -1,15 +1,13 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.interactor;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.GetWeatherByCitiesCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.GetWeatherByCityCommand;
+import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCommand;
 
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 /**
  * Created by da.pavlov1 on 12.09.2017.
@@ -22,5 +20,10 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteCityInterac
     public void obtainCitiesWeather() {
         getListener().onObtainCitiesWeather(
                 executeCommand(new GetWeatherByCitiesCommand()));
+    }
+
+    @Override
+    public void delCityFromDb(CityView city) {
+        executeVoidCommand(new DelCityFromDbCommand(city));
     }
 }

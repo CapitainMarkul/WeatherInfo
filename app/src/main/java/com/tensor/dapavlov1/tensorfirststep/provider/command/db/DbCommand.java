@@ -7,5 +7,5 @@ package com.tensor.dapavlov1.tensorfirststep.provider.command.db;
 public interface DbCommand {
     void execute();
 
-    void undo();
+//    void undo();
 }

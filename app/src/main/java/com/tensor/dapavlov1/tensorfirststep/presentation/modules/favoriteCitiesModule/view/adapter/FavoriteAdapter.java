@@ -33,7 +33,6 @@ import java.util.List;
 public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHolder> {
     private List<CityView> cityViewWeathers = new ArrayList<>();
     private DelItemListener listener;
-    private EmptyListener emptyListener;
 
     private int lastAnimateElement = 0; //Не позволяет анимировать элементы, которые уже были показаны
     private boolean isAnimate = true;
@@ -42,14 +41,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         this.listener = listener;
     }
 
-    public void setEmptyListener(EmptyListener listener) {
-        emptyListener = listener;
-    }
-
     public void setItems(List<CityView> cityViewWeathers) {
         this.cityViewWeathers.clear();
         this.cityViewWeathers.addAll(cityViewWeathers);
         notifyDataSetChanged();
+    }
+
+    public List<CityView> getItems() {
+        return cityViewWeathers;
     }
 
     public void setItem(CityView cityViewWeather) {
@@ -84,10 +83,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         if (isAnimate) {
             setAnimation(holder.binding.cardFullInfo, position, R.anim.recycleradd);
         }
-
     }
 
-    private void setAnimation(View viewToAnimate, int position, @AnimRes int animateRes) {
+    public void setAnimation(View viewToAnimate, int position, @AnimRes int animateRes) {
         if (position >= lastAnimateElement) {
             Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(),
                     animateRes);
@@ -101,17 +99,15 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         return (cityViewWeathers != null) ? cityViewWeathers.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick, DelObserver {
+    public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick {
         private HorizontalWeatherAdapter horizontalWeatherAdapter;
         private CardWeatherFullInfoBinding binding;
-        private Context context;
 
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
             binding.setEvents(this);
             binding.setSwitchGradient(SwitchGradient.getInstance());
-            context = itemView.getContext();
             setupViews(itemView.getContext());
         }
 
@@ -122,31 +118,11 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             binding.rvWeatherOnOtherTime.setAdapter(horizontalWeatherAdapter);
         }
 
-        private void removeCard(int position) {
-            cityViewWeathers.remove(position);  //удаляем из листаАдаптера
-            notifyItemRemoved(position);    //тправляем запрос на обновление списка
-            notifyItemRangeChanged(getAdapterPosition(), cityViewWeathers.size());  //склеиваем новый список
-            setAnimation(binding.cardFullInfo, position, R.anim.recyclerdel);
-            if (emptyListener != null && cityViewWeathers.isEmpty()) {
-                emptyListener.onEmpty();
-            }
-        }
-
         @Override
         public void onItemClick() {
             if (listener != null) {
-                DbClient.getInstance().subscribe(this);
-                listener.onItemClick(binding.tvCity.getText().toString());
-            }
-        }
-
-        @Override
-        public void deleteResult(boolean isSuccess, String deletedCityName) {
-            if (isSuccess) {
-                removeCard(getAdapterPosition());
-                DbClient.getInstance().unSubscribe(this);
-            } else {
-                Toast.makeText(context, "Произошла ошибка при удалении", Toast.LENGTH_SHORT).show();
+                int cachedPosition = getLayoutPosition();
+                listener.onItemClick(cityViewWeathers.get(cachedPosition));
             }
         }
     }

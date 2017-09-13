@@ -1,6 +1,8 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityInDb;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.DelCityFromDb;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.MvpInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 
@@ -16,7 +18,7 @@ public interface AddCityInteractorPresenterContract {
 // TODO: 12.09.2017  void onObtainCityWeather(Observable<CityView> cityRx, Throwable error);
     }
 
-    interface Interactor extends MvpInteractor<Presenter> {
+    interface Interactor extends MvpInteractor<Presenter>, DelCityFromDb, AddCityInDb {
         void obtainCityWeather(String fullCityName);
     }
 }

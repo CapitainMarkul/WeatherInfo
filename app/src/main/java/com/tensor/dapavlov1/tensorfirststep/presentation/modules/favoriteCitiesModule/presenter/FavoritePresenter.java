@@ -1,9 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter;
 
-import android.util.Log;
-import android.widget.Toast;
-
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
@@ -11,14 +7,16 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityInteractorPresenterContract;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityRouterPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.interactor.FavoriteCityInteractor;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.router.FavoriteToAddCityRouter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.Router;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
+import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -31,58 +29,46 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class FavoritePresenter extends BasePresenter<FavoriteActivity>
-        implements FavoriteCityInteractorPresenterContract.Presenter {
-    private Router router;
-    private CitiesDataRepository citiesDataRepository;
+        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver {
+
+    private List<CityView> cachedCitiesView;
     private boolean isLoading = false;
 
     private FavoriteCityInteractorPresenterContract.Interactor interactor = new FavoriteCityInteractor();
+    private FavoriteCityRouterPresenterContract.Router router = new FavoriteToAddCityRouter();
 
     public FavoritePresenter() {
-        citiesDataRepository = new CitiesDataRepository();
+        cachedCitiesView = new ArrayList<>();
     }
 
     public void updateWeathers() {
         isLoading = false;
-        citiesDataRepository.clearCacheCitiesView();
+        cachedCitiesView.clear();
         activity.getBinding().setIsLoading(true);
 
         interactor.setListener(this);
         interactor.obtainCitiesWeather();
-
-//        activity.getDisposableManager().addDisposable(
-//                FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
-//                citiesDataRepository.getCitiesRx()
-//                        .getData()
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(
-//                                city -> citiesCallback.onUpdate(city),
-//                                throwable -> citiesCallback.onComplete(),
-//                                () -> citiesCallback.onComplete()));
     }
 
     public void switchActivity() {
         router.goToActivity(activity, AddCityActivity.class);
     }
 
-    public void deleteCity(String cityName) {
-        citiesDataRepository.delete(cityName);
+    public void deleteCity(CityView city) {
+        DbClient.getInstance().subscribe(this);
+        interactor.delCityFromDb(city);
     }
 
     public void showCachedCities() {
-        List<CityView> cachedCities = citiesDataRepository.getCacheCitiesView();
-        if (cachedCities != null && !cachedCities.isEmpty()) {
-            activity.setItems(cachedCities);
+//        List<CityView> cachedCities = citiesDataRepository.getCacheCitiesView();
+        if (cachedCitiesView != null && !cachedCitiesView.isEmpty()) {
+            activity.setItems(cachedCitiesView);
         }
-        activity.getBinding().setCities(cachedCities);
+        activity.getBinding().setCities(cachedCitiesView);
     }
 
     public boolean isLoadingComplete() {
         return isLoading;
-    }
-
-    public void setRouter(Router router) {
-        this.router = router;
     }
 
     // FIXME: 13.09.2017 Требуется упростить логику
@@ -94,7 +80,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity>
 
             //cached
             isLoading = true;
-            citiesDataRepository.cacheCityView(city);
+            cachedCitiesView.add(city);
 
             activity.getBinding().setIsLoading(false);
         }
@@ -115,13 +101,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity>
 
         if (observable != null) {
             DisposableManager.getInstance().addDisposable(
-                    AddCityActivity.ID_POOL_COMPOSITE_DISPOSABLE,
+                    FavoriteActivity.ID_POOL_COMPOSITE_DISPOSABLE,
                     observable
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     this::showCitiesView,
-                                    e -> activity.showMessage(R.string.unknown_error),
+                                    e -> {
+                                        activity.showMessage(R.string.unknown_error);
+                                        showEmptyCard();
+                                    },
                                     () -> {
                                         //Эти сообщения показываем после того, как все данные загрузились
                                         if (exception == null) {
@@ -137,5 +126,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteActivity>
                 showEmptyCard();
             }
         }
+    }
+
+    @Override
+    public void deleteResult(boolean isSuccess, CityView deletedCity) {
+        if (isSuccess) {
+            cachedCitiesView.remove(deletedCity);
+            activity.delCityFromAdapter(deletedCity);
+        }
+        DbClient.getInstance().unSubscribe(this);
     }
 }

@@ -8,6 +8,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.ViewToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObservable;
@@ -114,12 +116,14 @@ public class DbClient implements DelObservable {
 
     //Сначала в БД заносится город, узнаем его ID,  прикрепляем к нему Лист с погодой
     //на текущий момент сущности Weather существуют, но без привязки к городу
-    public void setInDataBase(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
+//    public void setInDataBase(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
+    public void setInDataBase(CityView city) {
 //        CityDb cityDb = new CityDb(null, cityName, lastTimeUpdate);
         long cityId = App.getDaoSession().getCityDbDao().insert(
-                new CityDb(null, cityName, lastTimeUpdate));
+                new CityDb(null, city.getName(), city.getLastTimeUpdate()));
         App.getDaoSession().getWeatherDbDao().insertInTx(
-                attachWeatherToCity(weathers, cityId, false));
+                attachWeatherToCity(
+                        ViewToDbMap.convertWeathersToDbType(city.getWeatherViews()), cityId, false));
     }
 
     // FIXME: 07.09.2017 Если информацию обновляем, то нужно восстановить ключи, если это вставка нового города - этого делать не нужно
@@ -134,15 +138,15 @@ public class DbClient implements DelObservable {
         return weathers;
     }
 
-    public void deleteCity(@NotNull String cityName) {
+    public void deleteCity(@NotNull CityView city) {
         try {
-            CityDb temp = searchCity(cityName);
+            CityDb temp = searchCity(city.getName());
             App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
             temp.delete();
 
-            notifyAllObservers(true, cityName);
+            notifyAllObservers(true, city);
         } catch (Exception e) {
-            notifyAllObservers(false, cityName);
+            notifyAllObservers(false, city);
         }
     }
 
@@ -165,18 +169,12 @@ public class DbClient implements DelObservable {
     }
 
     @Override
-    public void unSubscribeAll() {
-        observers.clear();
-    }
-
-    //Иначе, кто-то отписывается, и мы получаем Ошибку модификации списка
-    @Override
-    public void notifyAllObservers(boolean isSuccess, String deletedCityName) {
+    public void notifyAllObservers(boolean isSuccess, CityView deletedCity) {
         DelObserver[] delObserversArray = new DelObserver[observers.size()];
         delObserversArray = observers.toArray(delObserversArray);
 
         for (DelObserver item : delObserversArray) {
-            item.deleteResult(isSuccess, deletedCityName);
+            item.deleteResult(isSuccess, deletedCity);
         }
     }
 }
