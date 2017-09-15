@@ -1,7 +1,10 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter;
 
+import android.content.Intent;
+
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.UpdateActivityInfoReceiver;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
@@ -11,10 +14,10 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesM
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.router.FavoriteToAddCityRouter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
 
 
 import io.reactivex.Flowable;
@@ -27,10 +30,14 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
-        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver {
+        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver,
+        UpdateActivityInfoReceiver.Receiver {
     private FavoriteCityInteractorPresenterContract.Interactor interactor = new FavoriteCityInteractor();
     private FavoriteCityRouterPresenterContract.Router router = new FavoriteToAddCityRouter();
 
+    private static final int INFO_IS_CHANGE_STATE = 1;
+
+    private UpdateActivityInfoReceiver receiver = UpdateActivityInfoReceiver.getInstance();
 
     public void updateWeathers() {
         getViewModel().setLoading(true);
@@ -45,6 +52,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
     }
 
     public void switchActivity() {
+        receiver.setReceiver(this);
         router.goToActivity(getActivity().getComponentsActivity(), AddCityActivity.class);
     }
 
@@ -55,7 +63,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
 
     private void showEmptyCard() {
         getViewModel().setLoading(false);
-        getViewModel().reset();
+        getViewModel().showEmptyResult();
     }
 
     @Override
@@ -98,6 +106,20 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
             getViewModel().delCityView(deletedCity);
         }
         DbClient.getInstance().unSubscribe(this);
+    }
+
+    @Override
+    public void onReceiveResult(Intent intent) {
+        switch (intent.getIntExtra(AddCityActivity.GET_STATE, 0)) {
+            case INFO_IS_CHANGE_STATE: {
+                getViewModel().resetAdapter();
+                updateWeathers();
+                break;
+            }
+            default:
+                break;
+        }
+        receiver.reset();
     }
 
     @Override

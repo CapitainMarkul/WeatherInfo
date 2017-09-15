@@ -10,9 +10,9 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.v
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

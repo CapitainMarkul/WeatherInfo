@@ -35,5 +35,14 @@
                 <!--<category android:name="android.intent.category.LAUNCHER"/>-->
             <!--</intent-filter>-->
         </activity>
+
+        <!--<receiver-->
+            <!--android:name=".domain.services.syncChangeOtherActivity.receiver.UpdateActivityInfoReceiver"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.tensor.dapavlov1.tensorfirststep.action.INFO_IS_CHANGE" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
     </application>
 </manifest>

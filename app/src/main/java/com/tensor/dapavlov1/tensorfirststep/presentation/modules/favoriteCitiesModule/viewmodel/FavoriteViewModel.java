@@ -17,8 +17,8 @@ import java.util.List;
 @Parcel
 public class FavoriteViewModel extends AbstractViewModel {
     private List<CityView> citiesView = new ArrayList<>();
-    //    private List<CityView> citiesView = new ArrayList<>();
     private boolean isLoading;
+    private boolean isResetAdapter;
     private CityView lastDeletedCity;
 
     @Bindable
@@ -69,10 +69,29 @@ public class FavoriteViewModel extends AbstractViewModel {
         notifyPropertyChanged(BR.loading);
     }
 
-    public void reset() {
+    @Bindable
+    public boolean isResetAdapter() {
+        return isResetAdapter;
+    }
+
+    public void setResetAdapter(boolean resetAdapter) {
+        isResetAdapter = resetAdapter;
+        notifyPropertyChanged(BR.resetAdapter);
+    }
+
+    public void resetAdapter() {
+        resetViewModel();
+        setResetAdapter(true);
+    }
+
+    public void showEmptyResult() {
+        resetViewModel();
+        setCitiesView(citiesView);
+    }
+
+    private void resetViewModel() {
         citiesView.clear();
         isLoading = false;
         lastDeletedCity = null;
-        notifyPropertyChanged(BR.citiesView);
     }
 }

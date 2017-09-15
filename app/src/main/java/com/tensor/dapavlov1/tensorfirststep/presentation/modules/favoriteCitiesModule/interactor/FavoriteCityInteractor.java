@@ -4,8 +4,8 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityInteractorPresenterContract;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.GetWeatherByCitiesCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.cloud.GetWeatherByCitiesCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.DelCityFromDbCommand;
 
 import io.reactivex.Flowable;
 

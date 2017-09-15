@@ -4,9 +4,9 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.GetWeatherByCityCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.AddCityInDbCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DelCityFromDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.cloud.GetWeatherByCityCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.AddCityInDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.DelCityFromDbCommand;
 
 import io.reactivex.Observable;
 

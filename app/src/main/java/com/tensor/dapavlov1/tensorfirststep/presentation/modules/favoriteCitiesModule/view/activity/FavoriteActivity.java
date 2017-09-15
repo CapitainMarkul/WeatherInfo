@@ -49,7 +49,7 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         setupRecyclerView();
         setupListeners();
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             startUpdateWeatherInfo();
         }
     }
@@ -95,6 +95,10 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         @Override
         public void onPropertyChanged(Observable sender, int propertyId) {
             FavoriteViewModel viewModel = (FavoriteViewModel) sender;
+            if(viewModel.isResetAdapter()){
+                favoriteAdapter.setDefaultSetting();
+                getViewModel().setResetAdapter(false);
+            }
             switch (propertyId) {
                 case BR.citiesView: {
                     if (favoriteAdapter != null && viewModel.getLastCity() != null) {
@@ -142,17 +146,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         getPresenter().deleteCity(city);
     }
 
-
-//    private void checkUpdateInOtherActivity() {
-//        if (checkUpdateInOtherActivity.isUpdate()) {
-//            startUpdateWeatherInfo();
-//            checkUpdateInOtherActivity.setUpdate(false);
-//        }
-//    }
-
-    //
-//
-
     private void startUpdateWeatherInfo() {
         favoriteAdapter.setDefaultSetting();
         getPresenter().updateWeathers();
@@ -162,12 +155,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         binding.srRefresh.setOnRefreshListener(() -> startUpdateWeatherInfo());
     }
 
-    //
-//    @Override
-//    public void setItems(final List<CityView> weathers) {
-//        favoriteAdapter.setItems(weathers);
-//    }
-//
     public void setItemInAdapter(CityView cityViewWeather) {
         favoriteAdapter.setItem(cityViewWeather);
         //для работы анимации на 1 элементе
@@ -256,6 +243,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
 
     @Override
     public void onEmpty() {
-        getViewModel().reset();
+        getViewModel().showEmptyResult();
     }
 }

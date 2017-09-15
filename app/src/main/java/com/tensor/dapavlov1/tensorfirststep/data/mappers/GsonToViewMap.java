@@ -3,7 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.CityGson;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
-import com.tensor.dapavlov1.tensorfirststep.provider.common.TrimDateSingleton;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateSingleton;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.WeatherRootGson;
 
 import java.util.ArrayList;

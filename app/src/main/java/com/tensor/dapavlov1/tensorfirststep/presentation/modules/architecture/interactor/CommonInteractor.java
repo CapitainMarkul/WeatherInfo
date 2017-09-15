@@ -2,8 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.i
 
 import android.support.annotation.NonNull;
 
-import com.tensor.dapavlov1.tensorfirststep.provider.command.cloud.CloudCommand;
-import com.tensor.dapavlov1.tensorfirststep.provider.command.db.DbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.cloud.CloudCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.DbCommand;
 
 /**
  * Created by da.pavlov1 on 12.09.2017.

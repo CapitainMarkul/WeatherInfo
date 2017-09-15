@@ -1,6 +1,9 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
@@ -21,11 +24,12 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.UpdateActivityInfoReceiver;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
@@ -33,8 +37,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.p
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
-import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.PlacesDataRepository;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -56,10 +59,18 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
     private PlacesAutoComplete placesAutoComplete;
     private HorizontalWeatherAdapter horizontalWeatherAdapter;
 
-    private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
     private ActivityAddCityBinding binding;
 
-    private static final String NEW_CITY_ADAPTER_KEY = AddCityActivity.class.getSimpleName() + "_ADAPTER";
+    public static final String NEW_CITY_ADAPTER_KEY = AddCityActivity.class.getSimpleName() + "_ADAPTER";
+    private static final String ACTION_TYPE = "com.tensor.dapavlov1.tensorfirststep.action.INFO_IS_CHANGE";
+
+    public static final String GET_STATE = "info_changed";
+    private static final int INFO_IS_NOT_CHANGE_STATE = 0;
+    private static final int INFO_IS_CHANGE_STATE = 1;
+
+    private int CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
+
+    private BroadcastReceiver receiver = UpdateActivityInfoReceiver.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,18 +80,30 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
 
         setupViews();
         // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
-//        if (savedInstanceState == null) {
+
         setupRecyclerAdapter();
         setupRecyclerView();
 
         setupRxListeners();
-        setupSingleton();
-//        }
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
         }
         Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //регистрируем слушатель
+        registerReceiver(receiver, new IntentFilter(ACTION_TYPE));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //Отказываемся от пидписки
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -127,9 +150,9 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
         return new AddCityPresenter();
     }
 
-    private void setupSingleton() {
-        checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
-    }
+//    private void setupSingleton() {
+//        checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
+//    }
 
     private void setupViews() {
         autoText = binding.toolBar.tvAutocompleteText;
@@ -158,6 +181,11 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
                 .filter(event -> {
                     if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                         //перехватываем нажатие кнопки Back
+                        if (CURRENT_STATE == INFO_IS_CHANGE_STATE) {
+                            Intent intent = new Intent(ACTION_TYPE);
+                            intent.putExtra(GET_STATE, CURRENT_STATE);
+                            sendBroadcast(intent);
+                        }
                         onBackPressed();
                         return false;
                     }
@@ -366,8 +394,13 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
 
     @Override
     public void onItemClick() {
+        changeState(INFO_IS_CHANGE_STATE);
         switchFavorite();
         getPresenter().onFavoriteClick();
+    }
+
+    private void changeState(int newState) {
+        CURRENT_STATE = newState;
     }
 
     private void switchFavorite() {

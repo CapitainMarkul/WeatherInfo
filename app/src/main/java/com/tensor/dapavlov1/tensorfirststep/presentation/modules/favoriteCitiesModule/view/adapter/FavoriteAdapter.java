@@ -60,6 +60,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     public void setDefaultSetting() {
         lastAnimateElement = 0; // позволяем анимации снова выполняться
         cityViewWeathers.clear();
+        notifyDataSetChanged();
     }
 
     @Override
