@@ -46,6 +46,10 @@ public class CityView implements Parcelable {
         return isFavorite;
     }
 
+    public void setWeatherViews(List<WeatherView> weatherViews) {
+        this.weatherViews = weatherViews;
+    }
+
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
     }

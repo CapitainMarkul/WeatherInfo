@@ -11,16 +11,8 @@
         <import type="java.util.List"/>
 
         <variable
-            name="cityView"
-            type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView"/>
-
-        <variable
-            name="isLoading"
-            type="boolean"/>
-
-        <variable
-            name="isFirstLaunch"
-            type="boolean"/>
+            name="viewModel"
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel"/>
     </data>
 
     <RelativeLayout
@@ -42,24 +34,27 @@
                 <include
                     android:id="@+id/cv_nothing_weather"
                     layout="@layout/card_weather_nothing_find"
-                    android:visibility="@{isFirstLaunch || cityView != null &amp;&amp; !isLoading ? v.GONE : v.VISIBLE}"/>
+                    android:visibility="@{viewModel.firstLaunch || viewModel.city != null &amp;&amp; !viewModel.loading ? v.GONE : v.VISIBLE}"/>
 
                 <include
                     android:id="@+id/cv_weather_city"
                     layout="@layout/card_weather_full_info"
-                    android:visibility="@{cityView != null &amp;&amp; !isLoading ? v.VISIBLE : v.GONE}"
-                    app:cityView="@{cityView}"/>
+                    android:visibility="@{viewModel.city != null &amp;&amp; !viewModel.loading ? v.VISIBLE : v.GONE}"
+                    app:checkBoxClick="@{viewModel}"
+                    app:cityView="@{viewModel.city}"
+                    app:switchGradient="@{viewModel.switchGradient}"/>
 
                 <include
                     android:id="@+id/cv_searching"
                     layout="@layout/card_weather_searching"
-                    android:visibility="@{isLoading ? v.VISIBLE : v.GONE}"/>
+                    android:visibility="@{viewModel.loading ? v.VISIBLE : v.GONE}"/>
             </FrameLayout>
         </ScrollView>
 
         <include
             android:id="@+id/tool_bar"
-            layout="@layout/toolbar_main"/>
+            layout="@layout/toolbar_main"
+            app:viewModel="@{viewModel}"/>
 
         <!--<LinearLayout-->
         <!--android:layout_width="wrap_content"-->

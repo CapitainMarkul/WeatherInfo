@@ -19,35 +19,35 @@ public class DisposableManager {
         private static final DisposableManager INSTANCE = new DisposableManager();
     }
 
-    private Map<Integer, CompositeDisposable> mapCompositeDisposable;
+    private Map<String, CompositeDisposable> mapCompositeDisposable;
 
     private DisposableManager() {
         mapCompositeDisposable = new HashMap<>();
     }
 
-    public void addDisposable(int idPoolCompositeDisposable, Disposable disposable) {
-        if (mapCompositeDisposable.get(idPoolCompositeDisposable) == null) {
+    public void addDisposable(String poolCompositeDisposableKey, Disposable disposable) {
+        if (mapCompositeDisposable.get(poolCompositeDisposableKey) == null) {
             CompositeDisposable compositeDisposable = new CompositeDisposable();
             compositeDisposable.add(disposable);
-            mapCompositeDisposable.put(idPoolCompositeDisposable, compositeDisposable);
+            mapCompositeDisposable.put(poolCompositeDisposableKey, compositeDisposable);
         } else {
-            mapCompositeDisposable.get(idPoolCompositeDisposable).add(disposable);
+            mapCompositeDisposable.get(poolCompositeDisposableKey).add(disposable);
         }
     }
 
-    public void disposeAll(int idPoolCompositeDisposable) {
-        if (mapCompositeDisposable.get(idPoolCompositeDisposable) != null) {
-            mapCompositeDisposable.get(idPoolCompositeDisposable).dispose();
+    public void disposeAll(String poolCompositeDisposableKey) {
+        if (mapCompositeDisposable.get(poolCompositeDisposableKey) != null) {
+            mapCompositeDisposable.get(poolCompositeDisposableKey).dispose();
             //FixMe: Имеет ли смысл заносить Null ?
-            mapCompositeDisposable.put(idPoolCompositeDisposable, null);
+            mapCompositeDisposable.put(poolCompositeDisposableKey, null);
         }
     }
 
     //debug
-//    public static int testSize(int idManager) {
-//        if (mapCompositeDisposable.get(idManager) != null) {
-//            return mapCompositeDisposable.get(idManager).size();
-//        }
-//        return 0;
-//    }
+    public int testSize(String idManager) {
+        if (mapCompositeDisposable.get(idManager) != null) {
+            return mapCompositeDisposable.get(idManager).size();
+        }
+        return 0;
+    }
 }

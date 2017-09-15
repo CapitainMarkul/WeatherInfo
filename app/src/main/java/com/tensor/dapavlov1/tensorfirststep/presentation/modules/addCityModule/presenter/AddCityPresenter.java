@@ -1,25 +1,16 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Toast;
-
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.interactor.AddCityInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
-import com.tensor.dapavlov1.tensorfirststep.provider.callbacks.CityCallback;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.CitiesDataRepository;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.cities.mythrows.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
@@ -32,112 +23,57 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 
-public class AddCityPresenter extends BasePresenter<AddCityActivity>
+public class AddCityPresenter extends BasePresenter<AddCityViewModel>
         implements DelObserver, AddCityInteractorPresenterContract.Presenter {
 
     //Temp Answer
     // TODO: 12.09.2017 В будущем -  Dagger 2
     private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
-    private CityView cachedCityView;
+//    private CityView cachedCityView;
+
     //для созранения состояния при ConfigChange
-    private boolean isLoading = false;
+//    private boolean isLoading = false;
 
     private final static String CITY_VIEW_MODEL = "city_view_model";
 
-    private void cityIsFavorite(boolean isFavorite) {
-        cachedCityView.setFavorite(isFavorite);
+    @Override
+    public void attachView(AddCityViewModel viewModel, ActivityComponents activity) {
+        super.attachView(viewModel, activity);
+        interactor.setListener(this);
     }
 
-    public void resumePresenter(Bundle saveDataBundle) {
-        cachedCityView = (CityView) saveDataBundle.get(CITY_VIEW_MODEL);
-        showCityView(cachedCityView);
+    @Override
+    public void detachView() {
+        interactor.setListener(null);
+        super.detachView();
     }
 
-    public Bundle saveData(Bundle outState) {
-        //объект для отображения
-        //ситуация с TerminateApp, презентер пересоздается, и не имеет кешированной информации
-        if (cachedCityView != null) {
-            outState.putParcelable(CITY_VIEW_MODEL, cachedCityView);
-        }
-        return outState;
-    }
+    @Override
+    public void destroy() {
 
-    public void clearInputText() {
-        activity.clearInputText();
-    }
-
-    private void cachedInfo(CityView cityView) {
-        cachedCityView = cityView;
-    }
-
-    private void startAnimation() {
-        Animation anim = AnimationUtils.loadAnimation(App.getContext(), R.anim.alpha);
-        activity.getBinding().cvSearching.tvSearching.startAnimation(anim);
-    }
-
-    private void stopAnimation() {
-        activity.getBinding().cvSearching.tvSearching.clearAnimation();
     }
 
     public void getWeatherInCity(final String fullCityName) {
-        isLoading = true;
-        activity.getBinding().setIsLoading(true);
-        startAnimation();
+        getViewModel().setLoading(true);
+        getViewModel().setFirstLaunch(false);
 
-        interactor.setListener(this);
         interactor.obtainCityWeather(fullCityName);
     }
 
-    private void addToFavorite() {
-        interactor.addCityInDb(cachedCityView);
-        cityIsFavorite(true);
-        showMessage(R.string.activity_favorite_add_to_favorite);
-    }
-
-    private void deleteFromFavorite() {
-        interactor.delCityFromDb(cachedCityView);
-    }
-
-    public void checkEndTask() {
-        if (isLoading) {
-            activity.getBinding().setIsLoading(true);
-        } else {
-            if (cachedCityView != null) {
-                showCityView(cachedCityView);
-            }
-        }
-    }
-
     private void showMessage(int message) {
-        activity.showMessage(message);
-    }
-
-    public void onFavoriteClick() {
-        if (activity.isCheckedNow()) {
-            addToFavorite();
-        } else {
-            DbClient.getInstance().subscribe(this);
-            deleteFromFavorite();
-        }
+        getViewModel().setSuccessMessage(message);
     }
 
     private void showCityView(CityView city) {
-        isLoading = false;
-        cachedInfo(city);
-        activity.getBinding().setCityView(city);
-        activity.getBinding().setIsLoading(false);
-        activity.isFavoriteCity(city.isFavorite());
-
-        activity.refreshWeathers(cachedCityView.getWeatherViews());
-        stopAnimation();
+        getViewModel().setCityView(city);
+        getViewModel().setLoading(false);
+        getViewModel().getCity().setFavorite((city.isFavorite()));
     }
 
     private void showErrorView(int errorMessage) {
-        isLoading = false;
-        activity.showMessage(errorMessage);
-        activity.getBinding().setCityView(null);
-        activity.getBinding().setIsLoading(false);
-        stopAnimation();
+        getViewModel().setErrorMessage(errorMessage);
+        getViewModel().setCityView(null);
+        getViewModel().setLoading(false);
     }
 
 
@@ -148,7 +84,7 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity>
 
         if (exception == null && observable != null) {
             DisposableManager.getInstance().addDisposable(
-                    AddCityActivity.ID_POOL_COMPOSITE_DISPOSABLE,
+                    AddCityActivity.DISPOSABLE_POOL_KEY,
                     observable
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -164,10 +100,29 @@ public class AddCityPresenter extends BasePresenter<AddCityActivity>
         }
     }
 
+    public void onFavoriteClick() {
+        if (!getViewModel().getCity().isFavorite()) {
+            addToFavorite(getViewModel().getCity());
+        } else {
+            deleteFromFavorite(getViewModel().getCity());
+        }
+    }
+
+    private void addToFavorite(CityView city) {
+        interactor.addCityInDb(city);
+        getViewModel().setFavorite(true);
+        showMessage(R.string.activity_favorite_add_to_favorite);
+    }
+
+    private void deleteFromFavorite(CityView city) {
+        DbClient.getInstance().subscribe(this);
+        interactor.delCityFromDb(city);
+    }
+
     @Override
     public void deleteResult(boolean isSuccess, CityView deletedCity) {
         if (isSuccess) {
-            cityIsFavorite(!isSuccess);
+            getViewModel().setFavorite(false);
             showMessage(R.string.activity_favorite_del_from_favorite);
         } else {
             showMessage(R.string.unknown_error);

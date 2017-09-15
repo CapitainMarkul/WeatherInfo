@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
@@ -10,12 +9,8 @@
             type="android.widget.AutoCompleteTextView"/>
 
         <variable
-            name="activity"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity"/>
-
-        <variable
-            name="mPresenter"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter"/>
+            name="viewModel"
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel"/>
     </data>
 
     <Toolbar
@@ -53,7 +48,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="10dp"
-                android:onClick="@{() -> mPresenter.clearInputText()}"
+                android:onClick="@{viewModel.clearInputText()}"
                 android:src="@drawable/ic_clear_text_view"/>
         </RelativeLayout>
     </Toolbar>

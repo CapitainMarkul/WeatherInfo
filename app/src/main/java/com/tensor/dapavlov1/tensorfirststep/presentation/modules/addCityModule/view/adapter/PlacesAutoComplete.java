@@ -21,6 +21,7 @@ public class PlacesAutoComplete extends ArrayAdapter<String> implements Filterab
     }
 
     public ArrayAdapter<String> setItems(List<String> list) {
+        // TODO: 13.09.2017 Исправить
         return new ArrayAdapter<>(context, resource, list);
     }
 }

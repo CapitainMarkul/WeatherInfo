@@ -10,18 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import com.tensor.dapavlov1.tensorfirststep.databinding.CardWeatherFullInfoBinding;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
-import com.tensor.dapavlov1.tensorfirststep.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.provider.repository.deleteobservable.DelObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,14 +95,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         return (cityViewWeathers != null) ? cityViewWeathers.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements ItemClick {
+    public class ViewHolder extends RecyclerView.ViewHolder implements checkBoxClick {
         private HorizontalWeatherAdapter horizontalWeatherAdapter;
         private CardWeatherFullInfoBinding binding;
 
         public ViewHolder(View itemView) {
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
-            binding.setEvents(this);
+            binding.setCheckBoxClick(this);
             binding.setSwitchGradient(SwitchGradient.getInstance());
             setupViews(itemView.getContext());
         }

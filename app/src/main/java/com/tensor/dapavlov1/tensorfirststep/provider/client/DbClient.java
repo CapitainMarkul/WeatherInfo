@@ -49,19 +49,6 @@ public class DbClient implements DelObservable {
         observers = new ArrayList<>();
     }
 
-//    public Flowable<CityDb> loadListAllCitiesRxd() {
-//        return Flowable.create(e -> {
-//            try {
-//                for (CityDb item : loadListAllCities()) {
-//                    e.onNext(item);
-//                }
-//                e.onComplete();
-//            } catch (EmptyDbException e1) {
-//                e1.printStackTrace();
-//            }
-//        }, BackpressureStrategy.BUFFER);
-//    }
-
     public Flowable<List<CityDb>> loadListAllCitiesRx() {
         return Flowable.fromCallable(() -> {
             try {

@@ -5,17 +5,16 @@
 
     <data>
 
-        <variable
-            name="mPresenter"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter"/>
-
-        <variable
-            name="events"
-            type="com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick"/>
-
+        <!--<variable-->
+        <!--name="viewModel"-->
+        <!--type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel"/>-->
         <variable
             name="switchGradient"
             type="com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient"/>
+
+        <variable
+            name="checkBoxClick"
+            type="com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick"/>
 
         <variable
             name="cityView"
@@ -76,7 +75,9 @@
                 android:layout_marginEnd="5dp"
                 android:button="@drawable/selector_checkbox"
                 android:checked="@{cityView.isFavorite}"
-                android:onClick="@{() -> events.onItemClick()}"/>
+                android:onClick="@{() -> checkBoxClick.onItemClick()}"/>
+            <!--android:onClick="@{() -> viewModel.onItemClick()}"/>-->
+            <!--app:onClearInputText="@{() -> checkBoxClick.onItemClick()}"/>-->
             <!--android:onClick="@{() -> mPresenter.onClickToFavorite()}"/>-->
             <!--END Line Top-->
 

@@ -7,11 +7,12 @@ import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
 
 import org.jetbrains.annotations.Contract;
+import org.parceler.Parcel;
 
 /**
  * Created by da.pavlov1 on 08.08.2017.
  */
-
+@Parcel
 public class SwitchGradient {
     public static SwitchGradient getInstance() {
         return SwitchGradientLoader.INSTANCE;

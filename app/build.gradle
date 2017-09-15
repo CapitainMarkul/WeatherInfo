@@ -43,7 +43,8 @@ android {
         debug {
             buildConfigField "String", "WEATHER_API_URL_TO_LOAD_IMAGE", '"https://www.weatherbit.io/static/img/icons/"'
             buildConfigField "String", "WEATHER_API_EXPANSION_LOAD_IMAGE", '".png"'
-            buildConfigField "String", "WEATHER_API_KEY", '"49b1b7d6f68b4dca99d2b456a24406c3"'
+//            buildConfigField "String", "WEATHER_API_KEY", '"49b1b7d6f68b4dca99d2b456a24406c3"'
+            buildConfigField "String", "WEATHER_API_KEY", '"41bc25e43db64b20bad5087c440ff617"'
             buildConfigField "String", "WEATHER_API_LANGUAGE", '"ru"'
             buildConfigField "String", "WEATHER_API_SCHEME", '"https"'
             buildConfigField "String", "WEATHER_API_HOST", '"api.weatherbit.io"'
@@ -97,6 +98,10 @@ dependencies {
 
     //Gson
     compile 'com.google.code.gson:gson:2.8.1'
+
+    //Parceler
+    compile 'org.parceler:parceler-api:1.1.5'
+    annotationProcessor 'org.parceler:parceler:1.1.5'
 
     //android
     compile 'com.android.support:appcompat-v7:26.+'

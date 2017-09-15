@@ -1,39 +1,42 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity;
 
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.BaseLoader;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
-import com.tensor.dapavlov1.tensorfirststep.interfaces.ItemClick;
+import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
-import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.provider.repository.places.PlacesDataRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.ObservableSource;
@@ -46,84 +49,86 @@ import io.reactivex.schedulers.Schedulers;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class AddCityActivity extends AppCompatActivity
-        implements com.tensor.dapavlov1.tensorfirststep.interfaces.AddCityActivity,
-        LoaderManager.LoaderCallbacks<Map<String, Object>>, ItemClick {
-    private AutoCompleteTextView autoText;
+public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPresenter>
+        implements checkBoxClick {
 
-    private DisposableManager disposableManager;
+    private AutoCompleteTextView autoText;
     private PlacesAutoComplete placesAutoComplete;
-    private AddCityPresenter mPresenter;
     private HorizontalWeatherAdapter horizontalWeatherAdapter;
 
     private CheckUpdateInOtherActivity checkUpdateInOtherActivity;
-    private Bundle saveBundle;
     private ActivityAddCityBinding binding;
 
-    private boolean isTextChanged = true;
-    private boolean isConfigChange = false;
-
-    private final static String NEW_CITY_PRESENTER = "new_city_presenter";
-    private final static String NEW_CITY_ADAPTER = "new_city_adapter";
-    private final static String IS_TEXT_CHANGED = "is_text_changed";
-    private final static String IS_CONFIG_CHANGE = "is_config_change";
-
-    public final static int ID_POOL_COMPOSITE_DISPOSABLE = 2;
-    private final static int ID_LOADER_NEW_CITY = 2;
+    private static final String NEW_CITY_ADAPTER_KEY = AddCityActivity.class.getSimpleName() + "_ADAPTER";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
-        binding.cvWeatherCity.setEvents(this);
-        binding.cvWeatherCity.setSwitchGradient(SwitchGradient.getInstance());
-        binding.setIsFirstLaunch(true);
-
-        initDisposableManager();
-
-        setupLoaders();
+        binding.setViewModel(getViewModel());
 
         setupViews();
+        // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
+//        if (savedInstanceState == null) {
+        setupRecyclerAdapter();
+        setupRecyclerView();
+
         setupRxListeners();
-        createPresenter();
         setupSingleton();
-
-        saveBundle = savedInstanceState;
-    }
-
-    private void initDisposableManager() {
-        disposableManager = DisposableManager.getInstance();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(IS_CONFIG_CHANGE, isChangingConfigurations());
-        outState.putBoolean(IS_TEXT_CHANGED, isTextChanged);
-        super.onSaveInstanceState(mPresenter.saveData(outState));
+//        }
+        if (savedInstanceState == null) {
+            //Не показываем карточку "Ваш город не найден"
+            getViewModel().setFirstLaunch(true);
+        }
+        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        getViewModel().addOnPropertyChangedCallback(viewModelObserver);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        autoText.clearFocus();
+
+        getViewModel().removeOnPropertyChangedCallback(viewModelObserver);
+    }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+////        AdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
+//    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        AdapterStorage.getInstance().saveAdapter(NEW_CITY_ADAPTER_KEY, horizontalWeatherAdapter);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        horizontalWeatherAdapter = AdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
+        setupRecyclerView();
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected AddCityViewModel createViewModel() {
+        return new AddCityViewModel();
+    }
+
+    @Override
+    protected AddCityPresenter createPresenter() {
+        return new AddCityPresenter();
     }
 
     private void setupSingleton() {
         checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
-    }
-
-    private void setupLoaders() {
-        getSupportLoaderManager().initLoader(ID_LOADER_NEW_CITY, null, this);
-    }
-
-    private void createPresenter() {
-        mPresenter = new AddCityPresenter();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        autoText.clearFocus();
     }
 
     private void setupViews() {
@@ -136,74 +141,18 @@ public class AddCityActivity extends AppCompatActivity
     // TODO: 29.08.2017 Вопрос об обработке Error в subscribe кнопки?
     // Мы же обрабатываем исключения в коде
     private void setupRxListeners() {
+        //Нажание на элемент выпадающего списка
         RxAutoCompleteTextView.itemClickEvents(autoText)
                 .subscribe(
                         next -> {
                             startSearchingCity();
-                            binding.setIsFirstLaunch(false);
-                            isTextChanged = false;
+//                            binding.setFirstLaunch(false);
+//                            isTextChanged = false;
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        disposable -> DisposableManager.getInstance().addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-
-        // С какого символа начинаем показывать подсказки
-        autoText.setThreshold(3);
-
-        RxTextView.textChanges(autoText)
-                .filter(charSequence -> {
-                    //Данное устловие позволяет защититься от показа подсказки, в тот момент,
-                    // когда пользователь уже выбрал один из вариантов, и перевернул экран
-                    if (isConfigChange) {
-                        isConfigChange = false;
-                        return false;
-                    }
-                    return true;
-                })
-                .subscribe(
-                        next -> isTextChanged = true,
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-
-        RxTextView.textChanges(autoText)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(s -> s.length() > 2)
-                .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
-                    @Override
-                    public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                        return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
-                                .map(s -> GsonFactory.getInstance().getPlacesName(s));
-                    }
-                })
-                .filter(charSequence -> isTextChanged)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            autoText.setAdapter(placesAutoComplete.setItems(result));
-                            autoText.showDropDown();
-                        },
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-
-        RxView.clicks(autoText)
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        res -> {
-                            if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
-                                autoText.showDropDown();
-                            }
-                        },
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
+                        disposable -> DisposableManager.getInstance().addDisposable(DISPOSABLE_POOL_KEY, disposable));
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -220,17 +169,78 @@ public class AddCityActivity extends AppCompatActivity
                         next -> {
                             if (next) {
                                 startSearchingCity();
-                                binding.setIsFirstLaunch(false);
-                                isTextChanged = false;
-                                if (autoText.isPopupShowing()) {
-                                    autoText.dismissDropDown();
-                                }
+//                                binding.setFirstLaunch(false);
+//                                isTextChanged = false;
+//                                if (autoText.isPopupShowing()) {
+//                                    autoText.dismissDropDown();
+//                                }
                             }
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
                         },
-                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
+                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+
+        RxTextView.textChanges(autoText)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(s -> s.length() > 2)
+                .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
+                    @Override
+                    public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
+                        return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
+                                .map(s -> GsonFactory.getInstance().getPlacesName(s));
+                    }
+                })
+//                .filter(charSequence -> isTextChanged)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            autoText.setAdapter(placesAutoComplete.setItems(result));
+                            autoText.showDropDown();
+                        },
+                        throwable -> showMessage(R.string.unknown_error),
+                        () -> {
+                        },
+                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+
+//        // С какого символа начинаем показывать подсказки
+//        autoText.setThreshold(3);
+//
+//        RxTextView.textChanges(autoText)
+//                .filter(charSequence -> {
+//                    //Данное устловие позволяет защититься от показа подсказки, в тот момент,
+//                    // когда пользователь уже выбрал один из вариантов, и перевернул экран
+//                    if (isConfigChange) {
+//                        isConfigChange = false;
+//                        return false;
+//                    }
+//                    return true;
+//                })
+//                .subscribe(
+//                        next -> isTextChanged = true,
+//                        throwable -> showMessage(R.string.unknown_error),
+//                        () -> {
+//                        },
+//                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
+//
+
+//
+//        RxView.clicks(autoText)
+//                .debounce(500, TimeUnit.MILLISECONDS)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        res -> {
+//                            if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
+//                                autoText.showDropDown();
+//                            }
+//                        },
+//                        throwable -> showMessage(R.string.unknown_error),
+//                        () -> {
+//                        },
+//                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
+//
+
     }
 
     @Override
@@ -240,40 +250,16 @@ public class AddCityActivity extends AppCompatActivity
 
     public void startSearchingCity() {
         binding.cvWeatherCity.setCityView(null);
-        mPresenter.getWeatherInCity(autoText.getText().toString());
+        getPresenter().getWeatherInCity(autoText.getText().toString());
     }
 
     public void clearInputText() {
         autoText.setText("");
     }
 
-    public boolean isCheckedNow() {
-        checkUpdateInOtherActivity.setUpdate(true);
-        return binding.cvWeatherCity.cbAddToFavorite.isChecked();
-    }
-
-    @Override
-    public void isFavoriteCity(final Boolean checked) {
-        if (checked) {
-            binding.cvWeatherCity.cbAddToFavorite.setChecked(true);
-        } else {
-            binding.cvWeatherCity.cbAddToFavorite.setChecked(false);
-        }
-    }
-
     public void refreshWeathers(final List<WeatherView> weatherViews) {
         horizontalWeatherAdapter.setItems(weatherViews);
         horizontalWeatherAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void showMessage(@StringRes final int message) {
-        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showErrorMessage(@StringRes final int message) {
-        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     private void setupRecyclerView() {
@@ -287,70 +273,114 @@ public class AddCityActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        if (!isChangingConfigurations()) {
-            disposableManager.disposeAll(ID_POOL_COMPOSITE_DISPOSABLE);
-        }
-        super.onDestroy();
-        mPresenter.detachActivity();
+    public void showMessage(@StringRes final int message) {
+        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        createPresenter();
-        setupRecyclerAdapter();
-        setupRecyclerView();
-        return new BaseLoader(getBaseContext(), createConfigMap());
-    }
-
-    private Map<String, Object> createConfigMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put(NEW_CITY_PRESENTER, mPresenter);
-        values.put(NEW_CITY_ADAPTER, horizontalWeatherAdapter);
-        return values;
+    public void showErrorMessage(@StringRes final int message) {
+        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }
 
     public ActivityAddCityBinding getBinding() {
         return binding;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
-        mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
-        binding.toolBar.setMPresenter(mPresenter);
-        binding.toolBar.setActivity(this);
-        binding.cvWeatherCity.setMPresenter(mPresenter);
-
-        horizontalWeatherAdapter = (HorizontalWeatherAdapter) dataMap.get(NEW_CITY_ADAPTER);
-
-        mPresenter.attachActivity(this);
-        mPresenter.checkEndTask();
-
-        if (saveBundle != null) {
-            mPresenter.resumePresenter(saveBundle);
-
-            //чтобы при перевороте, не появлялась новая подсказка,
-            // определяем был ли ConfigChange, и смотрим состояние изменения текста
-            isConfigChange = saveBundle.getBoolean(IS_CONFIG_CHANGE);
-            isTextChanged = saveBundle.getBoolean(IS_TEXT_CHANGED);
-
-            //при перевороте экрана, нужно восстановить состояние подсказок
-            if (autoText.getAdapter().getCount() > 0
-                    && !autoText.isPopupShowing() && !isTextChanged) {
-                autoText.showDropDown();
-            }
-        }
-
-        setupRecyclerView();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Map<String, Object>> loader) {
-
-    }
+    private Observable.OnPropertyChangedCallback viewModelObserver =
+            new Observable.OnPropertyChangedCallback() {
+                @Override
+                public void onPropertyChanged(Observable sender, int propertyId) {
+                    AddCityViewModel viewModel = (AddCityViewModel) sender;
+                    switch (propertyId) {
+                        case BR.city: {
+                            if (viewModel.getCity() != null) {
+                                refreshWeathers(viewModel.getCity().getWeatherViews());
+                            }
+                            break;
+                        }
+                        case BR.favorite: {
+                            binding.setViewModel(viewModel);
+                            break;
+                        }
+                        case BR.successMessage: {
+                            showMessage(viewModel.getSuccessMessage());
+                            break;
+                        }
+                        case BR.errorMessage: {
+                            showErrorMessage(viewModel.getErrorMessage());
+                            break;
+                        }
+                        case BR.onClearInputText: {
+                            clearInputText();
+                            break;
+                        }
+                        case BR.onItemClick: {
+                            onItemClick();
+                            break;
+                        }
+                        case BR.animation: {
+                            if (viewModel.isAnimation()) {
+                                Animation anim = AnimationUtils.loadAnimation(getBaseContext(), R.anim.alpha);
+                                binding.cvSearching.tvSearching.startAnimation(anim);
+                            } else {
+                                binding.cvSearching.tvSearching.clearAnimation();
+                            }
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                    binding.setViewModel(viewModel);
+                }
+            };
+//
+//    @Override
+//    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
+//        mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
+//        binding.toolBar.setMPresenter(mPresenter);
+//        binding.toolBar.setActivity(this);
+//        binding.cvWeatherCity.setMPresenter(mPresenter);
+//
+//        horizontalWeatherAdapter = (HorizontalWeatherAdapter) dataMap.get(NEW_CITY_ADAPTER);
+//
+//        mPresenter.attachActivity(this);
+//        mPresenter.checkEndTask();
+//
+//        if (saveBundle != null) {
+//            mPresenter.resumePresenter(saveBundle);
+//
+//            //чтобы при перевороте, не появлялась новая подсказка,
+//            // определяем был ли ConfigChange, и смотрим состояние изменения текста
+//            isConfigChange = saveBundle.getBoolean(IS_CONFIG_CHANGE);
+//            isTextChanged = saveBundle.getBoolean(IS_TEXT_CHANGED);
+//
+//            //при перевороте экрана, нужно восстановить состояние подсказок
+//            if (autoText.getAdapter().getCount() > 0
+//                    && !autoText.isPopupShowing() && !isTextChanged) {
+//                autoText.showDropDown();
+//            }
+//        }
+//
+//        setupRecyclerView();
+//    }
 
     @Override
     public void onItemClick() {
-        mPresenter.onFavoriteClick();
+        switchFavorite();
+        getPresenter().onFavoriteClick();
+    }
+
+    private void switchFavorite() {
+        CheckBox temp = binding.cvWeatherCity.cbAddToFavorite;
+        if (temp.isChecked()) {
+            temp.setChecked(false);
+        } else {
+            temp.setChecked(true);
+        }
+    }
+
+    @Override
+    public Activity getComponentsActivity() {
+        return this;
     }
 }
