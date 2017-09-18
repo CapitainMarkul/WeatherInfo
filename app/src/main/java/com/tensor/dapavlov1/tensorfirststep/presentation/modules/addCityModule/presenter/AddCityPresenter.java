@@ -29,12 +29,6 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModel>
     //Temp Answer
     // TODO: 12.09.2017 В будущем -  Dagger 2
     private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
-//    private CityView cachedCityView;
-
-    //для созранения состояния при ConfigChange
-//    private boolean isLoading = false;
-
-    private final static String CITY_VIEW_MODEL = "city_view_model";
 
     @Override
     public void attachView(AddCityViewModel viewModel, ActivityComponents activity) {

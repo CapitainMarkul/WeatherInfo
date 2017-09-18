@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Created by da.pavlov1 on 14.09.2017.
  */
+
 @Parcel
 public class FavoriteViewModel extends AbstractViewModel {
     private List<CityView> citiesView = new ArrayList<>();

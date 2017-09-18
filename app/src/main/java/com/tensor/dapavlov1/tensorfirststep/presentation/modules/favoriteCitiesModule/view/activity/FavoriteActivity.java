@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
@@ -11,9 +12,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.tensor.dapavlov1.tensorfirststep.CheckUpdateInOtherActivity;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.receivers.ReceiverWithAction;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
@@ -32,7 +33,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         implements DelItemListener, EmptyListener {
 
     private FavoriteAdapter favoriteAdapter;
-    private CheckUpdateInOtherActivity checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
 
     public static final String FAVORITE_CITY_ADAPTER_KEY = FavoriteActivity.class.getSimpleName() + "_ADAPTER";
 
@@ -49,9 +49,9 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         setupRecyclerView();
         setupListeners();
 
-        if (savedInstanceState == null) {
-            startUpdateWeatherInfo();
-        }
+//        if (savedInstanceState == null) {
+////            startUpdateWeatherInfo();
+//        }
     }
 
     @Override
@@ -90,12 +90,11 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         return new FavoriteViewModel();
     }
 
-
     private Observable.OnPropertyChangedCallback viewModelObserver = new Observable.OnPropertyChangedCallback() {
         @Override
         public void onPropertyChanged(Observable sender, int propertyId) {
             FavoriteViewModel viewModel = (FavoriteViewModel) sender;
-            if(viewModel.isResetAdapter()){
+            if (viewModel.isResetAdapter()) {
                 favoriteAdapter.setDefaultSetting();
                 getViewModel().setResetAdapter(false);
             }
@@ -175,6 +174,18 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
 
+//    private void registerReceivers() {
+//        for (ReceiverWithAction item : getPresenter().getReceivers()) {
+//            registerReceiver(item.getReceiver(), item.getIntentFilter());
+//        }
+//    }
+
+//    private void unregisterReceivers() {
+//        for (ReceiverWithAction item : getPresenter().getReceivers()) {
+//            unregisterReceiver(item.getReceiver());
+//        }
+//    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -192,54 +203,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
             onEmpty();
         }
     }
-    //
-//    @Override
-//    public Loader onCreateLoader(int id, Bundle args) {
-//        setupPresenter();
-//        setupRecyclerAdapter();
-//        setupRecyclerView();
-//
-//        //Ситуация, на другом экране делаем Terminate, потом добавляем город в избранное.
-//        // Возвращаемся и получаем, что лоадер создается новый и вызывает этот метод
-//        // + были изменения на другом экране, следовательно метод checkUpdateInOtherActivity() тоже начнет обновление списка.
-//        // В итоге мы получаем дублирующиеся результаты.
-//        // Решение: если был Terminate, не обновляем информацию при создании Лоадера
-//        if (!checkUpdateInOtherActivity.isUpdate()) {
-//            startUpdateWeatherInfo();
-//        }
-//        return new BaseLoader(getBaseContext(), createConfigMap());
-//    }
-//
-
-    //
-//    @Override
-//    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
-//        mPresenter = (FavoritePresenter) dataMap.get(FAVORITE_PRESENTER);
-//
-//        binding.setMPresenter(mPresenter);
-//
-//        //восстаансливаем прошлый адаптер
-//        favoriteAdapter = (FavoriteAdapter) dataMap.get(FAVORITE_ADAPTER);
-//        setupRecyclerView();
-//
-//        mPresenter.attachActivity(this);
-//
-//        //если ответ от сервера уже пришел, то показываем результат
-//        if (mPresenter.isLoadingComplete()) {
-//            favoriteAdapter.setAnimate(isChangingConfigurations());
-//            mPresenter.showCachedCities();
-//        } else {
-//            if (binding.getCitiesView() != null && binding.getCityView() != null) {
-//                binding.setLoading(true);
-//            } else {
-//                if (binding.cardWeatherDefault.cvDefault.getVisibility() == View.VISIBLE) {
-//                    binding.setLoading(true);
-//                }
-//            }
-//        }
-//
-//
-//    }
 
     @Override
     public void onEmpty() {

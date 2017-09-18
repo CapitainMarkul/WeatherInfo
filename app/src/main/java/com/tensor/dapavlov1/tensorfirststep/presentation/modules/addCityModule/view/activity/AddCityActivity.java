@@ -29,7 +29,7 @@ import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.UpdateActivityInfoReceiver;
+//import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.AllReceivers;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
@@ -38,6 +38,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.Horizon
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.PlacesDataRepository;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -61,16 +62,15 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
 
     private ActivityAddCityBinding binding;
 
-    public static final String NEW_CITY_ADAPTER_KEY = AddCityActivity.class.getSimpleName() + "_ADAPTER";
-    private static final String ACTION_TYPE = "com.tensor.dapavlov1.tensorfirststep.action.INFO_IS_CHANGE";
+    private final static String simpleName = AddCityActivity.class.getSimpleName();
 
+    public static final String NEW_CITY_ADAPTER_KEY = simpleName + "_ADAPTER";
     public static final String GET_STATE = "info_changed";
+
     private static final int INFO_IS_NOT_CHANGE_STATE = 0;
-    private static final int INFO_IS_CHANGE_STATE = 1;
+    public static final int INFO_IS_CHANGE_STATE = 1;
 
     private int CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
-
-    private BroadcastReceiver receiver = UpdateActivityInfoReceiver.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,20 +90,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
             getViewModel().setFirstLaunch(true);
         }
         Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //регистрируем слушатель
-        registerReceiver(receiver, new IntentFilter(ACTION_TYPE));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //Отказываемся от пидписки
-        unregisterReceiver(receiver);
     }
 
     @Override
@@ -150,10 +136,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
         return new AddCityPresenter();
     }
 
-//    private void setupSingleton() {
-//        checkUpdateInOtherActivity = CheckUpdateInOtherActivity.getInstance();
-//    }
-
     private void setupViews() {
         autoText = binding.toolBar.tvAutocompleteText;
         binding.cvWeatherCity.cardFullInfo.setVisibility(View.INVISIBLE);
@@ -182,9 +164,13 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
                     if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                         //перехватываем нажатие кнопки Back
                         if (CURRENT_STATE == INFO_IS_CHANGE_STATE) {
-                            Intent intent = new Intent(ACTION_TYPE);
+                            Intent intent = new Intent(FavoritePresenter.ADD_NEW_CITY_ACTION);
                             intent.putExtra(GET_STATE, CURRENT_STATE);
                             sendBroadcast(intent);
+                            CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
+                            //Запускаем сервис, передавая ему новый Intent
+//                            Intent intent = new Intent(this, BackgroundService.class);
+//                            startService(intent);
                         }
                         onBackPressed();
                         return false;
@@ -269,6 +255,11 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
 //                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
 //
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

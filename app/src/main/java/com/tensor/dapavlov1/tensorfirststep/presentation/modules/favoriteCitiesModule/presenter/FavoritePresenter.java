@@ -1,10 +1,15 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.UpdateActivityInfoReceiver;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.receivers.ReceiverWithAction;
+import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
@@ -20,6 +25,9 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.my
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -30,14 +38,19 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
-        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver,
-        UpdateActivityInfoReceiver.Receiver {
+        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver
+//        , AllReceivers.Receiver
+{
+
+    public final static String ADD_NEW_CITY_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.ADD_NEW_CITY";
+    public final static String WEATHER_SYNC_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.WEATHER_SYNC_ACTION";
+
     private FavoriteCityInteractorPresenterContract.Interactor interactor = new FavoriteCityInteractor();
     private FavoriteCityRouterPresenterContract.Router router = new FavoriteToAddCityRouter();
 
-    private static final int INFO_IS_CHANGE_STATE = 1;
+    private boolean isSwitchToAddNewCity = false;
 
-    private UpdateActivityInfoReceiver receiver = UpdateActivityInfoReceiver.getInstance();
+    private static final int INFO_IS_CHANGE_STATE = 1;
 
     public void updateWeathers() {
         getViewModel().setLoading(true);
@@ -52,7 +65,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
     }
 
     public void switchActivity() {
-        receiver.setReceiver(this);
+        isSwitchToAddNewCity = true;
         router.goToActivity(getActivity().getComponentsActivity(), AddCityActivity.class);
     }
 
@@ -108,18 +121,61 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
         DbClient.getInstance().unSubscribe(this);
     }
 
-    @Override
-    public void onReceiveResult(Intent intent) {
-        switch (intent.getIntExtra(AddCityActivity.GET_STATE, 0)) {
-            case INFO_IS_CHANGE_STATE: {
-                getViewModel().resetAdapter();
-                updateWeathers();
-                break;
+    private BroadcastReceiver addNewCityReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getIntExtra(AddCityActivity.GET_STATE, 0)) {
+                case AddCityActivity.INFO_IS_CHANGE_STATE: {
+                    getViewModel().resetAdapter();
+                    updateWeathers();
+                    break;
+                }
+                default:
+                    break;
             }
-            default:
-                break;
         }
-        receiver.reset();
+    };
+
+    private BroadcastReceiver weatherSyncReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateWeathers();
+        }
+    };
+
+    @Override
+    public void attachView(FavoriteViewModel viewModel, ActivityComponents activityComponents) {
+        super.attachView(viewModel, activityComponents);
+        registerReceivers();
+    }
+
+    @Override
+    public void detachView() {
+        if (!isSwitchToAddNewCity) {
+            //Если будем переходить на другой экран, не на добавление нового города, то выполним отписку
+            //Если выполнять отписку каждый раз, то результатов мы не получаем
+            unregisterReceivers();
+        }
+        super.detachView();
+    }
+
+    private void registerReceivers() {
+        for (ReceiverWithAction item : getReceivers()) {
+            getActivity().getComponentsActivity().registerReceiver(item.getReceiver(), item.getIntentFilter());
+        }
+    }
+
+    private void unregisterReceivers() {
+        for (ReceiverWithAction item : getReceivers()) {
+            getActivity().getComponentsActivity().unregisterReceiver(item.getReceiver());
+        }
+    }
+
+    private List<ReceiverWithAction> getReceivers() {
+        List<ReceiverWithAction> receivers = new ArrayList<>();
+        receivers.add(new ReceiverWithAction(addNewCityReceiver, new IntentFilter(ADD_NEW_CITY_ACTION)));
+        receivers.add(new ReceiverWithAction(weatherSyncReceiver, new IntentFilter(WEATHER_SYNC_ACTION)));
+        return receivers;
     }
 
     @Override
