@@ -93,7 +93,7 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
         Observable<CityView> observable = cityRx.getData();
 
         if (exception == null && observable != null) {
-            DisposableManager.getInstance().addDisposable(
+            getDisposableManager().addDisposable(
                     AddCityActivity.DISPOSABLE_POOL_KEY,
                     observable
                             .subscribeOn(Schedulers.io())

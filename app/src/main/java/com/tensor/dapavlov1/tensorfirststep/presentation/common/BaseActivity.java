@@ -25,6 +25,8 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
     private static final String PRESENTER_KEY = BaseActivity.class.getSimpleName() + "_PRESENTER";
     public static final String DISPOSABLE_POOL_KEY = BaseActivity.class.getSimpleName() + "_DISPOSABLE";
 
+    private DisposableManager disposableManager = DisposableManager.getInstance();
+
     private ViewModel viewModel;
     private Presenter presenter;
 
@@ -77,9 +79,7 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
     }
 
     protected DisposableManager getDisposableManager() {
-        // FIXME: 20.09.2017 Поддержка Disposable manager'a
-//        return presenter.getDisposableManager();
-        return null;
+        return disposableManager;
     }
 
     @Override
@@ -99,8 +99,8 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-//            presenter.getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
-//            Log.e("SIze:", String.valueOf(presenter.getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+            getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
+            Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
         }
         super.onDestroy();
     }

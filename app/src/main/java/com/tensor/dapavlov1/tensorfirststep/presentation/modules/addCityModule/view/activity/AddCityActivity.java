@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -91,7 +92,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
         }
-//        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
@@ -165,10 +166,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        }
-//                        ,
-//                        disposable -> DisposableManager.getInstance().addDisposable(DISPOSABLE_POOL_KEY, disposable)
-                );
+                        },
+                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -179,9 +178,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                             intent.putExtra(GET_STATE, CURRENT_STATE);
                             sendBroadcast(intent);
                             CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
-                            //Запускаем сервис, передавая ему новый Intent
-//                            Intent intent = new Intent(this, BackgroundService.class);
-//                            startService(intent);
                         }
                         onBackPressed();
                         return false;
@@ -203,10 +199,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        }
-//                        ,
-//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable)
-                );
+                        },
+                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
 
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -228,10 +222,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        }
-//                        ,
-//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable)
-                );
+                        },
+                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
 
 //        // С какого символа начинаем показывать подсказки
         autoText.setThreshold(3);
@@ -271,6 +263,12 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 //
 
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        Log.e("SIzeDestr:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -367,36 +365,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                     binding.setViewModel(viewModel);
                 }
             };
-//
-//    @Override
-//    public void onLoadFinished(Loader<Map<String, Object>> loader, Map<String, Object> dataMap) {
-//        mPresenter = (AddCityPresenter) dataMap.get(NEW_CITY_PRESENTER);
-//        binding.toolBar.setMPresenter(mPresenter);
-//        binding.toolBar.setActivity(this);
-//        binding.cvWeatherCity.setMPresenter(mPresenter);
-//
-//        horizontalWeatherAdapter = (HorizontalWeatherAdapter) dataMap.get(NEW_CITY_ADAPTER);
-//
-//        mPresenter.attachActivity(this);
-//        mPresenter.checkEndTask();
-//
-//        if (saveBundle != null) {
-//            mPresenter.resumePresenter(saveBundle);
-//
-//            //чтобы при перевороте, не появлялась новая подсказка,
-//            // определяем был ли ConfigChange, и смотрим состояние изменения текста
-//            isConfigChange = saveBundle.getBoolean(IS_CONFIG_CHANGE);
-//            isTextChanged = saveBundle.getBoolean(IS_TEXT_CHANGED);
-//
-//            //при перевороте экрана, нужно восстановить состояние подсказок
-//            if (autoText.getAdapter().getCount() > 0
-//                    && !autoText.isPopupShowing() && !isTextChanged) {
-//                autoText.showDropDown();
-//            }
-//        }
-//
-//        setupRecyclerView();
-//    }
 
     @Override
     public void onItemClick() {

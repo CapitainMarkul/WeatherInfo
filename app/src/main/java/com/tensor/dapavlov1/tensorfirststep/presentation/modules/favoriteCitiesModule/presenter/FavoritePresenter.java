@@ -52,8 +52,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
 
     private boolean isSwitchToAddNewCity = false;
 
-    private static final int INFO_IS_CHANGE_STATE = 1;
-
     @Inject
     public FavoritePresenter(FavoriteInteractorPresenterContract.Interactor interactor,
                              FavoriteRouterPresenterContract.Router router) {
