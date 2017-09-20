@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
 
-import org.jetbrains.annotations.Contract;
 import org.parceler.Parcel;
 
 /**
@@ -28,16 +27,16 @@ public class SwitchGradient {
     public Drawable getBackground(@Nullable String iconCode) {
         if (iconCode != null) {
             if (iconCode.contains("c01d")) {
-                return App.getContext().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);
+                return App.get().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);
             } else if (iconCode.contains("c01n")) {
-                return App.getContext().getResources().getDrawable(R.drawable.background_gradient_night, null);
+                return App.get().getResources().getDrawable(R.drawable.background_gradient_night, null);
             } else if (iconCode.contains("c02")
                     || iconCode.contains("a")) {
-                return App.getContext().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);
+                return App.get().getResources().getDrawable(R.drawable.background_gradient_cloud_sun, null);
             } else if (iconCode.contains("c04")) {
-                return App.getContext().getResources().getDrawable(R.drawable.background_gradient_cloud, null);
+                return App.get().getResources().getDrawable(R.drawable.background_gradient_cloud, null);
             } else {
-                return App.getContext().getResources().getDrawable(R.drawable.background_gradient_rain, null);
+                return App.get().getResources().getDrawable(R.drawable.background_gradient_rain, null);
             }
         }
         return null;

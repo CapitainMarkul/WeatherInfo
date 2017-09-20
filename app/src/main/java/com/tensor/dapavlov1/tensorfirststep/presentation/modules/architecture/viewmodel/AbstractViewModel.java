@@ -1,21 +1,20 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel;
 
 import android.databinding.BaseObservable;
-import android.databinding.Bindable;
-import android.support.annotation.StringRes;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.tensor.dapavlov1.tensorfirststep.BR;
+
 
 /**
  * Created by da.pavlov1 on 13.09.2017.
  */
 
-public abstract class AbstractViewModel extends BaseObservable {
+public abstract class AbstractViewModel extends BaseObservable implements MvpViewModel {
 
     private int errorMessage;
     private int successMessage;
 
-    @Bindable
+    @Override
     public int getErrorMessage() {
         return errorMessage;
     }
@@ -25,7 +24,7 @@ public abstract class AbstractViewModel extends BaseObservable {
         notifyPropertyChanged(BR.errorMessage);
     }
 
-    @Bindable
+    @Override
     public int getSuccessMessage() {
         return successMessage;
     }

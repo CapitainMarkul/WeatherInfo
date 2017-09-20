@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import com.android.databinding.library.baseAdapters.BR;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.AbstractViewModel;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract;
 
 import org.parceler.Parcel;
 
@@ -16,7 +17,8 @@ import java.util.List;
  */
 
 @Parcel
-public class FavoriteViewModel extends AbstractViewModel {
+public class FavoriteViewModel extends AbstractViewModel
+        implements FavoriteViewModelContract.ViewModel {
     private List<CityView> citiesView = new ArrayList<>();
     private boolean isLoading;
     private boolean isResetAdapter;

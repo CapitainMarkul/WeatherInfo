@@ -11,7 +11,7 @@ import io.reactivex.Flowable;
  * Created by da.pavlov1 on 12.09.2017.
  */
 
-public interface FavoriteCityInteractorPresenterContract {
+public interface FavoriteInteractorPresenterContract {
     interface Presenter extends MvpInteractor.LPresenter {
         void onObtainCitiesWeather(ResultWrapper<Flowable<CityView>> cityRx);
     }

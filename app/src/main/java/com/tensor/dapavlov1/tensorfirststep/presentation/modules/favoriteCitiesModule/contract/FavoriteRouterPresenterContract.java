@@ -9,7 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.ro
  * Created by da.pavlov1 on 12.09.2017.
  */
 
-public interface FavoriteCityRouterPresenterContract {
+public interface FavoriteRouterPresenterContract {
     interface Presenter extends MvpRouter.Listener {
     }
 

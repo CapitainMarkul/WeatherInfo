@@ -23,7 +23,7 @@ public class PlacesDataStoreFactory extends CheckConnect {
     }
 
     public PlacesDataStore createPlacesDataStore() throws NetworkConnectException {
-        if (isOnline(App.getContext())) {
+        if (isOnline(App.get())) {
             return new CloudPlacesDataStore();
         } else {
             throw new NetworkConnectException();

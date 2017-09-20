@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
 import com.tensor.dapavlov1.tensorfirststep.domain.services.receivers.ReceiverWithAction;
@@ -19,6 +20,9 @@ import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteComponent;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteDaggerModule;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter.FavoriteAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
@@ -29,7 +33,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesM
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePresenter>
+public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.ViewModel, FavoriteViewModelContract.Presenter>
         implements DelItemListener, EmptyListener {
 
     private FavoriteAdapter favoriteAdapter;
@@ -37,6 +41,7 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
     public static final String FAVORITE_CITY_ADAPTER_KEY = FavoriteActivity.class.getSimpleName() + "_ADAPTER";
 
     private ActivityFavoriteBinding binding;
+    private FavoriteComponent favoriteComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,13 +86,20 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
     }
 
     @Override
-    protected FavoritePresenter createPresenter() {
-        return new FavoritePresenter();
+    protected void inject() {
+        favoriteComponent = App.get()
+                .presentationComponents()
+                .favoriteComponent(new FavoriteDaggerModule());
     }
 
     @Override
-    protected FavoriteViewModel createViewModel() {
-        return new FavoriteViewModel();
+    protected FavoriteViewModelContract.Presenter createPresenter() {
+        return favoriteComponent.getPresenter();
+    }
+
+    @Override
+    protected FavoriteViewModelContract.ViewModel createViewModel() {
+        return favoriteComponent.getViewModel();
     }
 
     private Observable.OnPropertyChangedCallback viewModelObserver = new Observable.OnPropertyChangedCallback() {
@@ -173,18 +185,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModel, FavoritePr
         // FIXME: 15.09.2017 Здесь убрать настройки видимости
         binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
-
-//    private void registerReceivers() {
-//        for (ReceiverWithAction item : getPresenter().getReceivers()) {
-//            registerReceiver(item.getReceiver(), item.getIntentFilter());
-//        }
-//    }
-
-//    private void unregisterReceivers() {
-//        for (ReceiverWithAction item : getPresenter().getReceivers()) {
-//            unregisterReceiver(item.getReceiver());
-//        }
-//    }
 
     @Override
     protected void onDestroy() {

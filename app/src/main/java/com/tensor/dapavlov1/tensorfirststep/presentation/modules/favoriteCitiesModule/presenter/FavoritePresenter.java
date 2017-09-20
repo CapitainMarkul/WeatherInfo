@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.domain.services.receivers.ReceiverWithAction;
@@ -13,10 +13,9 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponen
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityInteractorPresenterContract;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteCityRouterPresenterContract;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.interactor.FavoriteCityInteractor;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.router.FavoriteToAddCityRouter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteInteractorPresenterContract;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteRouterPresenterContract;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
@@ -28,6 +27,8 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobs
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -37,20 +38,45 @@ import io.reactivex.schedulers.Schedulers;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
-        implements FavoriteCityInteractorPresenterContract.Presenter, DelObserver
-//        , AllReceivers.Receiver
+public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.ViewModel>
+        implements DelObserver,
+        FavoriteInteractorPresenterContract.Presenter,  //для приема данных из Интерактора
+        FavoriteViewModelContract.Presenter             //для отправки данных в интерактор
 {
 
     public final static String ADD_NEW_CITY_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.ADD_NEW_CITY";
     public final static String WEATHER_SYNC_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.WEATHER_SYNC_ACTION";
 
-    private FavoriteCityInteractorPresenterContract.Interactor interactor = new FavoriteCityInteractor();
-    private FavoriteCityRouterPresenterContract.Router router = new FavoriteToAddCityRouter();
+    private FavoriteInteractorPresenterContract.Interactor interactor;
+    private FavoriteRouterPresenterContract.Router router;
 
     private boolean isSwitchToAddNewCity = false;
 
     private static final int INFO_IS_CHANGE_STATE = 1;
+
+    @Inject
+    public FavoritePresenter(FavoriteInteractorPresenterContract.Interactor interactor,
+                             FavoriteRouterPresenterContract.Router router) {
+        this.interactor = interactor;
+        this.router = router;
+    }
+
+    @Override
+    public void attachView(FavoriteViewModelContract.ViewModel viewModel, ActivityComponents activityComponents) {
+        super.attachView(viewModel, activityComponents);
+        registerReceivers();
+    }
+
+    @Override
+    public void detachView() {
+        if (!isSwitchToAddNewCity) {
+//            //Если будем переходить на другой экран, не на добавление нового города, то выполним отписку
+//            //Если выполнять отписку каждый раз, то результатов мы не получаем
+            unregisterReceivers();
+        }// TODO: 20.09.2017 разобраться с отпиской
+//        unregisterReceivers();
+        super.detachView();
+    }
 
     public void updateWeathers() {
         getViewModel().setLoading(true);
@@ -64,6 +90,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
         interactor.delCityFromDb(city);
     }
 
+    @Override
     public void switchActivity() {
         isSwitchToAddNewCity = true;
         router.goToActivity(getActivity().getComponentsActivity(), AddCityActivity.class);
@@ -143,31 +170,17 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModel>
         }
     };
 
-    @Override
-    public void attachView(FavoriteViewModel viewModel, ActivityComponents activityComponents) {
-        super.attachView(viewModel, activityComponents);
-        registerReceivers();
-    }
-
-    @Override
-    public void detachView() {
-        if (!isSwitchToAddNewCity) {
-            //Если будем переходить на другой экран, не на добавление нового города, то выполним отписку
-            //Если выполнять отписку каждый раз, то результатов мы не получаем
-            unregisterReceivers();
-        }
-        super.detachView();
-    }
-
     private void registerReceivers() {
         for (ReceiverWithAction item : getReceivers()) {
-            getActivity().getComponentsActivity().registerReceiver(item.getReceiver(), item.getIntentFilter());
+//            getActivity().getComponentsActivity().registerReceiver(item.getReceiver(), item.getIntentFilter());
+            App.get().registerReceiver(item.getReceiver(), item.getIntentFilter());
         }
     }
 
     private void unregisterReceivers() {
         for (ReceiverWithAction item : getReceivers()) {
-            getActivity().getComponentsActivity().unregisterReceiver(item.getReceiver());
+//            getActivity().getComponentsActivity().unregisterReceiver(item.getReceiver());
+            App.get().unregisterReceiver(item.getReceiver());
         }
     }
 

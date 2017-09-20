@@ -1,9 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,6 +21,7 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
@@ -32,8 +30,10 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 //import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.AllReceivers;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityDaggerModule;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter.AddCityPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
@@ -53,7 +53,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by da.pavlov1 on 03.08.2017.
  */
 
-public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPresenter>
+public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewModel, AddCityViewModelContract.Presenter>
         implements checkBoxClick {
 
     private AutoCompleteTextView autoText;
@@ -61,6 +61,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
     private HorizontalWeatherAdapter horizontalWeatherAdapter;
 
     private ActivityAddCityBinding binding;
+
+    private AddCityComponent injectComponent;
 
     private final static String simpleName = AddCityActivity.class.getSimpleName();
 
@@ -89,7 +91,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
         }
-        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+//        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
@@ -127,13 +129,20 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
     }
 
     @Override
-    protected AddCityViewModel createViewModel() {
-        return new AddCityViewModel();
+    protected void inject() {
+        injectComponent = App.get()
+                .presentationComponents()
+                .addCityComponent(new AddCityDaggerModule());
     }
 
     @Override
-    protected AddCityPresenter createPresenter() {
-        return new AddCityPresenter();
+    protected AddCityViewModelContract.ViewModel createViewModel() {
+        return injectComponent.getViewModel();
+    }
+
+    @Override
+    protected AddCityViewModelContract.Presenter createPresenter() {
+        return injectComponent.getPresenter();
     }
 
     private void setupViews() {
@@ -156,8 +165,10 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        },
-                        disposable -> DisposableManager.getInstance().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+                        }
+//                        ,
+//                        disposable -> DisposableManager.getInstance().addDisposable(DISPOSABLE_POOL_KEY, disposable)
+                );
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -192,8 +203,10 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        },
-                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+                        }
+//                        ,
+//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable)
+                );
 
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -215,11 +228,13 @@ public class AddCityActivity extends BaseActivity<AddCityViewModel, AddCityPrese
                         },
                         throwable -> showMessage(R.string.unknown_error),
                         () -> {
-                        },
-                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+                        }
+//                        ,
+//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable)
+                );
 
 //        // С какого символа начинаем показывать подсказки
-//        autoText.setThreshold(3);
+        autoText.setThreshold(3);
 //
 //        RxTextView.textChanges(autoText)
 //                .filter(charSequence -> {

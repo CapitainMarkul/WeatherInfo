@@ -33,7 +33,7 @@ public class CitiesDataRepository extends CheckConnect {
 
     public ResultWrapper<Observable<CityView>> getCity(String fullCityName) {
         //  здесь мы можем тянуть только из интернета
-        if (!isOnline(App.getContext())) {
+        if (!isOnline(App.get())) {
             return new ResultWrapper<>(null, new NetworkConnectException());
         }
         return new ResultWrapper<>(cloudCityStore.getCity(fullCityName), null);
@@ -52,7 +52,7 @@ public class CitiesDataRepository extends CheckConnect {
             return new ResultWrapper<>(null, e);
         }
 
-        if (isOnline(App.getContext())) {
+        if (isOnline(App.get())) {
             return new ResultWrapper<>(cloudCitiesStore.getCitiesRx(cityNames), null);
         } else {
             return new ResultWrapper<>(dbCitiesStore.getCitiesRx(), new NetworkConnectException());

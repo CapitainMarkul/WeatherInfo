@@ -5,14 +5,15 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.interactor.AddCityInteractor;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,16 +24,31 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 
-public class AddCityPresenter extends BasePresenter<AddCityViewModel>
-        implements DelObserver, AddCityInteractorPresenterContract.Presenter {
-
+public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.ViewModel>
+        implements DelObserver,
+        AddCityInteractorPresenterContract.Presenter,      //для приема данных из Интерактора
+        AddCityViewModelContract.Presenter                 //для отправки данных в интерактор
+{
     //Temp Answer
     // TODO: 12.09.2017 В будущем -  Dagger 2
-    private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
+//    private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
+
+//    @Override
+//    public void attachView(AddCityViewModel viewModel, ActivityComponents activity) {
+//        super.attachView(viewModel, activity);
+//        interactor.setListener(this);
+//    }
+
+    private final AddCityInteractorPresenterContract.Interactor interactor;
+
+    @Inject
+    public AddCityPresenter(AddCityInteractorPresenterContract.Interactor interactor) {
+        this.interactor = interactor;
+    }
 
     @Override
-    public void attachView(AddCityViewModel viewModel, ActivityComponents activity) {
-        super.attachView(viewModel, activity);
+    public void attachView(AddCityViewModelContract.ViewModel viewModel, ActivityComponents activityComponents) {
+        super.attachView(viewModel, activityComponents);
         interactor.setListener(this);
     }
 

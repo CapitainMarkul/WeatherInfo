@@ -19,12 +19,10 @@ public class ViewToDbMap {
 //        private static final ViewToDbMap INSTANCE = new ViewToDbMap();
 //    }
 
-    private ViewToDbMap() {
-    }
 
     public static List<WeatherDb> convertWeathersToDbType(List<WeatherView> weathers) {
         List<WeatherDb> result = new ArrayList<>();
-        for(WeatherView item : weathers){
+        for (WeatherView item : weathers) {
             result.add(converter(item));
         }
         return result;

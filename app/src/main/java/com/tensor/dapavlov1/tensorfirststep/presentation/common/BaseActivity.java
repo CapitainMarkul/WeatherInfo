@@ -7,8 +7,10 @@ import android.util.Log;
 
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.ShowMessage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.AbstractViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.PresenterStorage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
 
 import org.parceler.Parcels;
 
@@ -16,7 +18,7 @@ import org.parceler.Parcels;
  * Created by da.pavlov1 on 14.09.2017.
  */
 
-public abstract class BaseActivity<ViewModel extends AbstractViewModel, Presenter extends BasePresenter<ViewModel>>
+public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter extends MvpPresenter<ViewModel>>
         extends AppCompatActivity implements ActivityComponents, ShowMessage {
 
     private static final String VM_KEY = BaseActivity.class.getSimpleName() + "_VM";
@@ -25,6 +27,8 @@ public abstract class BaseActivity<ViewModel extends AbstractViewModel, Presente
 
     private ViewModel viewModel;
     private Presenter presenter;
+
+    protected abstract void inject();
 
     protected abstract Presenter createPresenter();
 
@@ -41,6 +45,8 @@ public abstract class BaseActivity<ViewModel extends AbstractViewModel, Presente
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        inject();
 
         if (savedInstanceState == null) {
             viewModel = createViewModel();
@@ -71,7 +77,9 @@ public abstract class BaseActivity<ViewModel extends AbstractViewModel, Presente
     }
 
     protected DisposableManager getDisposableManager() {
-        return presenter.getDisposableManager();
+        // FIXME: 20.09.2017 Поддержка Disposable manager'a
+//        return presenter.getDisposableManager();
+        return null;
     }
 
     @Override
@@ -91,8 +99,8 @@ public abstract class BaseActivity<ViewModel extends AbstractViewModel, Presente
     @Override
     protected void onDestroy() {
         if (!isChangingConfigurations()) {
-            presenter.getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
-            Log.e("SIze:", String.valueOf(presenter.getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+//            presenter.getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
+//            Log.e("SIze:", String.valueOf(presenter.getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
         }
         super.onDestroy();
     }

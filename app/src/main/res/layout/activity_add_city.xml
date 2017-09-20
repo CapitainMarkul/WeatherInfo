@@ -12,7 +12,7 @@
 
         <variable
             name="viewModel"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel"/>
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract.ViewModel"/>
     </data>
 
     <RelativeLayout
@@ -40,7 +40,7 @@
                     android:id="@+id/cv_weather_city"
                     layout="@layout/card_weather_full_info"
                     android:visibility="@{viewModel.city != null &amp;&amp; !viewModel.loading ? v.VISIBLE : v.GONE}"
-                    app:checkBoxClick="@{viewModel}"
+                    app:checkBoxClick="@{viewModel.onItemClick}"
                     app:cityView="@{viewModel.city}"
                     app:switchGradient="@{viewModel.switchGradient}"/>
 

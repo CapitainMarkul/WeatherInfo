@@ -16,7 +16,7 @@
 
         <variable
             name="viewModel"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel"/>
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract.ViewModel"/>
 
         <!--<variable-->
         <!--name="isLoading"-->
@@ -28,7 +28,7 @@
 
         <variable
             name="presenter"
-            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter"/>
+            type="com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract.Presenter"/>
         <!--<variable-->
         <!--name="cityView"-->
         <!--type="com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView"/>-->

@@ -3,12 +3,13 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.common;
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.AbstractViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
 
 /**
  * Created by da.pavlov1 on 22.08.2017.
  */
 
-public abstract class BasePresenter<ViewModel extends AbstractViewModel>
+public abstract class BasePresenter<ViewModel extends MvpViewModel>
         implements MvpPresenter<ViewModel> {
 
     private ViewModel viewModel;

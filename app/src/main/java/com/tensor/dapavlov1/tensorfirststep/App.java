@@ -1,8 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep;
 
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Intent;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -10,10 +8,11 @@ import com.squareup.leakcanary.RefWatcher;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.DaggerPresentationComponents;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.PresentationComponents;
 
 import org.greenrobot.greendao.database.Database;
 
-import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,6 +25,8 @@ public class App extends Application {
     private static DaoSession daoSession;
     static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+    private PresentationComponents presentationComponents;
+
     public static ExecutorService getExecutorService() {
         return executorService;
     }
@@ -36,10 +37,9 @@ public class App extends Application {
         instance = this;
     }
 
-    public static App getContext() {
+    public static App get() {
         return instance;
     }
-
 
     @Override
     public void onCreate() {
@@ -48,10 +48,11 @@ public class App extends Application {
         initSession();
         startService(new Intent(this, UpdateWeatherService.class));
 
+        injectDependencies();
 //        createAlarmManager();
     }
 
-//    private void createAlarmManager() {
+    //    private void createAlarmManager() {
 //        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 ////
 //        alarmManager.setRepeating(
@@ -61,6 +62,15 @@ public class App extends Application {
 //                PendingIntent.getService(this, 0,
 //                        new Intent(this, UpdateWeatherService.class), 0));
 //    }
+    public PresentationComponents presentationComponents() {
+        return presentationComponents;
+    }
+
+    private void injectDependencies() {
+        presentationComponents = DaggerPresentationComponents.builder()
+                .build();
+    }
+
 
     protected RefWatcher setupLeakCanary() {
         if (LeakCanary.isInAnalyzerProcess(this)) {
