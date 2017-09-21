@@ -9,26 +9,26 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.jakewharton.rxbinding2.InitialValueObservable;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
-//import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.receiver.AllReceivers;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
@@ -41,12 +41,17 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.he
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.PlacesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 
+import org.reactivestreams.Subscription;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -73,7 +78,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     private static final int INFO_IS_NOT_CHANGE_STATE = 0;
     public static final int INFO_IS_CHANGE_STATE = 1;
 
-    private int CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
+    private static int CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,17 +87,18 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         binding.setViewModel(getViewModel());
 
         setupViews();
-        // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
 
         setupRecyclerAdapter();
         setupRecyclerView();
 
         setupRxListeners();
+        // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
+//            setupRxListeners();
         }
-        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+//        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
@@ -156,18 +162,10 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     // TODO: 29.08.2017 Вопрос об обработке Error в subscribe кнопки?
     // Мы же обрабатываем исключения в коде
     private void setupRxListeners() {
-        //Нажание на элемент выпадающего списка
-        RxAutoCompleteTextView.itemClickEvents(autoText)
-                .subscribe(
-                        next -> {
-                            startSearchingCity();
-//                            binding.setFirstLaunch(false);
-//                            isTextChanged = false;
-                        },
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+
+        autoText.setOnItemClickListener((adapterView, view, i, l) -> {
+            startSearchingCity();
+        });
 
         RxView.keys(autoText)
                 .filter(event -> {
@@ -202,12 +200,38 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         },
                         disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
 
+        //Нажание на элемент выпадающего списка
+//        RxAutoCompleteTextView.itemClickEvents(autoText)
+//                .subscribe(
+//                        next -> {
+//                            startSearchingCity();
+////                            binding.setFirstLaunch(false);
+////                            isTextChanged = false;
+//                        },
+//                        throwable -> showMessage(R.string.unknown_error),
+//                        () -> {
+//                        },
+//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+
+        io.reactivex.Observable e = RxTextView.textChangeEvents(autoText);
+        io.reactivex.Observable e2 = RxTextView.textChangeEvents(autoText);
+
+        // TODO: 20.09.2017 Сделай другие модули, а потом доделай это 
+        io.reactivex.Observable.combineLatest(e, e2, new BiFunction() {
+            @Override
+            public Object apply(@NonNull Object o, @NonNull Object o2) throws Exception {
+                return null;
+            }
+        });
+//        (emailObservable, passwordObservable) -> {});
         RxTextView.textChanges(autoText)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(s -> s.length() > 2)
                 .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
                     @Override
                     public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
+                        Object f = PlacesDataRepository.getInstance();
+
                         return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
                                 .map(s -> GsonFactory.getInstance().getPlacesName(s));
                     }

@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.c
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.ApiFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.GoogleApiClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.interfaces.PlacesDataStore;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 
 import java.io.IOException;
 
@@ -13,7 +14,11 @@ import io.reactivex.Observable;
  */
 
 public class CloudPlacesDataStore implements PlacesDataStore {
-    private GoogleApiClient googleClient = ApiFactory.getInstance().crateClientGoogleApi();
+    private final GoogleApiClient googleClient;
+
+    public CloudPlacesDataStore(GoogleApiClient googleApiClient) {
+        this.googleClient = googleApiClient;
+    }
 
     @Override
     public Observable<String> getPlaces(String inputText) throws IOException {

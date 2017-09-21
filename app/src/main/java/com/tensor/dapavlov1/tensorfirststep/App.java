@@ -5,8 +5,14 @@ import android.content.Intent;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+import com.tensor.dapavlov1.tensorfirststep.core.CoreComponent;
+import com.tensor.dapavlov1.tensorfirststep.core.CoreModule;
+import com.tensor.dapavlov1.tensorfirststep.core.DaggerCoreComponent;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
+import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
+import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessModule;
+import com.tensor.dapavlov1.tensorfirststep.domain.assembly.DaggerBusinessComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.DaggerPresentationComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.PresentationComponents;
@@ -22,10 +28,12 @@ import java.util.concurrent.Executors;
  */
 //по умолчанию  в одном экземпляре
 public class App extends Application {
-    private static DaoSession daoSession;
+    //    private static DaoSession daoSession;
     static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     private PresentationComponents presentationComponents;
+    private BusinessComponent businessComponent;
+    private CoreComponent coreComponent;
 
     public static ExecutorService getExecutorService() {
         return executorService;
@@ -45,7 +53,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         setupLeakCanary();
-        initSession();
+//        initSession();
         startService(new Intent(this, UpdateWeatherService.class));
 
         injectDependencies();
@@ -66,8 +74,25 @@ public class App extends Application {
         return presentationComponents;
     }
 
+    public BusinessComponent businessComponent() {
+        return businessComponent;
+    }
+
+    public CoreComponent coreComponent() {
+        return coreComponent;
+    }
+
     private void injectDependencies() {
+        coreComponent = DaggerCoreComponent.builder()
+                .coreModule(new CoreModule(this))
+                .build();
+        businessComponent = DaggerBusinessComponent.builder()
+                .coreComponent(coreComponent)
+                .businessModule(new BusinessModule())
+                .build();
+
         presentationComponents = DaggerPresentationComponents.builder()
+                .businessComponent(businessComponent)
                 .build();
     }
 
@@ -79,13 +104,13 @@ public class App extends Application {
         return LeakCanary.install(this);
     }
 
-    public static DaoSession getDaoSession() {
-        return daoSession;
-    }
+//    public static DaoSession getDaoSession() {
+//        return daoSession;
+//    }
 
     private void initSession() {
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "weathers");
-        Database db = helper.getWritableDb();
-        daoSession = new DaoMaster(db).newSession();
+//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "weathers");
+//        Database db = helper.getWritableDb();
+//        daoSession = new DaoMaster(db).newSession();
     }
 }

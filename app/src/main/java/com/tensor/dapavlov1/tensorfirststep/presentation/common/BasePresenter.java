@@ -1,9 +1,14 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.common;
 
 import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.AbstractViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
+
+import javax.inject.Inject;
+
+import dagger.Lazy;
 
 /**
  * Created by da.pavlov1 on 22.08.2017.
@@ -11,6 +16,12 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.vi
 
 public abstract class BasePresenter<ViewModel extends MvpViewModel>
         implements MvpPresenter<ViewModel> {
+
+    @Inject Lazy<WeatherService> weatherService;
+
+    public WeatherService getWeatherService() {
+        return weatherService.get();
+    }
 
     private ViewModel viewModel;
     private ActivityComponents activityComponents;

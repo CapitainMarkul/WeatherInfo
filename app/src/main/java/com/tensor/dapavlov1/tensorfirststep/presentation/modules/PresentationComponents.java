@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules;
 
+import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityDaggerModule;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteComponent;
@@ -12,7 +13,7 @@ import dagger.Component;
  */
 
 @PerPresentationScope
-@Component
+@Component(dependencies = BusinessComponent.class)
 public interface PresentationComponents {
     AddCityComponent addCityComponent(AddCityDaggerModule addCityDaggerModule);
 

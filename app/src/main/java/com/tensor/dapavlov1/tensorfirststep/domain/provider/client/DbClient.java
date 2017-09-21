@@ -2,7 +2,6 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.client;
 
 import android.support.annotation.Nullable;
 
-import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
@@ -21,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 
 /**
@@ -29,21 +30,22 @@ import io.reactivex.Flowable;
 
 public class DbClient implements DelObservable {
 
-    public static DbClient getInstance() {
-        return DbClientLoader.INSTANCE;
-    }
+//    public static DbClient getInstance() {
+//        return DbClientLoader.INSTANCE;
+//    }
+//
+//    private static final class DbClientLoader {
+//        private static final DbClient INSTANCE = new DbClient();
+//    }
 
-    private static final class DbClientLoader {
-        private static final DbClient INSTANCE = new DbClient();
-    }
-
+    private final DaoSession daoSession;
     private Query<CityDb> query;
-    private DaoSession daoSession;
     private List<DelObserver> observers;
 
-    private DbClient() {
-        daoSession = App.getDaoSession();
-        query = App.getDaoSession().getCityDbDao().queryBuilder().build();
+    @Inject
+    public DbClient(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        query = daoSession.getCityDbDao().queryBuilder().build();
         observers = new ArrayList<>();
     }
 
@@ -104,9 +106,9 @@ public class DbClient implements DelObservable {
 //    public void setInDataBase(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
     public void setInDataBase(CityView city) {
 //        CityDb cityDb = new CityDb(null, cityName, lastTimeUpdate);
-        long cityId = App.getDaoSession().getCityDbDao().insert(
+        long cityId = daoSession.getCityDbDao().insert(
                 new CityDb(null, city.getName(), city.getLastTimeUpdate()));
-        App.getDaoSession().getWeatherDbDao().insertInTx(
+        daoSession.getWeatherDbDao().insertInTx(
                 attachWeatherToCity(
                         ViewToDbMap.convertWeathersToDbType(city.getWeatherViews()), cityId, false));
     }
@@ -126,7 +128,7 @@ public class DbClient implements DelObservable {
     public void deleteCity(@NotNull CityView city) {
         try {
             CityDb temp = searchCity(city.getName());
-            App.getDaoSession().getWeatherDbDao().deleteInTx(temp.getWeathers());
+            daoSession.getWeatherDbDao().deleteInTx(temp.getWeathers());
             temp.delete();
 
             notifyAllObservers(true, city);
@@ -159,7 +161,7 @@ public class DbClient implements DelObservable {
         delObserversArray = observers.toArray(delObserversArray);
 
         for (DelObserver item : delObserversArray) {
-            item.deleteResult(isSuccess, deletedCity);
+            item.sendDelResult(isSuccess, deletedCity);
         }
     }
 }

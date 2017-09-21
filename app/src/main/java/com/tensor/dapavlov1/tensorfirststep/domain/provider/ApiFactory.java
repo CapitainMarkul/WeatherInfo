@@ -19,11 +19,11 @@ public class ApiFactory {
     private ApiFactory() {
     }
 
-    public WeatherApiClient createClientWeatherApi() {
-        return new WeatherApiClient();
-    }
-
-    public GoogleApiClient crateClientGoogleApi() {
-        return new GoogleApiClient();
-    }
+//    public WeatherApiClient createClientWeatherApi() {
+//        return new WeatherApiClient();
+//    }
+//
+//    public GoogleApiClient crateClientGoogleApi() {
+//        return new GoogleApiClient();
+//    }
 }

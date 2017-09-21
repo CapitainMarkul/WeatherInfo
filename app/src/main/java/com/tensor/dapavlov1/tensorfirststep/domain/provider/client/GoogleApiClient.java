@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -20,6 +23,14 @@ import okhttp3.Response;
  */
 
 public class GoogleApiClient extends ApiHelper {
+
+    private final OkHttpClient okHttpClient;
+
+    @Inject
+    public GoogleApiClient(OkHttpClient okHttpClient) {
+        this.okHttpClient = okHttpClient;
+    }
+
     private Map<String, String> createMapForGoogleApi(String key, String types, String input) {
         Map<String, String> map = new HashMap<>();
         map.put("types", types);

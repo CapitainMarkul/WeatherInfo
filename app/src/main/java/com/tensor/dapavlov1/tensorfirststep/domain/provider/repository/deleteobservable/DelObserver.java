@@ -7,5 +7,5 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
  */
 
 public interface DelObserver {
-    void deleteResult(boolean isSuccess, CityView deletedCity);
+    void sendDelResult(boolean isSuccess, CityView deletedCity);
 }

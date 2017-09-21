@@ -6,6 +6,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.interfaces.CitiesDataStore;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 
 import org.reactivestreams.Publisher;
 
@@ -22,7 +23,11 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class DbCitiesStore implements CitiesDataStore {
-    private DbClient dbClient = DbClient.getInstance();
+    private final DbClient dbClient;
+
+    public DbCitiesStore(DbClient dbClient){
+        this.dbClient = dbClient;
+    }
 
     @Override
     public Flowable<CityView> getCitiesRx() {

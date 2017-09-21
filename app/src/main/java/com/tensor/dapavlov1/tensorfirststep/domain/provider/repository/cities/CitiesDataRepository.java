@@ -2,6 +2,9 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.GoogleApiClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.WeatherApiClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.CheckConnect;
@@ -13,6 +16,9 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.my
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.Lazy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
@@ -25,10 +31,18 @@ public class CitiesDataRepository extends CheckConnect {
     private CloudCitiesStore cloudCitiesStore;
     private CloudCityStore cloudCityStore;
 
+    @Inject Lazy<DbClient> dbClient;
+    @Inject Lazy<WeatherApiClient> weatherApiClient;
+
     public CitiesDataRepository() {
-        dbCitiesStore = new DbCitiesStore();
-        cloudCitiesStore = new CloudCitiesStore();
-        cloudCityStore = new CloudCityStore();
+        inject();
+        dbCitiesStore = new DbCitiesStore(dbClient.get());
+        cloudCitiesStore = new CloudCitiesStore(weatherApiClient.get(), dbClient.get());
+        cloudCityStore = new CloudCityStore(weatherApiClient.get(), dbClient.get());
+    }
+
+    private void inject() {
+        App.get().businessComponent().inject(this);
     }
 
     public ResultWrapper<Observable<CityView>> getCity(String fullCityName) {
@@ -47,7 +61,7 @@ public class CitiesDataRepository extends CheckConnect {
         //Здесь читаем БД, если пустая, то интернет нет смысла подключать
         List<String> cityNames;
         try {
-            cityNames = DbClient.getInstance().getCityNames();
+            cityNames = dbClient.get().getCityNames();
         } catch (EmptyDbException e) {
             return new ResultWrapper<>(null, e);
         }

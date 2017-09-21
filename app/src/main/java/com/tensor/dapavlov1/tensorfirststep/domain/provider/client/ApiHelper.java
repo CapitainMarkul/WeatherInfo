@@ -12,13 +12,13 @@ import okhttp3.OkHttpClient;
  */
 
 abstract class ApiHelper {
-    protected OkHttpClient okHttpClient;
+//    protected OkHttpClient okHttpClient;
+//
+//    protected ApiHelper() {
+//        okHttpClient = new OkHttpClient();
+//    }
 
-    protected ApiHelper() {
-        okHttpClient = new OkHttpClient();
-    }
-
-    protected String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
+    protected static String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
         HttpUrl.Builder builder = new HttpUrl.Builder()
                 .scheme(scheme)
                 .host(host)

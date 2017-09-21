@@ -84,7 +84,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
     }
 
     public void deleteCity(CityView city) {
-        DbClient.getInstance().subscribe(this);
+        getWeatherService().getDbService().subscribe(this);
         interactor.delCityFromDb(city);
     }
 
@@ -139,11 +139,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
     }
 
     @Override
-    public void deleteResult(boolean isSuccess, CityView deletedCity) {
+    public void sendDelResult(boolean isSuccess, CityView deletedCity) {
         if (isSuccess) {
             getViewModel().delCityView(deletedCity);
         }
-        DbClient.getInstance().unSubscribe(this);
+        getWeatherService().getDbService().unSubscribe(this);
     }
 
     private BroadcastReceiver addNewCityReceiver = new BroadcastReceiver() {
