@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly;
 
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.assembly.PerAddCityScope;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract;
@@ -31,7 +32,7 @@ public class AddCityDaggerModule {
 
     @Provides
     @PerAddCityScope
-    AddCityInteractorPresenterContract.Interactor provideAddCityInteractor() {
-        return new AddCityInteractor();
+    AddCityInteractorPresenterContract.Interactor provideAddCityInteractor(AddCityInteractor addCityInteractor) {
+        return addCityInteractor;
     }
 }

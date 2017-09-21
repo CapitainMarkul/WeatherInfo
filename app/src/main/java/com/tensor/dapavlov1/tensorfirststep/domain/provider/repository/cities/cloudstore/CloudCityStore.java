@@ -4,7 +4,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.WeatherApiClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyResponseException;
 

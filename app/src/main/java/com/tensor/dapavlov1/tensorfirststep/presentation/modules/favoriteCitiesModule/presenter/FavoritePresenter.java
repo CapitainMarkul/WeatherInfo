@@ -17,8 +17,6 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesM
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteRouterPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;

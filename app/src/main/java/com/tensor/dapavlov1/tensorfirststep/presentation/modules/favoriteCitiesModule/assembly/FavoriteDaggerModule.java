@@ -1,5 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly;
 
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.assembly.PerFavoriteScope;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteRouterPresenterContract;
@@ -33,8 +34,8 @@ public class FavoriteDaggerModule {
 
     @Provides
     @PerFavoriteScope
-    FavoriteInteractorPresenterContract.Interactor provideFavoriteInteractor() {
-        return new FavoriteCityInteractor();
+    FavoriteInteractorPresenterContract.Interactor provideFavoriteInteractor(FavoriteCityInteractor favoriteCityInteractor) {
+        return favoriteCityInteractor;
     }
 
     @Provides

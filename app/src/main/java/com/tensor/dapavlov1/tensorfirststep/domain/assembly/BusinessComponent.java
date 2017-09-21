@@ -1,9 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.domain.assembly;
 
 import com.tensor.dapavlov1.tensorfirststep.core.CoreComponent;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.AddCityInDbCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.db.DelCityFromDbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.CitiesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.PlacesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;

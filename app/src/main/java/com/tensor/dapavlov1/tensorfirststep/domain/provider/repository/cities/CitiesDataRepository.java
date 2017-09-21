@@ -2,11 +2,9 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.GoogleApiClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.WeatherApiClient;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.DbClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.DbClient;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.CheckConnect;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.cloudstore.CloudCitiesStore;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.cloudstore.CloudCityStore;
@@ -61,7 +59,7 @@ public class CitiesDataRepository extends CheckConnect {
         //Здесь читаем БД, если пустая, то интернет нет смысла подключать
         List<String> cityNames;
         try {
-            cityNames = dbClient.get().getCityNames();
+            cityNames = dbClient.get().getCitiesName();
         } catch (EmptyDbException e) {
             return new ResultWrapper<>(null, e);
         }
