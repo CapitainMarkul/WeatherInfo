@@ -1,15 +1,22 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.common;
+package com.tensor.dapavlov1.tensorfirststep.core.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.tensor.dapavlov1.tensorfirststep.App;
+
 /**
- * Created by da.pavlov1 on 14.08.2017.
+ * Created by da.pavlov1 on 22.09.2017.
  */
 
-public abstract class CheckConnect {
-    protected boolean isOnline(final Context context) {
+public class NetworkHelper {
+    public NetworkHelper() {
+
+    }
+
+    public static boolean isOnline() {
+        Context context = App.get();
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();

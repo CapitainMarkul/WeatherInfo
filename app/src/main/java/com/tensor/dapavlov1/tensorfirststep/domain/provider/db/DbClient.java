@@ -1,11 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.domain.provider.db;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DbCommand;
@@ -14,12 +15,13 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.GetCities
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.SearchCityCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.UpdateAllCitiesCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.UpdateCityCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandHelper;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyDbException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObservable;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
 
 import org.jetbrains.annotations.NotNull;
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +29,23 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 /**
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class DbClient extends DbCommandHelper implements DelObservable {
+public class DbClient extends DbCommandUtils implements DelObservable {
     private final DaoSession daoSession;
     private List<DelObserver> observers;
 
     @Inject
     public DbClient(DaoSession daoSession) {
         this.daoSession = daoSession;
-//        query = daoSession.getCityDbDao().queryBuilder().build();
         observers = new ArrayList<>();
     }
 
-    public Flowable<List<CityDb>> loadListAllCitiesRx() {
+    public Flowable<List<CityDb>> loadAllCitiesDbRx() {
         return Flowable.fromCallable(() -> {
             try {
                 return loadListAllCities(daoSession);
@@ -54,12 +56,23 @@ public class DbClient extends DbCommandHelper implements DelObservable {
         });
     }
 
-    public List<String> getCitiesName() throws EmptyDbException {
+    public Flowable<CityView> loadAllCitiesViewRx() {
+        return loadAllCitiesDbRx()
+                .flatMap(new Function<List<CityDb>, Publisher<CityDb>>() {
+                    @Override
+                    public Publisher<CityDb> apply(@NonNull List<CityDb> cityDbs) throws Exception {
+                        return Flowable.fromIterable(cityDbs);
+                    }
+                })
+                .map(city -> DbToViewMap.getInstance().convertDbModelToViewModel(city, city.getWeathers(), true));
+    }
+
+    public List<String> getCitiesName() {
         DbCommand<List<String>> getCitiesNameCommand = new GetCitiesNameCommand();
         List<String> result = getCitiesNameCommand.execute(daoSession);
 
         if (result == null) {
-            throw new EmptyDbException();
+            return new ArrayList<String>();
         }
         return result;
     }
@@ -93,13 +106,6 @@ public class DbClient extends DbCommandHelper implements DelObservable {
         return searchCityCommand.execute(daoSession);
     }
 
-//        CityDb cityDb = new CityDb(null, cityName, lastTimeUpdate);
-//        long cityId = daoSession.getCityDbDao().insert(
-//                new CityDb(null, city.getName(), city.getLastTimeUpdate()));
-//        daoSession.getWeatherDbDao().insertInTx(
-//                attachWeatherToCity(
-//                        ViewToDbMap.convertWeathersToDbType(city.getWeatherViews()), cityId, false));
-
     public void deleteCity(@NotNull CityView city) {
         DbCommand<Boolean> delCommand = new DelCityFromDbCommand(city);
         if (delCommand.execute(daoSession)) {
@@ -108,26 +114,6 @@ public class DbClient extends DbCommandHelper implements DelObservable {
             notifyAllObservers(false, city);
         }
     }
-
-//    private List<CityDb> loadListAllCities() throws EmptyDbException {
-//        List<CityDb> resultList = query.forCurrentThread().list();
-//        if (resultList.isEmpty()) {
-//            throw new EmptyDbException();
-//        }
-//        return resultList;
-//    }
-
-//    // FIXME: 07.09.2017 Если информацию обновляем, то нужно восстановить ключи, если это вставка нового города - этого делать не нужно
-//    private List<WeatherDb> attachWeatherToCity(List<WeatherDb> weathers, Long cityId, boolean isUpdate) {
-//        long counter = 1;
-//        for (WeatherDb item : weathers) {
-//            item.setCityId(cityId);
-//            if (isUpdate) {
-//                item.setId(counter++);
-//            }
-//        }
-//        return weathers;
-//    }
 
     /**
      * Observable >>>

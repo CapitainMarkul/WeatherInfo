@@ -1,22 +1,25 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.client;
+package com.tensor.dapavlov1.tensorfirststep.domain.provider.network;
 
 import android.support.annotation.NonNull;
+
+import com.tensor.dapavlov1.tensorfirststep.core.utils.NetworkHelper;
 
 import java.util.Map;
 
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
 
 /**
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-abstract class ApiHelper {
-//    protected OkHttpClient okHttpClient;
-//
-//    protected ApiHelper() {
-//        okHttpClient = new OkHttpClient();
-//    }
+public abstract class ApiCommandUtils extends NetworkHelper {
+    protected static String trimCityName(String fullCityName) {
+        if (fullCityName.indexOf(',') != -1) {
+            return fullCityName.substring(0, fullCityName.indexOf(','));
+        } else {
+            return fullCityName;
+        }
+    }
 
     protected static String createUrl(String scheme, String host, String segment, @NonNull Map<String, String> map) {
         HttpUrl.Builder builder = new HttpUrl.Builder()

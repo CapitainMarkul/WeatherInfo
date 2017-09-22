@@ -1,7 +1,11 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter;
 
 
+import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToViewMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
@@ -30,19 +34,7 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
         AddCityInteractorPresenterContract.Presenter,      //для приема данных из Интерактора
         AddCityViewModelContract.Presenter                 //для отправки данных в интерактор
 {
-    //Temp Answer
-    // TODO: 12.09.2017 В будущем -  Dagger 2
-//    private AddCityInteractorPresenterContract.Interactor interactor = new AddCityInteractor();
-
-//    @Override
-//    public void attachView(AddCityViewModel viewModel, ActivityComponents activity) {
-//        super.attachView(viewModel, activity);
-//        interactor.setListener(this);
-//    }
-
     private final AddCityInteractorPresenterContract.Interactor interactor;
-
-//    @Inject Lazy<WeatherService> weatherService;
 
     @Inject
     public AddCityPresenter(AddCityInteractorPresenterContract.Interactor interactor) {
@@ -91,14 +83,31 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
 
 
     @Override
-    public void onObtainCityWeather(ResultWrapper<Observable<CityView>> cityRx) {
+    public void onObtainCityWeather(ResultWrapper<Observable<String>> cityRx) {
         Exception exception = cityRx.getError();
-        Observable<CityView> observable = cityRx.getData();
+        Observable<String> observable = cityRx.getData();
 
         if (exception == null && observable != null) {
             getDisposableManager().addDisposable(
                     AddCityActivity.DISPOSABLE_POOL_KEY,
                     observable
+                            .map(response -> {
+                                if (response == null || response.equals("")) {
+                                    throw new EmptyResponseException();
+                                }
+                                return response;
+                            })
+                            .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
+                            .map(cityGson -> GsonToViewMap.getInstance().convertGsonToViewModel(cityGson))
+                            .map(viewCity -> {
+                                CityDb cityDb = getWeatherService().getDbService().searchCity(viewCity.getName());
+                                if (cityDb == null) {
+                                    viewCity.setFavorite(false);
+                                    return viewCity;
+                                }
+                                viewCity.setFavorite(true);
+                                return viewCity;
+                            })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(

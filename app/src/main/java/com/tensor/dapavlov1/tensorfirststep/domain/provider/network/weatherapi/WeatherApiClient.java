@@ -1,8 +1,9 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.client;
+package com.tensor.dapavlov1.tensorfirststep.domain.provider.network.weatherapi;
 
 import android.support.annotation.NonNull;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.ApiCommandUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,12 +23,40 @@ import okhttp3.Response;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class WeatherApiClient extends ApiHelper {
+public class WeatherApiClient extends ApiCommandUtils {
     private final OkHttpClient okHttpClient;
 
     @Inject
     public WeatherApiClient(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
+    }
+
+    //WeatherApiClient
+    public Observable<String> getWeatherByCitiesRx(@NonNull List<String> cityNames) {
+        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCityRx(city));
+    }
+
+    public Observable<String> getWeatherByCityRx(@NonNull String fullCityName) {
+        return Observable.create(source -> {
+            Call call = okHttpClient.newCall(
+                    createRequest(trimCityName(fullCityName)));
+
+            //отменяем запрос, если произошла отписка
+//            source.setCancellable(call::cancel);
+
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    source.onError(e);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    source.onNext(response.body().string());
+                    source.onComplete();
+                }
+            });
+        });
     }
 
     private Map<String, String> createMapForWeatherApi(String cityName, String key, String localisation, int countDays) {
@@ -51,32 +80,5 @@ public class WeatherApiClient extends ApiHelper {
                                 BuildConfig.WEATHER_API_LANGUAGE,
                                 BuildConfig.WEATHER_API_COUNT_DAY
                         ))).build();
-    }
-
-    //WeatherApiClient
-    public Observable<String> getWeatherByCitiesRx(@NonNull List<String> cityNames) {
-        return Observable.fromIterable(cityNames).flatMap(city -> getWeatherByCityRx(city));
-    }
-
-    public Observable<String> getWeatherByCityRx(@NonNull String cityName) {
-        return Observable.create(source -> {
-            Call call = okHttpClient.newCall(createRequest(cityName));
-
-            //отменяем запрос, если произошла отписка
-//            source.setCancellable(call::cancel);
-
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    source.onError(e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    source.onNext(response.body().string());
-                    source.onComplete();
-                }
-            });
-        });
     }
 }

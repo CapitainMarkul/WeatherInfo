@@ -2,8 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.i
 
 import android.support.annotation.NonNull;
 
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.cloud.CloudCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DbCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.NetworkCommand;
 
 /**
  * Created by da.pavlov1 on 12.09.2017.
@@ -14,8 +13,8 @@ public abstract class CommonInteractor<Listener extends MvpInteractor.LPresenter
 
     private Listener listener;
 
-    public Result executeCommand(CloudCommand<Result> cloudCommand) {
-        return cloudCommand.execute();
+    public Result executeCommand(NetworkCommand<Result> networkCommand) {
+        return networkCommand.execute();
     }
 
 //    public void executeVoidCommand(DbCommand cloudCommand) {

@@ -1,8 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.domain.provider;
 
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.GoogleApiClient;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.WeatherApiClient;
-
 /**
  * Created by da.pavlov1 on 03.08.2017.
  */

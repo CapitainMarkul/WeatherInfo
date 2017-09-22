@@ -2,8 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.service;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.DbClient;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.GoogleApiClient;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.client.WeatherApiClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.googleapi.GoogleApiClient;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.weatherapi.WeatherApiClient;
 
 import javax.inject.Inject;
 

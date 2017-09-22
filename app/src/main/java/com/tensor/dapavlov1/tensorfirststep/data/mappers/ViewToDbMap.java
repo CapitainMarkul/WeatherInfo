@@ -11,15 +11,9 @@ import java.util.List;
  */
 
 public class ViewToDbMap {
-//    public static ViewToDbMap getInstance() {
-//        return MapperDbToViewLoader.INSTANCE;
-//    }
-//
-//    private static final class MapperDbToViewLoader {
-//        private static final ViewToDbMap INSTANCE = new ViewToDbMap();
-//    }
-
-
+    private ViewToDbMap(){
+        //no Instance
+    }
     public static List<WeatherDb> convertWeathersToDbType(List<WeatherView> weathers) {
         List<WeatherDb> result = new ArrayList<>();
         for (WeatherView item : weathers) {

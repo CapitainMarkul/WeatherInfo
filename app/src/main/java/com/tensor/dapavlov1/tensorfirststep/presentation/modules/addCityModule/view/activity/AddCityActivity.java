@@ -26,6 +26,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
+import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
@@ -38,7 +39,6 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.v
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.places.PlacesDataRepository;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 
 import org.reactivestreams.Subscription;
@@ -230,10 +230,13 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                 .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
                     @Override
                     public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                        Object f = PlacesDataRepository.getInstance();
+                        // TODO: 22.09.2017 Отключить, включить интернет. Не работает список. (Падает SocketTimeout)
+                        io.reactivex.Observable<String> network = getPresenter().getWeatherService().
+                                getGoogleApiService().observableGooglePlaceRx(charSequence.toString());
 
-                        return PlacesDataRepository.getInstance().getPlaces(charSequence.toString())
-                                .map(s -> GsonFactory.getInstance().getPlacesName(s));
+                        io.reactivex.Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
+
+                        return observable.map(s -> GsonFactory.getInstance().getPlacesName(s));
                     }
                 })
 //                .filter(charSequence -> isTextChanged)

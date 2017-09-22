@@ -1,8 +1,9 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.client;
+package com.tensor.dapavlov1.tensorfirststep.domain.provider.network.googleapi;
 
 import android.support.annotation.NonNull;
 
 import com.tensor.dapavlov1.tensorfirststep.BuildConfig;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.ApiCommandUtils;
 
 
 import java.io.IOException;
@@ -22,34 +23,13 @@ import okhttp3.Response;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public class GoogleApiClient extends ApiHelper {
+public class GoogleApiClient extends ApiCommandUtils {
 
     private final OkHttpClient okHttpClient;
 
     @Inject
     public GoogleApiClient(OkHttpClient okHttpClient) {
         this.okHttpClient = okHttpClient;
-    }
-
-    private Map<String, String> createMapForGoogleApi(String key, String types, String input) {
-        Map<String, String> map = new HashMap<>();
-        map.put("types", types);
-        map.put("key", key);
-        map.put("input", input);
-        return map;
-    }
-
-    private Request createRequest(@NonNull String inputText) {
-        return new Request.Builder().url(
-                createUrl(
-                        BuildConfig.GOOGLE_API_SCHEME,
-                        BuildConfig.GOOGLE_API_HOST,
-                        BuildConfig.GOOGLE_API_SEGMENTS,
-                        createMapForGoogleApi(
-                                BuildConfig.GOOGLE_API_KEY,
-                                BuildConfig.GOOGLE_API_TYPES,
-                                inputText
-                        ))).build();
     }
 
     public Observable<String> observableGooglePlaceRx(@NonNull String inputText) {
@@ -72,5 +52,26 @@ public class GoogleApiClient extends ApiHelper {
                 }
             });
         });
+    }
+
+    private Map<String, String> createMapForGoogleApi(String key, String types, String input) {
+        Map<String, String> map = new HashMap<>();
+        map.put("types", types);
+        map.put("key", key);
+        map.put("input", input);
+        return map;
+    }
+
+    private Request createRequest(@NonNull String inputText) {
+        return new Request.Builder().url(
+                createUrl(
+                        BuildConfig.GOOGLE_API_SCHEME,
+                        BuildConfig.GOOGLE_API_HOST,
+                        BuildConfig.GOOGLE_API_SEGMENTS,
+                        createMapForGoogleApi(
+                                BuildConfig.GOOGLE_API_KEY,
+                                BuildConfig.GOOGLE_API_TYPES,
+                                inputText
+                        ))).build();
     }
 }

@@ -5,13 +5,13 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateSingleton;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandHelper;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
 
 /**
  * Created by da.pavlov1 on 21.09.2017.
  */
 
-public class UpdateCityCommand extends DbCommandHelper implements DbCommand<Void> {
+public class UpdateCityCommand extends DbCommandUtils implements DbCommand<Void> {
     private final CityWeatherWrapper cityWeatherWrapper;
 
     public UpdateCityCommand(CityWeatherWrapper cityWeatherWrapper) {

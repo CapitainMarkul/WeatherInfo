@@ -11,7 +11,7 @@ import java.util.List;
  * Created by da.pavlov1 on 21.09.2017.
  */
 
-public abstract class DbCommandHelper {
+public abstract class DbCommandUtils {
     // FIXME: 07.09.2017 Если информацию обновляем, то нужно восстановить ключи, если это вставка нового города - этого делать не нужно
     protected static List<WeatherDb> attachWeatherToCity(List<WeatherDb> weathers, Long cityId, boolean isUpdate) {
         long counter = 1;

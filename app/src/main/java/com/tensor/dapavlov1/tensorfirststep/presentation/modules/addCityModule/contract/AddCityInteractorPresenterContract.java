@@ -14,7 +14,7 @@ import io.reactivex.Observable;
 
 public interface AddCityInteractorPresenterContract {
     interface Presenter extends MvpInteractor.LPresenter {
-        void onObtainCityWeather(ResultWrapper<Observable<CityView>> cityRx);
+        void onObtainCityWeather(ResultWrapper<Observable<String>> cityRx);
 // TODO: 12.09.2017  void onObtainCityWeather(Observable<CityView> cityRx, Throwable error);
     }
 

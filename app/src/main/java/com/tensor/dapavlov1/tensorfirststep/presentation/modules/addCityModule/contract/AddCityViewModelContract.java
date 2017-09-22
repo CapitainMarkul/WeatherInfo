@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 import android.databinding.Bindable;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGradient;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
@@ -44,5 +45,6 @@ public interface AddCityViewModelContract {
     interface Presenter extends MvpPresenter<ViewModel> {
         void getWeatherInCity(String inputText);
         void onFavoriteClick();
+        WeatherService getWeatherService();
     }
 }

@@ -105,12 +105,12 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
     @Override
     public void onObtainCitiesWeather(ResultWrapper<Flowable<CityView>> cityRx) {
         Exception exception = cityRx.getError();
-        Flowable<CityView> observable = cityRx.getData();
+        Flowable<CityView> flowable = cityRx.getData();
 
-        if (observable != null) {
+        if (flowable != null) {
             getDisposableManager().addDisposable(
                     FavoriteActivity.FAVORITE_CITY_ADAPTER_KEY,
-                    observable
+                    flowable
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -125,10 +125,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
                                             getViewModel().setErrorMessage(R.string.activity_favorite_update_success);
                                         } else {
                                             if (exception instanceof NetworkConnectException) {
+                                                showEmptyCard();
                                                 getViewModel().setErrorMessage(R.string.str_error_connect_to_internet);
                                             }
                                         }
                                     }));
+// FIXME: 22.09.2017
+            //Только установили приложение (поставлено в конце метода, чтобы были показаны сообщения с ошибками)
+            if(flowable.isEmpty().blockingGet()){
+                showEmptyCard();
+            }
         } else {
             if (exception instanceof EmptyDbException) {
                 showEmptyCard();

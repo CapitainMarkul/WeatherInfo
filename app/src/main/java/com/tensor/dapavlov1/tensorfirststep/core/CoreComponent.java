@@ -16,12 +16,9 @@ import okhttp3.OkHttpClient;
 @Singleton
 @Component(modules = CoreModule.class)
 public interface CoreComponent {
-    // TODO: 21.09.2017 Предоставляем низкоуровненые компоненты (или общие для всех)
     DaoSession getDaoSession();
 
     Context getContext();
 
     OkHttpClient getHttpClient();
-    //HttpClient и прочее
-    //Context
 }

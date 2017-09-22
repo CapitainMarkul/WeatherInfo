@@ -1,13 +1,12 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.interactor;
 
+import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.command.cloud.GetWeatherByCityCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DelCityFromDbCommand;
 
 import javax.inject.Inject;
 
@@ -29,8 +28,25 @@ public class AddCityInteractor extends CommonInteractor<AddCityInteractorPresent
 
     @Override
     public void obtainCityWeather(String fullCityName) {
-        getListener().onObtainCityWeather(
-                executeCommand(new GetWeatherByCityCommand(fullCityName)));
+        //Было1
+//        getListener().onObtainCityWeather(
+//                executeCommand(new GetWeatherByCityCommand(fullCityName)));
+        //Было2
+//        getListener().onObtainCityWeather(
+//                citiesDataRepository.getCityRx(fullCityName));
+        //Стало
+        Observable<String> network = weatherService.getWeatherService().getWeatherByCityRx(fullCityName);
+        Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
+
+        ResultWrapper<Observable<String>> result;
+
+        if (observable.isEmpty().blockingGet()) {
+            result = new ResultWrapper<>(null, new NetworkConnectException());
+        } else {
+            result = new ResultWrapper<>(observable, null);
+        }
+
+        getListener().onObtainCityWeather(result);
     }
 
     @Override

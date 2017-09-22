@@ -17,5 +17,4 @@ public class BusinessModule {
     WeatherService provideWeatherService() {
         return new WeatherService();
     }
-//// TODO: 21.09.2017 Предоставление Service'a
 }
