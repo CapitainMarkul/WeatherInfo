@@ -65,55 +65,6 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
         getListener().onObtainCitiesWeather(result);
     }
 
-    /**
-     * Network
-     * */
-
-//    public Flowable<CityView> getCitiesRx(List<String> cityNames) {
-//        return weatherApiClient.getWeatherByCitiesRx(cityNames)
-//                .map(string -> gsonFactory.createGsonCityModel(string))
-//                .map(gsonCity -> gsonToDbMap.convertGsonModelToDaoModel(gsonCity))
-//                .toFlowable(BackpressureStrategy.BUFFER)
-//                .switchMap(cityWeatherWrapper -> {
-//                    //set Update weather info in DB
-//                    App.getExecutorService().execute(() -> dbClient.updateCity(cityWeatherWrapper));
-//                    return Flowable.just(dbToViewMap.convertDbModelToViewModel(cityWeatherWrapper.getCityDb(), cityWeatherWrapper.getWeathers(), true));
-//                });
-//    }
-
-    /**
-     * Disk
-     */
-//    @Override
-//    public Flowable<CityView> getCitiesRx() {
-//        return Flowable.create(e ->
-//                dbClient.loadAllCitiesDbRx()
-//                        .subscribeOn(Schedulers.from(App.getExecutorService()))
-//                        .flatMap(new Function<List<CityDb>, Publisher<CityDb>>() {
-//                            @Override
-//                            public Publisher<CityDb> apply(@NonNull List<CityDb> cityDbs) throws Exception {
-//                                return Flowable.fromIterable(cityDbs);
-//                            }
-//                        })
-//                        .map(city ->
-//                                DbToViewMap.getInstance().convertDbModelToViewModel(city, city.getWeathers(), true))
-//                        .subscribe(
-//                                result -> {
-//                                    e.onNext(result);
-//                                    // TODO: 31.08.2017 Здесь можно установить задержку, для плавности анимации, при загрузке из хранилища
-//                                    Thread.sleep(100);
-//                                },
-//                                e::onError,
-//                                e::onComplete), BackpressureStrategy.BUFFER);
-//    }
-
-//    public List<String> getCitiesName() {
-//        try {
-//            return dbClient.getCitiesName();
-//        } catch (EmptyDbException e) {
-//            return new ArrayList<>();
-//        }
-//    }
     @Override
     public void delCityFromDb(CityView city) {
         weatherService.getDbService().deleteCity(city);
