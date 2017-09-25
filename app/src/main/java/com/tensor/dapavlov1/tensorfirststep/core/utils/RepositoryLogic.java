@@ -9,7 +9,7 @@ import io.reactivex.Observable;
  */
 
 public class RepositoryLogic {
-    public static <Type> Observable<Type> loadNetworkPriority(final Observable<Type> disk,@NonNull final Observable<Type> network) {
+    public static <Type> Observable<Type> loadNetworkPriority(final Observable<Type> disk, @NonNull final Observable<Type> network) {
         if (NetworkHelper.isOnline()) {
             return network;
         } else {

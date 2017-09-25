@@ -12,7 +12,7 @@ import okhttp3.HttpUrl;
  * Created by da.pavlov1 on 14.08.2017.
  */
 
-public abstract class ApiCommandUtils extends NetworkHelper {
+public abstract class NetworkUtils extends NetworkHelper {
     protected static String trimCityName(String fullCityName) {
         if (fullCityName.indexOf(',') != -1) {
             return fullCityName.substring(0, fullCityName.indexOf(','));
