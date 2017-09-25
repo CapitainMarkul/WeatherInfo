@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
@@ -15,16 +14,14 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityFavoriteBinding;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.receivers.ReceiverWithAction;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.EmptyListener;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.RecyclerAdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteDaggerModule;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter.FavoriteAdapter;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel;
 
@@ -74,14 +71,14 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        AdapterStorage.getInstance().saveAdapter(FAVORITE_CITY_ADAPTER_KEY, favoriteAdapter);
+        RecyclerAdapterStorage.getInstance().saveAdapter(FAVORITE_CITY_ADAPTER_KEY, favoriteAdapter);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         favoriteAdapter =
-                AdapterStorage.getInstance().restoreAdapter(FAVORITE_CITY_ADAPTER_KEY);
+                RecyclerAdapterStorage.getInstance().restoreAdapter(FAVORITE_CITY_ADAPTER_KEY);
         setupRecyclerView();
     }
 
@@ -189,7 +186,7 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        AdapterStorage.getInstance().restoreAdapter(FAVORITE_CITY_ADAPTER_KEY);
+//        RecyclerAdapterStorage.getInstance().restoreAdapter(FAVORITE_CITY_ADAPTER_KEY);
     }
 
     public void delCityFromAdapter(CityView deletedCity) {

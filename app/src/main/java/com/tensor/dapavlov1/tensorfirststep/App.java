@@ -8,16 +8,12 @@ import com.squareup.leakcanary.RefWatcher;
 import com.tensor.dapavlov1.tensorfirststep.core.CoreComponent;
 import com.tensor.dapavlov1.tensorfirststep.core.CoreModule;
 import com.tensor.dapavlov1.tensorfirststep.core.DaggerCoreComponent;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoMaster;
-import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessModule;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.DaggerBusinessComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.DaggerPresentationComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.PresentationComponents;
-
-import org.greenrobot.greendao.database.Database;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -9,21 +9,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.jakewharton.rxbinding2.InitialValueObservable;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.jakewharton.rxbinding2.widget.TextViewTextChangeEvent;
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
@@ -35,23 +33,19 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityDaggerModule;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.adapter.PlacesAutoComplete;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.AdapterStorage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.RecyclerAdapterStorage;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.StringAdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 
-import org.reactivestreams.Subscription;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -63,7 +57,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         implements checkBoxClick {
 
     private AutoCompleteTextView autoText;
-    private PlacesAutoComplete placesAutoComplete;
+    private ArrayAdapter<String> placesAutoCompleteAdapter;
     private HorizontalWeatherAdapter horizontalWeatherAdapter;
 
     private ActivityAddCityBinding binding;
@@ -73,11 +67,15 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     private final static String simpleName = AddCityActivity.class.getSimpleName();
 
     public static final String NEW_CITY_ADAPTER_KEY = simpleName + "_ADAPTER";
+    public static final String NEW_CITY_PLACES_ADAPTER_KEY = simpleName + "_PLACES_ADAPTER";
     public static final String GET_STATE = "info_changed";
 
-    private static final int INFO_IS_NOT_CHANGE_STATE = 0;
-    public static final int INFO_IS_CHANGE_STATE = 1;
+    private static boolean IS_CONFIG_CHANGE = false;
+    private static boolean IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
+    private static boolean IS_TEXT_CHANGED_USE_KEYBOARD = true;
 
+    public static final int INFO_IS_NOT_CHANGE_STATE = 0;
+    public static final int INFO_IS_CHANGE_STATE = 1;
     private static int CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
 
     @Override
@@ -86,19 +84,17 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.setViewModel(getViewModel());
 
-        setupViews();
-
         setupRecyclerAdapter();
         setupRecyclerView();
 
-        setupRxListeners();
         // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
-//            setupRxListeners();
+            createStringAdapter();
         }
-//        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+        setupViews();
+        setupRxListeners();
     }
 
     @Override
@@ -119,19 +115,24 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 //    @Override
 //    protected void onDestroy() {
 //        super.onDestroy();
-////        AdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
+////        RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
 //    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        AdapterStorage.getInstance().saveAdapter(NEW_CITY_ADAPTER_KEY, horizontalWeatherAdapter);
+        RecyclerAdapterStorage.getInstance().saveAdapter(NEW_CITY_ADAPTER_KEY, horizontalWeatherAdapter);
+//        StringAdapterStorage.getInstance().saveAdapter(NEW_CITY_PLACES_ADAPTER_KEY, placesAutoCompleteAdapter);
+
+        IS_CONFIG_CHANGE = true;
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        horizontalWeatherAdapter = AdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
-        setupRecyclerView();
+        horizontalWeatherAdapter = RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
+//        placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
+
+//        autoText.setAdapter(placesAutoCompleteAdapter);
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -155,147 +156,103 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     private void setupViews() {
         autoText = binding.toolBar.tvAutocompleteText;
         binding.cvWeatherCity.cardFullInfo.setVisibility(View.INVISIBLE);
-        placesAutoComplete = new PlacesAutoComplete(this, R.layout.item_auto_complete);
-        autoText.setAdapter(placesAutoComplete);
+        autoText.setAdapter(placesAutoCompleteAdapter);
     }
 
-    // TODO: 29.08.2017 Вопрос об обработке Error в subscribe кнопки?
-    // Мы же обрабатываем исключения в коде
+    private void createStringAdapter() {
+        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, new ArrayList<>());
+    }
+
     private void setupRxListeners() {
+        autoText.setThreshold(2);
 
         autoText.setOnItemClickListener((adapterView, view, i, l) -> {
+            // FIXME: 25.09.2017
+            IS_TEXT_CHANGED_USE_NOT_KEYBOARD = true;
+            IS_TEXT_CHANGED_USE_KEYBOARD = false;
             startSearchingCity();
         });
 
-        RxView.keys(autoText)
-                .filter(event -> {
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                        //перехватываем нажатие кнопки Back
-                        if (CURRENT_STATE == INFO_IS_CHANGE_STATE) {
-                            Intent intent = new Intent(FavoritePresenter.ADD_NEW_CITY_ACTION);
-                            intent.putExtra(GET_STATE, CURRENT_STATE);
-                            sendBroadcast(intent);
-                            CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
-                        }
-                        onBackPressed();
-                        return false;
-                    }
-                    return true;
-                })
-                .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
-                .subscribe(
-                        next -> {
-                            if (next) {
-                                startSearchingCity();
-//                                binding.setFirstLaunch(false);
-//                                isTextChanged = false;
-//                                if (autoText.isPopupShowing()) {
-//                                    autoText.dismissDropDown();
-//                                }
+        getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY,
+                RxView.keys(autoText)
+                        .filter(event -> {
+                            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                                IS_TEXT_CHANGED_USE_NOT_KEYBOARD = true;
+                                //перехватываем нажатие кнопки Back
+                                if (CURRENT_STATE == INFO_IS_CHANGE_STATE) {
+                                    Intent intent = new Intent(FavoritePresenter.ADD_NEW_CITY_ACTION);
+                                    intent.putExtra(GET_STATE, CURRENT_STATE);
+                                    sendBroadcast(intent);
+                                    CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
+                                }
+                                onBackPressed();
+                                return false;
                             }
-                        },
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+                            return true;
+                        })
+                        .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                        .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+                        .subscribe(
+                                next -> {
+                                    autoText.dismissDropDown();
+                                    if (next) {
+                                        IS_TEXT_CHANGED_USE_NOT_KEYBOARD = true;
+                                        startSearchingCity();
+                                    }
+                                },
+                                throwable -> showMessage(R.string.unknown_error)));
 
-        //Нажание на элемент выпадающего списка
-//        RxAutoCompleteTextView.itemClickEvents(autoText)
-//                .subscribe(
-//                        next -> {
-//                            startSearchingCity();
-////                            binding.setFirstLaunch(false);
-////                            isTextChanged = false;
-//                        },
-//                        throwable -> showMessage(R.string.unknown_error),
-//                        () -> {
-//                        },
-//                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+        getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY,
+                RxTextView.textChanges(autoText)
+                        .debounce(500, TimeUnit.MILLISECONDS)
+                        .filter(s -> s.length() > 2)
+                        .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
+                            @Override
+                            public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
+                                // TODO: 22.09.2017 Отключить, включить интернет. Не работает список. (Падает SocketTimeout)
+                                io.reactivex.Observable<String> network = getPresenter().getWeatherService().
+                                        getGoogleApiService().observableGooglePlaceRx(charSequence.toString());
 
-        io.reactivex.Observable e = RxTextView.textChangeEvents(autoText);
-        io.reactivex.Observable e2 = RxTextView.textChangeEvents(autoText);
+                                io.reactivex.Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
 
-        // TODO: 20.09.2017 Сделай другие модули, а потом доделай это 
-        io.reactivex.Observable.combineLatest(e, e2, new BiFunction() {
-            @Override
-            public Object apply(@NonNull Object o, @NonNull Object o2) throws Exception {
-                return null;
-            }
-        });
-//        (emailObservable, passwordObservable) -> {});
-        RxTextView.textChanges(autoText)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(s -> s.length() > 2)
-                .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
-                    @Override
-                    public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                        // TODO: 22.09.2017 Отключить, включить интернет. Не работает список. (Падает SocketTimeout)
-                        io.reactivex.Observable<String> network = getPresenter().getWeatherService().
-                                getGoogleApiService().observableGooglePlaceRx(charSequence.toString());
+                                return observable.map(s -> GsonFactory.getInstance().getPlacesName(s));
+                            }
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, result);
+                                    autoText.setAdapter(placesAutoCompleteAdapter);
 
-                        io.reactivex.Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
+                                    //NOT WORK
+//                                    placesAutoCompleteAdapter.clear();
+//                                    placesAutoCompleteAdapter.addAll(result);
+//                                    placesAutoCompleteAdapter.notifyDataSetChanged();
 
-                        return observable.map(s -> GsonFactory.getInstance().getPlacesName(s));
-                    }
-                })
-//                .filter(charSequence -> isTextChanged)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        result -> {
-                            autoText.setAdapter(placesAutoComplete.setItems(result));
-                            autoText.showDropDown();
-                        },
-                        throwable -> showMessage(R.string.unknown_error),
-                        () -> {
-                        },
-                        disposable -> getDisposableManager().addDisposable(DISPOSABLE_POOL_KEY, disposable));
+                                    if (!IS_CONFIG_CHANGE) {
+                                        if (IS_TEXT_CHANGED_USE_KEYBOARD) {
+                                            //Показываем
+                                            IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
 
-//        // С какого символа начинаем показывать подсказки
-        autoText.setThreshold(3);
-//
-//        RxTextView.textChanges(autoText)
-//                .filter(charSequence -> {
-//                    //Данное устловие позволяет защититься от показа подсказки, в тот момент,
-//                    // когда пользователь уже выбрал один из вариантов, и перевернул экран
-//                    if (isConfigChange) {
-//                        isConfigChange = false;
-//                        return false;
-//                    }
-//                    return true;
-//                })
-//                .subscribe(
-//                        next -> isTextChanged = true,
-//                        throwable -> showMessage(R.string.unknown_error),
-//                        () -> {
-//                        },
-//                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-//
+                                            autoText.showDropDown();
+                                        } else if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
+                                            autoText.dismissDropDown();
 
-//
-//        RxView.clicks(autoText)
-//                .debounce(500, TimeUnit.MILLISECONDS)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                        res -> {
-//                            if (autoText.getAdapter().getCount() > 0 && !autoText.isPopupShowing()) {
-//                                autoText.showDropDown();
-//                            }
-//                        },
-//                        throwable -> showMessage(R.string.unknown_error),
-//                        () -> {
-//                        },
-//                        disposable -> disposableManager.addDisposable(ID_POOL_COMPOSITE_DISPOSABLE, disposable));
-//
-
+                                            //Следующее изменение возможно только при помощи клавиатуры
+                                            IS_TEXT_CHANGED_USE_KEYBOARD = true;
+                                        }
+                                    } else {
+                                        if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
+                                            autoText.dismissDropDown();
+                                            //Возвращаемся к нормальной стратегии
+                                            IS_CONFIG_CHANGE = false;
+                                            IS_TEXT_CHANGED_USE_KEYBOARD = true;
+                                        }
+                                    }
+                                },
+                                throwable -> showMessage(R.string.unknown_error)));
     }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        Log.e("SIzeDestr:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

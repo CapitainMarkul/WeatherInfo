@@ -2,8 +2,6 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.h
 
 import android.support.v7.widget.RecyclerView;
 
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,16 +9,16 @@ import java.util.Map;
  * Created by da.pavlov1 on 14.09.2017.
  */
 
-public class AdapterStorage {
-    public static AdapterStorage getInstance() {
+public class RecyclerAdapterStorage {
+    public static RecyclerAdapterStorage getInstance() {
         return AdapterStorageLoader.INSTANCE;
     }
 
     private static final class AdapterStorageLoader {
-        private static final AdapterStorage INSTANCE = new AdapterStorage();
+        private static final RecyclerAdapterStorage INSTANCE = new RecyclerAdapterStorage();
     }
 
-    private AdapterStorage() {
+    private RecyclerAdapterStorage() {
         storage = new HashMap<>();
     }
 

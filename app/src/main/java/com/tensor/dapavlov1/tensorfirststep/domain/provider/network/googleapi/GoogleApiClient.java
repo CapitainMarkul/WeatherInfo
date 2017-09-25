@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.NetworkCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.NetworkUtils;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.googleapi.command.BuildRequestCommand;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.weatherapi.command.CallCommand;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.googleapi.command.CallCommand;
 
 
 import java.io.IOException;
