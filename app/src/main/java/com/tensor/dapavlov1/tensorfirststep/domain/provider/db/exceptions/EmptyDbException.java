@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows;
+package com.tensor.dapavlov1.tensorfirststep.domain.provider.db.exceptions;
 
 /**
  * Created by da.pavlov1 on 23.08.2017.

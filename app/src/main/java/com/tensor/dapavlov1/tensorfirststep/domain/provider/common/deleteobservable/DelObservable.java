@@ -1,4 +1,4 @@
-package com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable;
+package com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable;
 
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 

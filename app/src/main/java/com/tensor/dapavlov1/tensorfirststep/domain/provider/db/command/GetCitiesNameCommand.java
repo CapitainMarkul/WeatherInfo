@@ -3,7 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.exceptions.EmptyDbException;
 
 import java.util.ArrayList;
 import java.util.List;

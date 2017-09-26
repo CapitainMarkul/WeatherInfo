@@ -4,6 +4,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
@@ -11,12 +12,10 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.c
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.view.activity.AddCityActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

@@ -4,10 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.CityGson;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.PlaceGson;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateSingleton;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class GsonFactory {
 
     public CityGson createGsonCityModel(String responseJson) {
         CityGson cityGson = new Gson().fromJson(responseJson, CityGson.class);
-        cityGson.setDateLastUpdate(TrimDateSingleton.getInstance().getNowTime());
+        cityGson.setDateLastUpdate(TrimDateUtil.getNowTime());
         return cityGson;
     }
 

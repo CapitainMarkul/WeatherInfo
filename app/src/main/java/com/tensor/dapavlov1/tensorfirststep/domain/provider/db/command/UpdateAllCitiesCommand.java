@@ -4,7 +4,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDbDao;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateSingleton;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateUtil;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class UpdateAllCitiesCommand extends DbCommandUtils implements DbCommand<
             CityDb cityDb = daoSession.getCityDbDao().queryBuilder()
                     .where(CityDbDao.Properties.Name.eq(newItem.getCityDb().getName()))
                     .unique();
-            cityDb.setLastTimeUpdate(TrimDateSingleton.getInstance().getNowTime());
+            cityDb.setLastTimeUpdate(TrimDateUtil.getNowTime());
             cityDb.getWeathers().clear();
             cityDb.getWeathers().addAll(attachWeatherToCity(newItem.getWeathers(), cityDb.getId(), true));
             cityDb.update();

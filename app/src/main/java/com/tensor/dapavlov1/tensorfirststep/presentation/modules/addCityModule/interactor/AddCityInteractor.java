@@ -2,7 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;

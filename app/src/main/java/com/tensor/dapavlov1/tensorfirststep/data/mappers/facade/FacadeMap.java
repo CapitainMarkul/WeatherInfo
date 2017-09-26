@@ -9,7 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.mappers.WeatherMapper;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyResponseException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.EmptyResponseException;
 
 import java.util.List;
 
@@ -24,7 +24,6 @@ public class FacadeMap {
 
     }
 
-    // TODO: 26.09.2017 Методы преобразования
     public static CityView jsonToVM(String json) throws EmptyResponseException {
         if (json == null || json.equals("")) {
             throw new EmptyResponseException();

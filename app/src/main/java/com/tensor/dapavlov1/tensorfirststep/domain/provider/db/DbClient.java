@@ -17,9 +17,9 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.SearchCit
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.UpdateAllCitiesCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.UpdateCityCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyDbException;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObservable;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.deleteobservable.DelObserver;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.exceptions.EmptyDbException;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObservable;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;

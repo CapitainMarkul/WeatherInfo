@@ -2,7 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.data.mappers;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.WeatherDb;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateSingleton;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.TrimDateUtil;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.CityGson;
 import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.WeatherRootGson;
@@ -43,8 +43,8 @@ public class CityWeatherWrapMapper extends HelpMap {
                             itemRoot.getWindSpeed(),
                             itemRoot.getPressure(),
                             itemRoot.getTemperature(),
-                            TrimDateSingleton.getInstance().trimDate(itemRoot.getDate()),
-                            TrimDateSingleton.getInstance().trimTime(itemRoot.getDate()),
+                            TrimDateUtil.trimDate(itemRoot.getDate()),
+                            TrimDateUtil.trimTime(itemRoot.getDate()),
                             getIconUrlLoad(itemRoot),
                             getIconCode(itemRoot),
                             getWeatherDescription(itemRoot)
