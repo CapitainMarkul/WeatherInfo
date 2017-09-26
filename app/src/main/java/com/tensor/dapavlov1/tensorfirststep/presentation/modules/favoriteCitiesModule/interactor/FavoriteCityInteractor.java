@@ -2,10 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCities
 
 import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
@@ -41,14 +39,21 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
         List<String> cityNames = weatherService.getDbService().getCitiesName();
 // TODO: 22.09.2017 Разобраться с Flowable (to Observable ?)
         Observable<CityView> network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
-                .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-                .map(gsonCity -> GsonToDbMap.getInstance().convertGsonModelToDaoModel(gsonCity))
-                .map(cityWeatherWrapper -> {
+                .map(json -> {
+                    CityView city = FacadeMap.jsonToVM(json);
 //                    set Update weather info in DB
-                    App.getExecutorService().execute(() -> weatherService.getDbService().updateCity(cityWeatherWrapper));
-                    return DbToViewMap.getInstance().convertDbModelToViewModel(
-                            cityWeatherWrapper.getCityDb(), cityWeatherWrapper.getWeathers(), true);
+                    App.getExecutorService().execute(() ->
+                            weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews()));
+                    return city;
                 });
+//                .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
+//                .map(gsonCity -> CityWeatherWrapMapper.getInstance().convertGsonModelToWrapper(gsonCity))
+//                .map(cityWeatherWrapper -> {
+////                    set Update weather info in DB
+//                    App.getExecutorService().execute(() -> weatherService.getDbService().updateCity(cityWeatherWrapper));
+//                    return DbToViewMap.getInstance().convertDbModelToViewModel(
+//                            cityWeatherWrapper.getCityDb(), cityWeatherWrapper.getWeathers(), true);
+//                });
 
         Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx().toObservable();
 

@@ -2,11 +2,8 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.GsonToViewMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.repository.cities.mythrows.EmptyResponseException;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
@@ -91,21 +88,22 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
             getDisposableManager().addDisposable(
                     AddCityActivity.DISPOSABLE_POOL_KEY,
                     observable
-                            .map(response -> {
-                                if (response == null || response.equals("")) {
-                                    throw new EmptyResponseException();
-                                }
-                                return response;
-                            })
-                            .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-                            .map(cityGson -> GsonToViewMap.getInstance().convertGsonToViewModel(cityGson))
+//                            .map(response -> {
+//                                if (response == null || response.equals("")) {
+//                                    throw new EmptyResponseException();
+//                                }
+//                                return response;
+//                            })
+//                            .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
+//                            .map(cityGson -> GsonToViewMap.getInstance().convertGsonToViewModel(cityGson))
+                            .map(FacadeMap::jsonToVM)
                             .map(viewCity -> {
                                 CityDb cityDb = getWeatherService().getDbService().searchCity(viewCity.getName());
                                 if (cityDb == null) {
                                     viewCity.setFavorite(false);
-                                    return viewCity;
+                                } else {
+                                    viewCity.setFavorite(true);
                                 }
-                                viewCity.setFavorite(true);
                                 return viewCity;
                             })
                             .subscribeOn(Schedulers.io())

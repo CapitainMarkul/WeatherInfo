@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by da.pavlov1 on 10.08.2017.
+ * Created by da.pavlov1 on 26.09.2017.
  */
 
-public class ViewToDbMap {
-    private ViewToDbMap(){
-        //no Instance
+public class WeatherMapper {
+    private WeatherMapper() {
     }
-    public static List<WeatherDb> convertWeathersToDbType(List<WeatherView> weathers) {
+
+    public static List<WeatherDb> convertVMWeatherToDbWeather(List<WeatherView> weathers) {
         List<WeatherDb> result = new ArrayList<>();
         for (WeatherView item : weathers) {
             result.add(converter(item));

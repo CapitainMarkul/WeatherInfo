@@ -8,15 +8,15 @@ import com.tensor.dapavlov1.tensorfirststep.data.gsonmodels.WeatherRootGson;
  */
 
 public abstract class HelpMap {
-    protected String getIconUrlLoad(WeatherRootGson weatherRootGson) {
+    protected static String getIconUrlLoad(WeatherRootGson weatherRootGson) {
         return BuildConfig.WEATHER_API_URL_TO_LOAD_IMAGE + weatherRootGson.getWeatherChildGson().getIcon() + BuildConfig.WEATHER_API_EXPANSION_LOAD_IMAGE;
     }
 
-    protected String getIconCode(WeatherRootGson weatherRootGson) {
+    protected static String getIconCode(WeatherRootGson weatherRootGson) {
         return weatherRootGson.getWeatherChildGson().getIcon();
     }
 
-    protected String getWeatherDescription(WeatherRootGson weatherRootGson) {
+    protected static String getWeatherDescription(WeatherRootGson weatherRootGson) {
         return weatherRootGson.getWeatherChildGson().getDescription();
     }
 }

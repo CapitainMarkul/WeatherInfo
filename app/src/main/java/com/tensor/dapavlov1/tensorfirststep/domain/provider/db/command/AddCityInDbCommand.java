@@ -2,7 +2,7 @@ package com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.ViewToDbMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.common.DbCommandUtils;
 
@@ -24,7 +24,7 @@ public class AddCityInDbCommand extends DbCommandUtils implements DbCommand<Bool
                     new CityDb(null, city.getName(), city.getLastTimeUpdate()));
             daoSession.getWeatherDbDao().insertInTx(
                     attachWeatherToCity(
-                            ViewToDbMap.convertWeathersToDbType(city.getWeatherViews()), cityId, false));
+                            FacadeMap.weatherVmToWeatherDb(city.getWeatherViews()), cityId, false));
         } catch (Exception e) {
             //Произошли ошибки при добавлении записи в Бд
             return false;

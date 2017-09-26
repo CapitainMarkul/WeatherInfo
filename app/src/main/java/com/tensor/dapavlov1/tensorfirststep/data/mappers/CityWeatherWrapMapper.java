@@ -14,27 +14,27 @@ import java.util.List;
  * Created by da.pavlov1 on 10.08.2017.
  */
 
-public class GsonToDbMap extends HelpMap {
-    public static GsonToDbMap getInstance() {
-        return MapperGsonToDbLoader.INSTANCE;
+public class CityWeatherWrapMapper extends HelpMap {
+//    public static CityWeatherWrapMapper getInstance() {
+//        return MapperGsonToDbLoader.INSTANCE;
+//    }
+//
+//    private static final class MapperGsonToDbLoader {
+//        private static final CityWeatherWrapMapper INSTANCE = new CityWeatherWrapMapper();
+//    }
+
+    private CityWeatherWrapMapper() {
     }
 
-    private static final class MapperGsonToDbLoader {
-        private static final GsonToDbMap INSTANCE = new GsonToDbMap();
-    }
-
-    private GsonToDbMap() {
-    }
-
-    public CityWeatherWrapper convertGsonModelToDaoModel(CityGson cityGson) {
+    public static CityWeatherWrapper convertGsonModelToWrapper(CityGson cityGson) {
         return new CityWeatherWrapper(createDaoCity(cityGson, cityGson.getDateLastUpdate()), createDaoWeathers(cityGson.getWeathers()));
     }
 
-    private CityDb createDaoCity(CityGson cityGson, String dateLastUpdateInfo) {
+    private static CityDb createDaoCity(CityGson cityGson, String dateLastUpdateInfo) {
         return new CityDb(null, cityGson.getName(), dateLastUpdateInfo);
     }
 
-    private List<WeatherDb> createDaoWeathers(List<WeatherRootGson> gsonWeather) {
+    private static List<WeatherDb> createDaoWeathers(List<WeatherRootGson> gsonWeather) {
         List<WeatherDb> weathers = new ArrayList<>();
         for (WeatherRootGson itemRoot : gsonWeather) {
             weathers.add(

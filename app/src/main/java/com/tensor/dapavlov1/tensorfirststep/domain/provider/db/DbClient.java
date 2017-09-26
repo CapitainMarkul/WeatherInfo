@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
-import com.tensor.dapavlov1.tensorfirststep.data.mappers.DbToViewMap;
+import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DelCityFromDbCommand;
@@ -64,7 +65,7 @@ public class DbClient extends DbCommandUtils implements DelObservable {
                         return Flowable.fromIterable(cityDbs);
                     }
                 })
-                .map(city -> DbToViewMap.getInstance().convertDbModelToViewModel(city, city.getWeathers(), true));
+                .map(city -> FacadeMap.cityDbToCityVM(city, true));
     }
 
     public List<String> getCitiesName() {
@@ -83,8 +84,8 @@ public class DbClient extends DbCommandUtils implements DelObservable {
         updateAllCitiesCommand.execute(daoSession);
     }
 
-    public void updateCity(CityWeatherWrapper cityWeatherWrapper) {
-        DbCommand updateCommand = new UpdateCityCommand(cityWeatherWrapper);
+    public void updateCity(String cityName, List<WeatherView> weathers) {
+        DbCommand updateCommand = new UpdateCityCommand(cityName, weathers);
         updateCommand.execute(daoSession);
     }
 
