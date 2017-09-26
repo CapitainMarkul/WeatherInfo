@@ -33,15 +33,4 @@ public abstract class AbstractViewModel extends BaseObservable implements MvpVie
         this.successMessage = successMessage;
         notifyPropertyChanged(BR.successMessage);
     }
-
-    // TODO: 13.09.2017 ласс можно будет расширить
-//    @Override
-//    public void addOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
-//        super.addOnPropertyChangedCallback(callback);
-//    }
-//
-//    @Override
-//    public void removeOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
-//        super.removeOnPropertyChangedCallback(callback);
-//    }
 }

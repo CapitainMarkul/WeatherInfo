@@ -122,7 +122,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         RecyclerAdapterStorage.getInstance().saveAdapter(NEW_CITY_ADAPTER_KEY, horizontalWeatherAdapter);
-//        StringAdapterStorage.getInstance().saveAdapter(NEW_CITY_PLACES_ADAPTER_KEY, placesAutoCompleteAdapter);
+        StringAdapterStorage.getInstance().saveAdapter(NEW_CITY_PLACES_ADAPTER_KEY, placesAutoCompleteAdapter);
 
         IS_CONFIG_CHANGE = true;
     }
@@ -130,9 +130,11 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         horizontalWeatherAdapter = RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
-//        placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
+        placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
 
 //        autoText.setAdapter(placesAutoCompleteAdapter);
+        setupRecyclerView();
+        setupViews();
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -167,7 +169,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         autoText.setThreshold(2);
 
         autoText.setOnItemClickListener((adapterView, view, i, l) -> {
-            // FIXME: 25.09.2017
             IS_TEXT_CHANGED_USE_NOT_KEYBOARD = true;
             IS_TEXT_CHANGED_USE_KEYBOARD = false;
             startSearchingCity();
@@ -190,8 +191,10 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                             }
                             return true;
                         })
-                        .debounce(400, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                        .debounce(400, TimeUnit.MILLISECONDS)
                         .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+//                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 next -> {
                                     autoText.dismissDropDown();

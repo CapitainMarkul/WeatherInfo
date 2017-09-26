@@ -28,7 +28,6 @@ public class PresenterStorage {
         storage.put(presenterId, presenter);
     }
 
-    // TODO: 14.09.2017 Разобраться до конца
     public <T extends MvpPresenter> T restorePresenter(String presenterId) {
         return (T) storage.remove(presenterId);
     }

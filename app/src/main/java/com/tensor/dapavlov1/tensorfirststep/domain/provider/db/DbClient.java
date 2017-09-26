@@ -93,11 +93,7 @@ public class DbClient extends DbCommandUtils implements DelObservable {
 //    public void addInDataBase(String cityName, String lastTimeUpdate, List<WeatherDb> weathers) {
     public void addInDataBase(CityView city) {
         DbCommand<Boolean> addCommand = new AddCityInDbCommand(city);
-        if (addCommand.execute(daoSession)) {
-            // TODO: 21.09.2017 Город добавлен в избранное (Функционал можно внести в Observable)
-        } else {
-            // TODO: 21.09.2017 Произошла ошибка добавления
-        }
+        addCommand.execute(daoSession);
     }
 
     @Nullable

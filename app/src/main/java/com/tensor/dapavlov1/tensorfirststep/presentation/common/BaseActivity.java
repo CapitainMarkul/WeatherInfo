@@ -54,8 +54,6 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
             viewModel = createViewModel();
             presenter = createPresenter();
         } else {
-            //// FIXME: 14.09.2017 Для чего вытаскиваем ViewModel ? Попробовать убрать
-            //Ведь если здесь Null, то какой смысл ? (Существование ViewModel без Presenter'a)
             viewModel = Parcels.unwrap(savedInstanceState.getParcelable(VM_KEY));
             presenter = PresenterStorage.getInstance().restorePresenter(PRESENTER_KEY);
 

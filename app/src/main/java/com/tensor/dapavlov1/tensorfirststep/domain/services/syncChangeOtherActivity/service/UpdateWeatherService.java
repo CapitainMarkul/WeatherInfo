@@ -27,13 +27,11 @@ public class UpdateWeatherService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e("Create:", "on");
     }
 
     @Override
     public void onDestroy() {
         runAlarm();
-        Log.e("Destroy:", "on");
         super.onDestroy();
     }
 

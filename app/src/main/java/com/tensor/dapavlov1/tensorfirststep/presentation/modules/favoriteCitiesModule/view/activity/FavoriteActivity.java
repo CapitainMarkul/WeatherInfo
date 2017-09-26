@@ -179,8 +179,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
         binding.recyclerViewFavorite.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         binding.recyclerViewFavorite.setAdapter(favoriteAdapter);
-        // FIXME: 15.09.2017 Здесь убрать настройки видимости
-        binding.recyclerViewFavorite.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -193,9 +191,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
         int deletedPosition = favoriteAdapter.getItems().indexOf(deletedCity);
         favoriteAdapter.getItems().remove(deletedPosition);
         favoriteAdapter.notifyItemRemoved(deletedPosition);
-        // TODO: 13.09.2017 Подумать насчет анимации
-//        favoriteAdapter.notifyItemRangeChanged(deletedPosition, favoriteAdapter.getItemCount());
-//        favoriteAdapter.setAnimation(binding.cardFullInfo, position, R.anim.recyclerdel);
         if (favoriteAdapter.getItems().isEmpty()) {
             onEmpty();
         }

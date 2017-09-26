@@ -12,7 +12,6 @@ import java.util.List;
  */
 
 public abstract class DbCommandUtils {
-    // FIXME: 07.09.2017 Если информацию обновляем, то нужно восстановить ключи, если это вставка нового города - этого делать не нужно
     protected static List<WeatherDb> attachWeatherToCity(List<WeatherDb> weathers, Long cityId, boolean isUpdate) {
         long counter = 1;
         for (WeatherDb item : weathers) {
@@ -25,9 +24,9 @@ public abstract class DbCommandUtils {
     }
 
     protected static List<CityDb> loadListAllCities(DaoSession daoSession) throws EmptyDbException {
-        // TODO: 21.09.2017 Проверить, ForCurrentThread. Работает ли без него ?
+        // TODO: 21.09.2017 ForCurrentThread. Лечить здесь
         List<CityDb> resultList =
-                daoSession.getCityDbDao().queryBuilder().build().forCurrentThread().list();
+                daoSession.getCityDbDao().queryBuilder().build().list();
         if (resultList.isEmpty()) {
             throw new EmptyDbException();
         }

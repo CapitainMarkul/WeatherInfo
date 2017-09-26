@@ -78,7 +78,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
         getViewModel().setLoading(true);
 
         interactor.setListener(this);
-        interactor.obtainCitiesWeather();
+        App.getExecutorService().execute(() -> interactor.obtainCitiesWeather());
     }
 
     public void deleteCity(CityView city) {
@@ -109,7 +109,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
 
         if (flowable != null) {
             getDisposableManager().addDisposable(
-                    FavoriteActivity.FAVORITE_CITY_ADAPTER_KEY,
+                    FavoriteActivity.DISPOSABLE_POOL_KEY,
                     flowable
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
@@ -122,17 +122,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
                                     () -> {
                                         //Эти сообщения показываем после того, как все данные загрузились
                                         if (exception == null) {
-                                            getViewModel().setErrorMessage(R.string.activity_favorite_update_success);
+                                            getViewModel().setSuccessMessage(R.string.activity_favorite_update_success);
                                         } else {
                                             if (exception instanceof NetworkConnectException) {
-                                                showEmptyCard();
                                                 getViewModel().setErrorMessage(R.string.str_error_connect_to_internet);
                                             }
                                         }
                                     }));
-// FIXME: 22.09.2017
+
             //Только установили приложение (поставлено в конце метода, чтобы были показаны сообщения с ошибками)
-            if(flowable.isEmpty().blockingGet()){
+            if (flowable.isEmpty().blockingGet()) {
                 showEmptyCard();
             }
         } else {
