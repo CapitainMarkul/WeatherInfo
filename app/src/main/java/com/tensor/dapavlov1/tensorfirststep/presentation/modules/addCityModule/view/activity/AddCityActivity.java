@@ -3,7 +3,6 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.Observable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -23,6 +22,7 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.tensor.dapavlov1.tensorfirststep.App;
+import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
@@ -43,11 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -81,13 +77,14 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DISPOSABLE_POOL_KEY = getClass().getSimpleName() + "_DISPOSABLE";
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.setViewModel(getViewModel());
 
         setupRecyclerAdapter();
         setupRecyclerView();
 
-        // FIXME: 14.09.2017 Ошибка: при перевороте, плодятся Observer'ы
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
@@ -95,6 +92,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         }
         setupViews();
         setupRxListeners();
+        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
@@ -112,11 +110,11 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         getViewModel().removeOnPropertyChangedCallback(viewModelObserver);
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-////        RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DisposableManager.getInstance().disposeAll(DISPOSABLE_POOL_KEY);
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -132,9 +130,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         horizontalWeatherAdapter = RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
         placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
 
-//        autoText.setAdapter(placesAutoCompleteAdapter);
+        autoText.setAdapter(placesAutoCompleteAdapter);
         setupRecyclerView();
-        setupViews();
         super.onRestoreInstanceState(savedInstanceState);
     }
 
@@ -193,7 +190,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         })
                         .debounce(400, TimeUnit.MILLISECONDS)
                         .map(mapper -> mapper.getKeyCode() == KeyEvent.KEYCODE_ENTER)
-//                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 next -> {
@@ -209,53 +205,12 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                 RxTextView.textChanges(autoText)
                         .debounce(500, TimeUnit.MILLISECONDS)
                         .filter(s -> s.length() > 2)
-                        .switchMap(new Function<CharSequence, ObservableSource<List<String>>>() {
-                            @Override
-                            public ObservableSource<List<String>> apply(@NonNull CharSequence charSequence) throws Exception {
-                                // TODO: 22.09.2017 Отключить, включить интернет. Не работает список. (Падает SocketTimeout)
-                                io.reactivex.Observable<String> network = getPresenter().getWeatherService().
-                                        getGoogleApiService().observableGooglePlaceRx(charSequence.toString());
-
-                                io.reactivex.Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
-
-                                return observable.map(s -> GsonFactory.getInstance().getPlacesName(s));
-                            }
-                        })
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                result -> {
-                                    placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, result);
-                                    autoText.setAdapter(placesAutoCompleteAdapter);
-
-                                    //NOT WORK
-//                                    placesAutoCompleteAdapter.clear();
-//                                    placesAutoCompleteAdapter.addAll(result);
-//                                    placesAutoCompleteAdapter.notifyDataSetChanged();
-
-                                    if (!IS_CONFIG_CHANGE) {
-                                        if (IS_TEXT_CHANGED_USE_KEYBOARD) {
-                                            //Показываем
-                                            IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
-
-                                            autoText.showDropDown();
-                                        } else if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
-                                            autoText.dismissDropDown();
-
-                                            //Следующее изменение возможно только при помощи клавиатуры
-                                            IS_TEXT_CHANGED_USE_KEYBOARD = true;
-                                        }
-                                    } else {
-                                        if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
-                                            autoText.dismissDropDown();
-                                            //Возвращаемся к нормальной стратегии
-                                            IS_CONFIG_CHANGE = false;
-                                            IS_TEXT_CHANGED_USE_KEYBOARD = true;
-                                        }
-                                    }
-                                },
+                                result -> getPresenter().getPlaces(result.toString()),
                                 throwable -> showMessage(R.string.unknown_error)));
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -305,10 +260,41 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         return binding;
     }
 
-    private Observable.OnPropertyChangedCallback viewModelObserver =
-            new Observable.OnPropertyChangedCallback() {
+    private void updatePlacesInAdapter(List<String> places) {
+        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, places);
+        autoText.setAdapter(placesAutoCompleteAdapter);
+
+        //NOT WORK
+//                                    placesAutoCompleteAdapter.clear();
+//                                    placesAutoCompleteAdapter.addAll(result);
+//                                    placesAutoCompleteAdapter.notifyDataSetChanged();
+
+        if (!IS_CONFIG_CHANGE) {
+            if (IS_TEXT_CHANGED_USE_KEYBOARD) {
+                //Показываем
+                IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
+
+                autoText.showDropDown();
+            } else if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
+                autoText.dismissDropDown();
+
+                //Следующее изменение возможно только при помощи клавиатуры
+                IS_TEXT_CHANGED_USE_KEYBOARD = true;
+            }
+        } else {
+            if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
+                autoText.dismissDropDown();
+                //Возвращаемся к нормальной стратегии
+                IS_CONFIG_CHANGE = false;
+                IS_TEXT_CHANGED_USE_KEYBOARD = true;
+            }
+        }
+    }
+
+    private android.databinding.Observable.OnPropertyChangedCallback viewModelObserver =
+            new android.databinding.Observable.OnPropertyChangedCallback() {
                 @Override
-                public void onPropertyChanged(Observable sender, int propertyId) {
+                public void onPropertyChanged(android.databinding.Observable sender, int propertyId) {
                     AddCityViewModel viewModel = (AddCityViewModel) sender;
                     switch (propertyId) {
                         case BR.city: {
@@ -335,6 +321,10 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                         }
                         case BR.onItemClick: {
                             onItemClick();
+                            break;
+                        }
+                        case BR.places: {
+                            updatePlacesInAdapter(viewModel.getPlaces());
                             break;
                         }
                         case BR.animation: {

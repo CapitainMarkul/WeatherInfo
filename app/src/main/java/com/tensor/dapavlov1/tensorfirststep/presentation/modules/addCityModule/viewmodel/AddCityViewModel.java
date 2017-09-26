@@ -12,6 +12,9 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.vi
 
 import org.parceler.Parcel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by da.pavlov1 on 13.09.2017.
  */
@@ -24,6 +27,8 @@ public class AddCityViewModel extends AbstractViewModel
     private boolean isFavorite;
     private boolean isAnimation;
     private SwitchGradient switchGradient = SwitchGradient.getInstance();
+
+    private List<String> places = new ArrayList<>();
 
     //Listeners
     private boolean onClearInputText;
@@ -89,6 +94,17 @@ public class AddCityViewModel extends AbstractViewModel
     @Override
     public SwitchGradient getSwitchGradient() {
         return switchGradient;
+    }
+
+    @Override
+    public List<String> getPlaces() {
+        return places;
+    }
+
+    @Override
+    public void setPlaces(List<String> places) {
+        this.places = places;
+        notifyPropertyChanged(BR.places);
     }
 
 

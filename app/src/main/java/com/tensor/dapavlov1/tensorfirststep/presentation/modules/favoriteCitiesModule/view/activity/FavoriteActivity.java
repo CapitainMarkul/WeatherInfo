@@ -43,6 +43,8 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DISPOSABLE_POOL_KEY = getClass().getSimpleName() + "_DISPOSABLE";
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
         binding.setViewModel(getViewModel());
         binding.setPresenter(getPresenter());

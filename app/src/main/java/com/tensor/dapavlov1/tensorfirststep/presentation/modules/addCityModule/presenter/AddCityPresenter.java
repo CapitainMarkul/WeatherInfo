@@ -1,9 +1,11 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.presenter;
 
 
+import com.tensor.dapavlov1.tensorfirststep.App;
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityDb;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.ActivityComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BasePresenter;
@@ -13,6 +15,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.v
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -58,7 +62,12 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
         getViewModel().setLoading(true);
         getViewModel().setFirstLaunch(false);
 
-        interactor.obtainCityWeather(fullCityName);
+        App.getExecutorService().execute(() -> interactor.obtainCityWeather(fullCityName));
+    }
+
+    @Override
+    public void getPlaces(String inputText) {
+        interactor.obtainPlaces(inputText);
     }
 
     private void showMessage(int message) {
@@ -79,6 +88,27 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
 
 
     @Override
+    public void onObtainPlaces(ResultWrapper<Observable<String>> places) {
+        Exception exception = places.getError();
+        Observable<String> observable = places.getData();
+
+        if (exception == null && observable != null) {
+            getDisposableManager().addDisposable(
+                    AddCityActivity.DISPOSABLE_POOL_KEY,
+                    observable
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(s -> updatePlaces(GsonFactory.getInstance().getPlacesName(s))));
+        } else {
+
+        }
+    }
+
+    private void updatePlaces(List<String> places) {
+        getViewModel().setPlaces(places);
+    }
+
+    @Override
     public void onObtainCityWeather(ResultWrapper<Observable<String>> cityRx) {
         Exception exception = cityRx.getError();
         Observable<String> observable = cityRx.getData();
@@ -87,14 +117,6 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
             getDisposableManager().addDisposable(
                     AddCityActivity.DISPOSABLE_POOL_KEY,
                     observable
-//                            .map(response -> {
-//                                if (response == null || response.equals("")) {
-//                                    throw new EmptyResponseException();
-//                                }
-//                                return response;
-//                            })
-//                            .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-//                            .map(cityGson -> GsonToViewMap.getInstance().convertGsonToViewModel(cityGson))
                             .map(FacadeMap::jsonToVM)
                             .map(viewCity -> {
                                 CityDb cityDb = getWeatherService().getDbService().searchCity(viewCity.getName());

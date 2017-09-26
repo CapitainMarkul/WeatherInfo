@@ -2,11 +2,14 @@ package com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.
 
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityInteractorPresenterContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -47,6 +50,23 @@ public class AddCityInteractor extends CommonInteractor<AddCityInteractorPresent
         }
 
         getListener().onObtainCityWeather(result);
+    }
+
+    @Override
+    public void obtainPlaces(String inputText) {
+        Observable<String> network = weatherService.getGoogleApiService().getPlacesRx(inputText);
+
+        Observable<String> observable = RepositoryLogic.loadNetworkPriority(null, network);
+
+        ResultWrapper<Observable<String>> result;
+
+        if (observable.isEmpty().blockingGet()) {
+            result = new ResultWrapper<>(null, new NetworkConnectException());
+        } else {
+            result = new ResultWrapper<>(observable, null);
+        }
+
+        getListener().onObtainPlaces(result);
     }
 
     @Override

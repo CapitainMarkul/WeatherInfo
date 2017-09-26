@@ -23,7 +23,8 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
 
     private static final String VM_KEY = BaseActivity.class.getSimpleName() + "_VM";
     private static final String PRESENTER_KEY = BaseActivity.class.getSimpleName() + "_PRESENTER";
-    public static final String DISPOSABLE_POOL_KEY = BaseActivity.class.getSimpleName() + "_DISPOSABLE";
+    // TODO: 26.09.2017 Исправить
+    public static String DISPOSABLE_POOL_KEY;
 
     private DisposableManager disposableManager = DisposableManager.getInstance();
 
@@ -68,6 +69,7 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
         }
 
         presenter.attachView(getViewModel(), this);
+//        DISPOSABLE_POOL_KEY = presenter.getClass().getSimpleName() + "_DISPOSABLE";
     }
 
     @Override

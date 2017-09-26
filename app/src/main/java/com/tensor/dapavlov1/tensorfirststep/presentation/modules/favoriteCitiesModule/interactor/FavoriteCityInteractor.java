@@ -46,14 +46,6 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
                             weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews()));
                     return city;
                 });
-//                .map(string -> GsonFactory.getInstance().createGsonCityModel(string))
-//                .map(gsonCity -> CityWeatherWrapMapper.getInstance().convertGsonModelToWrapper(gsonCity))
-//                .map(cityWeatherWrapper -> {
-////                    set Update weather info in DB
-//                    App.getExecutorService().execute(() -> weatherService.getDbService().updateCity(cityWeatherWrapper));
-//                    return DbToViewMap.getInstance().convertDbModelToViewModel(
-//                            cityWeatherWrapper.getCityDb(), cityWeatherWrapper.getWeathers(), true);
-//                });
 
         Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx().toObservable();
 

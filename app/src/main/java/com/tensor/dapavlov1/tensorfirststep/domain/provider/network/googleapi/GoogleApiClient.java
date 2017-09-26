@@ -32,7 +32,7 @@ public class GoogleApiClient extends NetworkUtils {
         this.okHttpClient = okHttpClient;
     }
 
-    public Observable<String> observableGooglePlaceRx(@NonNull String inputText) {
+    public Observable<String> getPlacesRx(@NonNull String inputText) {
         NetworkCommand<Observable<String>> callCommand = new CallCommand(okHttpClient, buildRequest(inputText));
         return callCommand.execute();
     }

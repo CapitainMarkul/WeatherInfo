@@ -8,6 +8,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.common.visual.SwitchGra
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
 
+import java.util.List;
+
 /**
  * Created by da.pavlov1 on 20.09.2017.
  */
@@ -37,6 +39,10 @@ public interface AddCityViewModelContract {
         @Bindable
         SwitchGradient getSwitchGradient();
 
+        @Bindable
+        List<String> getPlaces();
+        void setPlaces(List<String> places);
+
         void clearInputText();
         void onItemClick();
     }
@@ -44,6 +50,7 @@ public interface AddCityViewModelContract {
     //Интерфейс для взаимодействия с презентором из Активити
     interface Presenter extends MvpPresenter<ViewModel> {
         void getWeatherInCity(String inputText);
+        void getPlaces(String inputText);
         void onFavoriteClick();
         WeatherService getWeatherService();
     }
