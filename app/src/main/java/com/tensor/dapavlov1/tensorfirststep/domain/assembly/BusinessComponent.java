@@ -3,6 +3,7 @@ package com.tensor.dapavlov1.tensorfirststep.domain.assembly;
 import com.tensor.dapavlov1.tensorfirststep.core.CoreComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
 
 import dagger.Component;
 
@@ -13,9 +14,7 @@ import dagger.Component;
 @PerBusinessScope
 @Component(modules = BusinessModule.class, dependencies = CoreComponent.class)
 public interface BusinessComponent {
-
     void inject(WeatherService weatherService);
-    void inject(AddCityInDbCommand addCityInDbCommand);
 
     WeatherService getWeatherService();
 }

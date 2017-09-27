@@ -7,6 +7,7 @@
     <string name="activity_favorite_update_success">Информация о погоде обновлена</string>
     <string name="activity_favorite_welcome_text">Добавьте новый город, нажав на кнопку "+"</string>
     <string name="activity_favorite_sorry">К сожалению, \nВаш город не поддерживается ;(</string>
+    <string name="activity_favorite_update_request">Обновить</string>
     <string name="unknown_error">Возникла ошибка. Повторите попытку</string>
 
 

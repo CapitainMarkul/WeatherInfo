@@ -4,6 +4,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelCityFromDb;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.MvpInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -18,6 +19,6 @@ public interface FavoriteInteractorPresenterContract {
     }
 
     interface Interactor extends MvpInteractor<Presenter>, DelCityFromDb {
-        void obtainCitiesWeather();
+        void obtainCitiesWeather(FavoriteActivity.WaysUpdatePriority waysUpdatePriority);
     }
 }

@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.presenter.MvpPresenter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.viewmodel.MvpViewModel;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 
 import java.util.List;
 
@@ -34,13 +35,17 @@ public interface FavoriteViewModelContract {
         void setResetAdapter(boolean reset);
         void resetAdapter();
 
+        @Bindable
+        boolean isDbIsUpdate();
+        void setDbIsUpdate(boolean dbIsUpdate);
+
         void showEmptyResult();
 
     }
 
     interface Presenter extends MvpPresenter<ViewModel> {
         void deleteCity(CityView city);
-        void updateWeathers();
+        void updateWeathers(FavoriteActivity.WaysUpdatePriority waysUpdatePriority);
         void switchActivity();
     }
 }

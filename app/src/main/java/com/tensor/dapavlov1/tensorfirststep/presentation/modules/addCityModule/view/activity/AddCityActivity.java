@@ -246,6 +246,11 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     }
 
     @Override
+    public void showMessageWithAction(@StringRes int message) {
+        //nothing
+    }
+
+    @Override
     public void showErrorMessage(@StringRes final int message) {
         Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_SHORT).show();
     }

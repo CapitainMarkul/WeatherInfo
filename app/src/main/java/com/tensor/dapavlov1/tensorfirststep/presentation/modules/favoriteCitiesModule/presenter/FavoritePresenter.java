@@ -21,10 +21,6 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.exceptions.EmptyD
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 
-
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +41,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
         FavoriteViewModelContract.Presenter             //для отправки данных в интерактор
 {
 
-//    public final static String ADD_NEW_CITY_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.ADD_NEW_CITY";
     public final static String WEATHER_SYNC_ACTION = FavoritePresenter.class.getSimpleName() + ".ACTION.WEATHER_SYNC_ACTION";
+    public final static String DB_IS_UPDATE = FavoritePresenter.class.getSimpleName() + ".DB_IS_UPDATE";
 
     private FavoriteInteractorPresenterContract.Interactor interactor;
     private FavoriteRouterPresenterContract.Router router;
@@ -77,12 +73,12 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
         super.detachView();
     }
 
-    public void updateWeathers() {
+    public void updateWeathers(FavoriteActivity.WaysUpdatePriority waysUpdatePriority) {
         getViewModel().resetAdapter();
         getViewModel().setLoading(true);
 
         interactor.setListener(this);
-        interactor.obtainCitiesWeather();
+        interactor.obtainCitiesWeather(waysUpdatePriority);
     }
 
     public void deleteCity(CityView city) {
@@ -150,25 +146,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
         getWeatherService().getDbService().unSubscribe(this);
     }
 
-//    private BroadcastReceiver addNewCityReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            switch (intent.getIntExtra(AddCityActivity.GET_STATE, 0)) {
-//                case AddCityActivity.INFO_IS_CHANGE_STATE: {
-//                    getViewModel().resetAdapter();
-//                    updateWeathers();
-//                    break;
-//                }
-//                default:
-//                    break;
-//            }
-//        }
-//    };
-
     private BroadcastReceiver weatherSyncReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateWeathers();
+            boolean response = intent.getBooleanExtra(DB_IS_UPDATE, false);
+            if (response) {
+                //Посылаем уведомление о том, что информация была обновленаs
+                getViewModel().setDbIsUpdate(true);
+            } else {
+                updateWeathers(FavoriteActivity.WaysUpdatePriority.NETWORK);
+            }
         }
     };
 
@@ -187,7 +174,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
     }
 
     private void createReceivers() {
-//        receivers.add(new ReceiverWithAction(addNewCityReceiver, new IntentFilter(ADD_NEW_CITY_ACTION)));
         receivers.add(new ReceiverWithAction(weatherSyncReceiver, new IntentFilter(WEATHER_SYNC_ACTION)));
     }
 

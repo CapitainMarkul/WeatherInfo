@@ -11,7 +11,7 @@ import com.tensor.dapavlov1.tensorfirststep.App;
  */
 
 public class NetworkHelper {
-    public NetworkHelper() {
+    protected NetworkHelper() {
 
     }
 

@@ -9,6 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherServi
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteInteractorPresenterContract;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 
 import java.util.List;
 
@@ -33,32 +34,44 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
     }
 
     @Override
-    public void obtainCitiesWeather() {
-        List<String> cityNames = weatherService.getDbService().getCitiesName();
+    public void obtainCitiesWeather(FavoriteActivity.WaysUpdatePriority waysUpdatePriority) {
 
-        Observable<CityView> network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
-                .map(json -> {
+        // TODO: 27.09.2017 Доделать обновление
 
-                    CityView city = FacadeMap.jsonToVM(json);
+        switch (waysUpdatePriority) {
+            case LOCAL: {
+                Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
+                ResultWrapper<Flowable<CityView>> result;
+                result = new ResultWrapper<>(disk.toFlowable(BackpressureStrategy.BUFFER), null);
+                getListener().onObtainCitiesWeather(result);
+                break;
+            }
+            case NETWORK: {
+                List<String> cityNames = weatherService.getDbService().getCitiesName();
+
+                Observable<CityView> network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
+                        .map(json -> {
+
+                            CityView city = FacadeMap.jsonToVM(json);
 //                    set Update weather info in DB
-                    App.getExecutorService().execute(() ->
-                            weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews()));
-                    return city;
-                });
+                            App.getExecutorService().execute(() ->
+                                    weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews()));
+                            return city;
+                        });
 
-        // TODO: 26.09.2017 loadAllCitiesViewRx()! Проверить обновление на главном экране
-        Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
+                // TODO: 26.09.2017 loadAllCitiesViewRx()! Проверить обновление на главном экране
+                Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
 
-        Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);
+                Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);
 
-        ResultWrapper<Flowable<CityView>> result;
+                ResultWrapper<Flowable<CityView>> result;
 
-        // TODO: 27.09.2017 Избавиться от Flowable?
-        if (observable == disk) {
-            result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), new NetworkConnectException());
-        } else {
-            result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), null);
-        }
+                // TODO: 27.09.2017 Избавиться от Flowable?
+                if (observable == disk) {
+                    result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), new NetworkConnectException());
+                } else {
+                    result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), null);
+                }
 
 //        ResultWrapper<Observable<CityView>> result;
 //
@@ -68,7 +81,12 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
 //            result = new ResultWrapper<>(observable, null);
 //        }
 
-        getListener().onObtainCitiesWeather(result);
+                getListener().onObtainCitiesWeather(result);
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     @Override

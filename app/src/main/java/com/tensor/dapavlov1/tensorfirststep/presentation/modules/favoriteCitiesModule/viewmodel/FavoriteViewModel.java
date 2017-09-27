@@ -22,6 +22,7 @@ public class FavoriteViewModel extends AbstractViewModel
     private List<CityView> citiesView = new ArrayList<>();
     private boolean isLoading;
     private boolean isResetAdapter;
+    private boolean dbIsUpdate;
     private CityView lastDeletedCity;
 
     @Bindable
@@ -70,6 +71,21 @@ public class FavoriteViewModel extends AbstractViewModel
     public void setLoading(boolean loading) {
         isLoading = loading;
         notifyPropertyChanged(BR.loading);
+    }
+
+    @Bindable
+    public boolean isDbIsUpdate() {
+        return dbIsUpdate;
+    }
+
+    public void setDbIsUpdate(boolean dbIsUpdate) {
+        this.dbIsUpdate = dbIsUpdate;
+        //Уведомление требуется только когда БД обновлена. Когда скидываем флаг, ничего сообщать не нужно
+        if (!dbIsUpdate) {
+            return;
+        }
+        this.dbIsUpdate = false;
+        notifyPropertyChanged(BR.dbIsUpdate);
     }
 
     @Bindable

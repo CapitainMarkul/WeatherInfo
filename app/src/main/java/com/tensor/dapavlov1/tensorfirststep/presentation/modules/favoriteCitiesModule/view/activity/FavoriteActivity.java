@@ -9,6 +9,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.tensor.dapavlov1.tensorfirststep.App;
@@ -41,6 +42,9 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
 
     public static final int UPDATE_INFO_REQUEST = 200;
 
+    public enum WaysUpdatePriority {
+        NETWORK, LOCAL
+    }
 //    public static final String ADD_NEW_CITY_ACTION = FavoriteActivity.class.getSimpleName() + ".ACTION.ADD_NEW_CITY";
 
 
@@ -133,6 +137,10 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
                     showErrorMessage(viewModel.getErrorMessage());
                     break;
                 }
+                case BR.dbIsUpdate: {
+                    showMessageWithAction(R.string.activity_favorite_update_success);
+                    break;
+                }
                 default:
                     break;
             }
@@ -140,10 +148,16 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
         }
     };
 
-
     @Override
     public void showMessage(@StringRes int message) {
         Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showMessageWithAction(@StringRes int message) {
+        Snackbar.make(binding.rootContainer, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.activity_favorite_update_request, view -> getPresenter().updateWeathers(WaysUpdatePriority.LOCAL))
+                .show();
     }
 
     @Override
@@ -163,7 +177,7 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
 
     private void startUpdateWeatherInfo() {
         favoriteAdapter.setDefaultSetting();
-        getPresenter().updateWeathers();
+        getPresenter().updateWeathers(WaysUpdatePriority.NETWORK);
     }
 
     private void setupListeners() {
