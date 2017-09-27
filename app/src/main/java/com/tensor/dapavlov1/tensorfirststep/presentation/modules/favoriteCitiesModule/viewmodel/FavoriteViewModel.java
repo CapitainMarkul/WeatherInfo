@@ -95,6 +95,7 @@ public class FavoriteViewModel extends AbstractViewModel
     private void resetViewModel() {
         citiesView.clear();
         isLoading = false;
+        isResetAdapter = false;
         lastDeletedCity = null;
     }
 }

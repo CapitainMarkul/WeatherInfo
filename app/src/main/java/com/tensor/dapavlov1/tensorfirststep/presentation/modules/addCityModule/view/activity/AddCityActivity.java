@@ -65,7 +65,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     public static final String NEW_CITY_ADAPTER_KEY = simpleName + "_ADAPTER";
     public static final String NEW_CITY_PLACES_ADAPTER_KEY = simpleName + "_PLACES_ADAPTER";
     public static final String GET_STATE = "info_changed";
-
+    public static final String DISPOSABLE_POOL_KEY = AddCityActivity.class.getSimpleName() + "_DISPOSABLE";
     private static boolean IS_CONFIG_CHANGE = false;
     private static boolean IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
     private static boolean IS_TEXT_CHANGED_USE_KEYBOARD = true;
@@ -77,7 +77,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DISPOSABLE_POOL_KEY = getClass().getSimpleName() + "_DISPOSABLE";
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.setViewModel(getViewModel());

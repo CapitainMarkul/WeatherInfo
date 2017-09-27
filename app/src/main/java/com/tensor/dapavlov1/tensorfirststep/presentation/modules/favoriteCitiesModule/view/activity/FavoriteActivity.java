@@ -39,6 +39,7 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     private FavoriteAdapter favoriteAdapter;
 
     public static final String FAVORITE_CITY_ADAPTER_KEY = FavoriteActivity.class.getSimpleName() + "_ADAPTER";
+    public static final String DISPOSABLE_POOL_KEY = FavoriteActivity.class.getSimpleName() + "_DISPOSABLE";
 
     private ActivityFavoriteBinding binding;
     private FavoriteComponent favoriteComponent;
@@ -46,7 +47,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DISPOSABLE_POOL_KEY = getClass().getSimpleName() + "_DISPOSABLE";
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_favorite);
         binding.setViewModel(getViewModel());
