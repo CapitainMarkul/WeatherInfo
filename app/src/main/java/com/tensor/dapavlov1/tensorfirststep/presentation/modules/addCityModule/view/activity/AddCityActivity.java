@@ -63,14 +63,9 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 
     private AddCityComponent injectComponent;
 
-    private final static String simpleName = AddCityActivity.class.getSimpleName();
-
-    public static final String NEW_CITY_ADAPTER_KEY = simpleName + "_ADAPTER";
-    public static final String NEW_CITY_PLACES_ADAPTER_KEY = simpleName + "_PLACES_ADAPTER";
-    public static final String NEW_CITY_ADAPTER_ITEMS_KEY = simpleName + "_ADAPTER_ITEMS";
-
     public static final String GET_STATE = "info_changed";
     public static final String DISPOSABLE_POOL_KEY = AddCityActivity.class.getSimpleName() + "_DISPOSABLE";
+
     private static boolean IS_CONFIG_CHANGE = false;
     private static boolean IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
     private static boolean IS_TEXT_CHANGED_USE_KEYBOARD = true;
@@ -125,16 +120,18 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        StringAdapterStorage.getInstance().saveAdapter(NEW_CITY_PLACES_ADAPTER_KEY, placesAutoCompleteAdapter);
 
         IS_CONFIG_CHANGE = true;
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
-        horizontalWeatherAdapter.setItems(getViewModel().getCity().getWeatherViews());
+        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, getViewModel().getPlaces());
+        autoText.setAdapter(placesAutoCompleteAdapter);
 
+        if (getViewModel().getCity() != null) {
+            horizontalWeatherAdapter.setItems(getViewModel().getCity().getWeatherViews());
+        }
         super.onRestoreInstanceState(savedInstanceState);
     }
 
