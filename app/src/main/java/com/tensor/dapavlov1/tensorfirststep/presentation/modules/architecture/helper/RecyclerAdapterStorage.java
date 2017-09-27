@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,5 +31,9 @@ public class RecyclerAdapterStorage {
 
     public <T extends RecyclerView.Adapter> T restoreAdapter(String adapterId) {
         return (T) storage.remove(adapterId);
+    }
+
+    public void test(){
+        Log.e("TAG", "tre");
     }
 }

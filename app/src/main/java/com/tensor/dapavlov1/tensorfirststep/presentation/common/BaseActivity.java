@@ -24,7 +24,6 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
     private static final String VM_KEY = BaseActivity.class.getSimpleName() + "_VM";
     private static final String PRESENTER_KEY = BaseActivity.class.getSimpleName() + "_PRESENTER";
 
-    public static String DISPOSABLE_POOL_KEY;
     private DisposableManager disposableManager = DisposableManager.getInstance();
 
     private ViewModel viewModel;

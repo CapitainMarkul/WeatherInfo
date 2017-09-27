@@ -22,7 +22,6 @@ public class UpdateAllCitiesCommand extends DbCommandUtils implements DbCommand<
 
     @Override
     public Void execute(DaoSession daoSession) {
-        // FIXME: 12.09.2017 Подумать над использованием запроса
         for (CityWeatherWrapper newItem : cityWeatherWrappers) {
             CityDb cityDb = daoSession.getCityDbDao().queryBuilder()
                     .where(CityDbDao.Properties.Name.eq(newItem.getCityDb().getName()))

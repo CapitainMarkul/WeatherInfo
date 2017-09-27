@@ -23,6 +23,10 @@ public class HorizontalWeatherAdapter
 
     private List<WeatherView> weatherViewNow;
 
+    public List<WeatherView> getWeathers() {
+        return weatherViewNow;
+    }
+
     public void setItems(@NotNull final List<WeatherView> weatherViews) {
         weatherViewNow = weatherViews;
     }

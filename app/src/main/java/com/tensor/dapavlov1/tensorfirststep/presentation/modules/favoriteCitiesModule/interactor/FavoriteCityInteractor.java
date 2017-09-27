@@ -1,18 +1,15 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.interactor;
 
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.R;
 import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.EmptyResponseException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.NetworkConnectException;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.CommonInteractor;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.contract.FavoriteInteractorPresenterContract;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,18 +46,27 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
                     return city;
                 });
 
-        // TODO: 26.09.2017 loadRx()! Проверить обновление на главном экране 
-        Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx().toObservable();
+        // TODO: 26.09.2017 loadAllCitiesViewRx()! Проверить обновление на главном экране
+        Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
 
         Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);
 
         ResultWrapper<Flowable<CityView>> result;
 
+        // TODO: 27.09.2017 Избавиться от Flowable?
         if (observable == disk) {
             result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), new NetworkConnectException());
         } else {
             result = new ResultWrapper<>(observable.toFlowable(BackpressureStrategy.BUFFER), null);
         }
+
+//        ResultWrapper<Observable<CityView>> result;
+//
+//        if (observable == disk) {
+//            result = new ResultWrapper<>(observable, new NetworkConnectException());
+//        } else {
+//            result = new ResultWrapper<>(observable, null);
+//        }
 
         getListener().onObtainCitiesWeather(result);
     }

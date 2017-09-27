@@ -2,17 +2,18 @@ package com.tensor.dapavlov1.tensorfirststep.data.viewmodels;
 
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcel;
+import org.parceler.ParcelConstructor;
+
 /**
  * Created by da.pavlov1 on 10.08.2017.
  */
-
-public class WeatherView implements Parcelable {
+@Parcel
+public class WeatherView  {
     private String windShort;
     private double windSpeed;
     private double pressure;
@@ -23,6 +24,7 @@ public class WeatherView implements Parcelable {
     private String iconCode;
     private String description;
 
+    @ParcelConstructor
     public WeatherView(String windShort, double windSpeed, double pressure, double temperature, String date, String time, String iconUrl, String iconCode, String description) {
         this.windShort = windShort;
         this.windSpeed = windSpeed;
@@ -35,29 +37,29 @@ public class WeatherView implements Parcelable {
         this.description = description;
     }
 
-    protected WeatherView(Parcel in) {
-        windShort = in.readString();
-        windSpeed = in.readDouble();
-        pressure = in.readDouble();
-        temperature = in.readDouble();
-        date = in.readString();
-        time = in.readString();
-        iconUrl = in.readString();
-        iconCode = in.readString();
-        description = in.readString();
-    }
+//    protected WeatherView(Parcel in) {
+//        windShort = in.readString();
+//        windSpeed = in.readDouble();
+//        pressure = in.readDouble();
+//        temperature = in.readDouble();
+//        date = in.readString();
+//        time = in.readString();
+//        iconUrl = in.readString();
+//        iconCode = in.readString();
+//        description = in.readString();
+//    }
 
-    public static final Creator<WeatherView> CREATOR = new Creator<WeatherView>() {
-        @Override
-        public WeatherView createFromParcel(Parcel in) {
-            return new WeatherView(in);
-        }
-
-        @Override
-        public WeatherView[] newArray(int size) {
-            return new WeatherView[size];
-        }
-    };
+//    public static final Creator<WeatherView> CREATOR = new Creator<WeatherView>() {
+//        @Override
+//        public WeatherView createFromParcel(Parcel in) {
+//            return new WeatherView(in);
+//        }
+//
+//        @Override
+//        public WeatherView[] newArray(int size) {
+//            return new WeatherView[size];
+//        }
+//    };
 
     public String getWindShort() {
         return windShort;
@@ -95,23 +97,23 @@ public class WeatherView implements Parcelable {
         return description;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(windShort);
-        parcel.writeDouble(windSpeed);
-        parcel.writeDouble(pressure);
-        parcel.writeDouble(temperature);
-        parcel.writeString(date);
-        parcel.writeString(time);
-        parcel.writeString(iconUrl);
-        parcel.writeString(iconCode);
-        parcel.writeString(description);
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel parcel, int i) {
+//        parcel.writeString(windShort);
+//        parcel.writeDouble(windSpeed);
+//        parcel.writeDouble(pressure);
+//        parcel.writeDouble(temperature);
+//        parcel.writeString(date);
+//        parcel.writeString(time);
+//        parcel.writeString(iconUrl);
+//        parcel.writeString(iconCode);
+//        parcel.writeString(description);
+//    }
 
     @BindingAdapter({"bind:iconUrl", "bind:errorImage"})
     public static void loadImage(ImageView view, String url, Drawable error) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -39,6 +40,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.he
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.StringAdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +67,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 
     public static final String NEW_CITY_ADAPTER_KEY = simpleName + "_ADAPTER";
     public static final String NEW_CITY_PLACES_ADAPTER_KEY = simpleName + "_PLACES_ADAPTER";
+    public static final String NEW_CITY_ADAPTER_ITEMS_KEY = simpleName + "_ADAPTER_ITEMS";
+
     public static final String GET_STATE = "info_changed";
     public static final String DISPOSABLE_POOL_KEY = AddCityActivity.class.getSimpleName() + "_DISPOSABLE";
     private static boolean IS_CONFIG_CHANGE = false;
@@ -81,17 +86,16 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_city);
         binding.setViewModel(getViewModel());
 
+        setupViews();
         setupRecyclerAdapter();
         setupRecyclerView();
+        setupRxListeners();
 
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
             createStringAdapter();
         }
-        setupViews();
-        setupRxListeners();
-        Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
     }
 
     @Override
@@ -115,15 +119,12 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 
         if (!isChangingConfigurations()) {
             getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
-//            Log.e("DisposKEY:", String.valueOf(DISPOSABLE_POOL_KEY));
-//            Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        RecyclerAdapterStorage.getInstance().saveAdapter(NEW_CITY_ADAPTER_KEY, horizontalWeatherAdapter);
         StringAdapterStorage.getInstance().saveAdapter(NEW_CITY_PLACES_ADAPTER_KEY, placesAutoCompleteAdapter);
 
         IS_CONFIG_CHANGE = true;
@@ -131,11 +132,9 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        horizontalWeatherAdapter = RecyclerAdapterStorage.getInstance().restoreAdapter(NEW_CITY_ADAPTER_KEY);
         placesAutoCompleteAdapter = StringAdapterStorage.getInstance().restoreAdapter(NEW_CITY_PLACES_ADAPTER_KEY);
+        horizontalWeatherAdapter.setItems(getViewModel().getCity().getWeatherViews());
 
-        autoText.setAdapter(placesAutoCompleteAdapter);
-        setupRecyclerView();
         super.onRestoreInstanceState(savedInstanceState);
     }
 

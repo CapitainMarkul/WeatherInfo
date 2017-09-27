@@ -6,6 +6,7 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.in
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.interactor.Wrapper.ResultWrapper;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * Created by da.pavlov1 on 12.09.2017.

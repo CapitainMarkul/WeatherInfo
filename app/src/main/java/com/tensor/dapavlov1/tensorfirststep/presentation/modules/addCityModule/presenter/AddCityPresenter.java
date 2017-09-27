@@ -99,8 +99,6 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(s -> updatePlaces(GsonFactory.getInstance().getPlacesName(s))));
-        } else {
-// TODO: 27.09.2017 посмотри обработку ошибок
         }
     }
 

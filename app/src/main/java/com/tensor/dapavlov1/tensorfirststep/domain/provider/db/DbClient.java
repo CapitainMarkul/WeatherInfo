@@ -1,6 +1,5 @@
 package com.tensor.dapavlov1.tensorfirststep.domain.provider.db;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.tensor.dapavlov1.tensorfirststep.data.daomodels.DaoSession;
@@ -9,7 +8,6 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DelCityFromDbCommand;
@@ -23,15 +21,12 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobserva
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 
 import org.jetbrains.annotations.NotNull;
-import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
@@ -50,7 +45,7 @@ public class DbClient extends DbCommandUtils implements DelObservable {
         observers = new ArrayList<>();
     }
 
-    private Observable<List<CityDb>> loadRxDB() {
+    private Observable<List<CityDb>> loadAllCitiesDbRx() {
         return Observable.fromCallable(() -> {
             try {
                 return loadListAllCities(daoSession);
@@ -61,8 +56,8 @@ public class DbClient extends DbCommandUtils implements DelObservable {
         });
     }
 
-    public Observable<CityView> loadRx() {
-        return loadRxDB()
+    public Observable<CityView> loadAllCitiesViewRx() {
+        return loadAllCitiesDbRx()
                 .flatMap(new Function<List<CityDb>, ObservableSource<CityDb>>() {
                     @Override
                     public ObservableSource<CityDb> apply(@io.reactivex.annotations.NonNull List<CityDb> cityDbs) throws Exception {
@@ -72,27 +67,27 @@ public class DbClient extends DbCommandUtils implements DelObservable {
     }
 
 
-    public Flowable<List<CityDb>> loadAllCitiesDbRx() {
-        return Flowable.fromCallable(() -> {
-            try {
-                return loadListAllCities(daoSession);
-            } catch (EmptyDbException e) {
-                //возвращаем пустоту
-                return new ArrayList<CityDb>();
-            }
-        });
-    }
+//    public Flowable<List<CityDb>> loadAllCitiesDbRx() {
+//        return Flowable.fromCallable(() -> {
+//            try {
+//                return loadListAllCities(daoSession);
+//            } catch (EmptyDbException e) {
+//                //возвращаем пустоту
+//                return new ArrayList<CityDb>();
+//            }
+//        });
+//    }
 
-    public Flowable<CityView> loadAllCitiesViewRx() {
-        return loadAllCitiesDbRx()
-                .flatMap(new Function<List<CityDb>, Publisher<CityDb>>() {
-                    @Override
-                    public Publisher<CityDb> apply(@NonNull List<CityDb> cityDbs) throws Exception {
-                        return Flowable.fromIterable(cityDbs);
-                    }
-                })
-                .map(city -> FacadeMap.cityDbToCityVM(city, true));
-    }
+//    public Flowable<CityView> loadAllCitiesViewRx() {
+//        return loadAllCitiesDbRx()
+//                .flatMap(new Function<List<CityDb>, Publisher<CityDb>>() {
+//                    @Override
+//                    public Publisher<CityDb> apply(@NonNull List<CityDb> cityDbs) throws Exception {
+//                        return Flowable.fromIterable(cityDbs);
+//                    }
+//                })
+//                .map(city -> FacadeMap.cityDbToCityVM(city, true));
+//    }
 
     public List<String> getCitiesName() {
         DbCommand<List<String>> getCitiesNameCommand = new GetCitiesNameCommand();
