@@ -14,6 +14,7 @@ public interface FavoriteRouterPresenterContract {
     }
 
     interface Router extends MvpRouter<Presenter> {
-        void goToActivity(@NonNull Activity fromActivity, @NonNull Class toActivity);
+        void goToActivity(@NonNull Activity previousActivity, @NonNull Class nextActivity);
+        void goToActivity(@NonNull Activity previousActivity, @NonNull Class nextActivity, int requestCode);
     }
 }

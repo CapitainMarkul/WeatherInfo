@@ -67,7 +67,6 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
         }
 
         presenter.attachView(getViewModel(), this);
-//        DISPOSABLE_POOL_KEY = presenter.getClass().getSimpleName() + "_DISPOSABLE";
     }
 
     @Override
@@ -93,11 +92,6 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
         }
         super.onStop();
     }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

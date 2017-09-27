@@ -31,8 +31,8 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN"/>-->
-                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--<action android:name="android.intent.action.MAIN"/>-->
+            <!--<category android:name="android.intent.category.LAUNCHER"/>-->
             <!--</intent-filter>-->
         </activity>
 
@@ -41,14 +41,5 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.INTERNET"/>
-        <!--android:process=":WeatherSyncProcess"/>-->
-        <!--<receivers-->
-        <!--android:name=".domain.services.syncChangeOtherActivity.receivers.AllReceivers"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="true">-->
-        <!--<intent-filter>-->
-        <!--<intentFilter android:name="com.tensor.dapavlov1.tensorfirststep.intentFilter.INFO_IS_CHANGE" />-->
-        <!--</intent-filter>-->
-        <!--</receivers>-->
     </application>
 </manifest>

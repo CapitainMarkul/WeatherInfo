@@ -13,7 +13,7 @@ import org.parceler.ParcelConstructor;
  * Created by da.pavlov1 on 10.08.2017.
  */
 @Parcel
-public class WeatherView  {
+public class WeatherView {
     private String windShort;
     private double windSpeed;
     private double pressure;
@@ -36,30 +36,6 @@ public class WeatherView  {
         this.iconCode = iconCode;
         this.description = description;
     }
-
-//    protected WeatherView(Parcel in) {
-//        windShort = in.readString();
-//        windSpeed = in.readDouble();
-//        pressure = in.readDouble();
-//        temperature = in.readDouble();
-//        date = in.readString();
-//        time = in.readString();
-//        iconUrl = in.readString();
-//        iconCode = in.readString();
-//        description = in.readString();
-//    }
-
-//    public static final Creator<WeatherView> CREATOR = new Creator<WeatherView>() {
-//        @Override
-//        public WeatherView createFromParcel(Parcel in) {
-//            return new WeatherView(in);
-//        }
-//
-//        @Override
-//        public WeatherView[] newArray(int size) {
-//            return new WeatherView[size];
-//        }
-//    };
 
     public String getWindShort() {
         return windShort;
@@ -96,24 +72,6 @@ public class WeatherView  {
     public String getDescription() {
         return description;
     }
-
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeString(windShort);
-//        parcel.writeDouble(windSpeed);
-//        parcel.writeDouble(pressure);
-//        parcel.writeDouble(temperature);
-//        parcel.writeString(date);
-//        parcel.writeString(time);
-//        parcel.writeString(iconUrl);
-//        parcel.writeString(iconCode);
-//        parcel.writeString(description);
-//    }
 
     @BindingAdapter({"bind:iconUrl", "bind:errorImage"})
     public static void loadImage(ImageView view, String url, Drawable error) {

@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
  */
 //по умолчанию  в одном экземпляре
 public class App extends Application {
-    //    private static DaoSession daoSession;
     static ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     private PresentationComponents presentationComponents;
@@ -98,15 +97,5 @@ public class App extends Application {
             return RefWatcher.DISABLED;
         }
         return LeakCanary.install(this);
-    }
-
-//    public static DaoSession getDaoSession() {
-//        return daoSession;
-//    }
-
-    private void initSession() {
-//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "weathers");
-//        Database db = helper.getWritableDb();
-//        daoSession = new DaoMaster(db).newSession();
     }
 }

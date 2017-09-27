@@ -4,12 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,12 +21,9 @@ import com.android.databinding.library.baseAdapters.BR;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.tensor.dapavlov1.tensorfirststep.App;
-import com.tensor.dapavlov1.tensorfirststep.DisposableManager;
 import com.tensor.dapavlov1.tensorfirststep.R;
-import com.tensor.dapavlov1.tensorfirststep.core.utils.RepositoryLogic;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
 import com.tensor.dapavlov1.tensorfirststep.databinding.ActivityAddCityBinding;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.checkBoxClick;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.BaseActivity;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
@@ -36,11 +31,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.a
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.contract.AddCityViewModelContract;
 import com.tensor.dapavlov1.tensorfirststep.presentation.common.adapters.HorizontalWeatherAdapter;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.viewmodel.AddCityViewModel;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.RecyclerAdapterStorage;
-import com.tensor.dapavlov1.tensorfirststep.presentation.modules.architecture.helper.StringAdapterStorage;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.presenter.FavoritePresenter;
-
-import org.parceler.Parcels;
+import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.activity.FavoriteActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,12 +112,15 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        outState.putInt(GET_STATE, CURRENT_STATE);
         IS_CONFIG_CHANGE = true;
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        //иначе, после Terminate теряем состояние (действия: добавили город, сделали Terminate)
+        CURRENT_STATE = savedInstanceState.getInt(GET_STATE);
+
         placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, getViewModel().getPlaces());
         autoText.setAdapter(placesAutoCompleteAdapter);
 
@@ -178,9 +173,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                                 IS_TEXT_CHANGED_USE_NOT_KEYBOARD = true;
                                 //перехватываем нажатие кнопки Back
                                 if (CURRENT_STATE == INFO_IS_CHANGE_STATE) {
-                                    Intent intent = new Intent(FavoritePresenter.ADD_NEW_CITY_ACTION);
-                                    intent.putExtra(GET_STATE, CURRENT_STATE);
-                                    sendBroadcast(intent);
+                                    setResult(FavoriteActivity.UPDATE_INFO_REQUEST,
+                                            new Intent().putExtra(GET_STATE, CURRENT_STATE));
                                     CURRENT_STATE = INFO_IS_NOT_CHANGE_STATE;
                                 }
                                 onBackPressed();
@@ -287,6 +281,8 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                 //Возвращаемся к нормальной стратегии
                 IS_CONFIG_CHANGE = false;
                 IS_TEXT_CHANGED_USE_KEYBOARD = true;
+            } else {
+                autoText.showDropDown();
             }
         }
     }

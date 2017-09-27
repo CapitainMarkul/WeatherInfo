@@ -32,8 +32,4 @@ public class RecyclerAdapterStorage {
     public <T extends RecyclerView.Adapter> T restoreAdapter(String adapterId) {
         return (T) storage.remove(adapterId);
     }
-
-    public void test(){
-        Log.e("TAG", "tre");
-    }
 }

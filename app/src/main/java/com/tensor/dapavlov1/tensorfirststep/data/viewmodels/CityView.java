@@ -25,13 +25,6 @@ public class CityView {
         this.isFavorite = isFavorite;
     }
 
-//    protected CityView(Parcel in) {
-//        name = in.readString();
-//        lastTimeUpdate = in.readString();
-////        weatherViews = in.createTypedArrayList(WeatherView.CREATOR);
-//        isFavorite = in.readByte() != 0;
-//    }
-
     public String getName() {
         return name;
     }
@@ -48,36 +41,7 @@ public class CityView {
         return isFavorite;
     }
 
-    public void setWeatherViews(List<WeatherView> weatherViews) {
-        this.weatherViews = weatherViews;
-    }
-
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
     }
-//
-//    public static final Creator<CityView> CREATOR = new Creator<CityView>() {
-//        @Override
-//        public CityView createFromParcel(Parcel in) {
-//            return new CityView(in);
-//        }
-//
-//        @Override
-//        public CityView[] newArray(int size) {
-//            return new CityView[size];
-//        }
-//    };
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeString(name);
-//        parcel.writeString(lastTimeUpdate);
-////        parcel.writeTypedList(weatherViews);
-//        parcel.writeByte((byte) (isFavorite ? 1 : 0));
-//    }
 }

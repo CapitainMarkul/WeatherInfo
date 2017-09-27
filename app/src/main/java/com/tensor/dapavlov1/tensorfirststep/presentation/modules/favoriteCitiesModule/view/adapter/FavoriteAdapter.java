@@ -33,8 +33,9 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     private int lastAnimateElement = 0; //Не позволяет анимировать элементы, которые уже были показаны
     private boolean isAnimate = true;
 
-    public void setListener(DelItemListener listener) {
+    public FavoriteAdapter setListener(DelItemListener listener) {
         this.listener = listener;
+        return this;
     }
 
     public void setItems(List<CityView> cityViewWeathers) {
