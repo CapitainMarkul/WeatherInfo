@@ -23,9 +23,8 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
 
     private static final String VM_KEY = BaseActivity.class.getSimpleName() + "_VM";
     private static final String PRESENTER_KEY = BaseActivity.class.getSimpleName() + "_PRESENTER";
-    // TODO: 26.09.2017 Исправить
-    public static String DISPOSABLE_POOL_KEY;
 
+    public static String DISPOSABLE_POOL_KEY;
     private DisposableManager disposableManager = DisposableManager.getInstance();
 
     private ViewModel viewModel;
@@ -96,14 +95,10 @@ public abstract class BaseActivity<ViewModel extends MvpViewModel, Presenter ext
         super.onStop();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (!isChangingConfigurations()) {
-            getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
-            Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
-        }
-        super.onDestroy();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

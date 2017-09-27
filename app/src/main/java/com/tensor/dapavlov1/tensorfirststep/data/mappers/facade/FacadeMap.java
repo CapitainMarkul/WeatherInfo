@@ -25,7 +25,7 @@ public class FacadeMap {
     }
 
     public static CityView jsonToVM(String json) throws EmptyResponseException {
-        if (json == null || json.equals("")) {
+        if (json == null || json.equals("") || json.contains("\"status_code\":429")) {
             throw new EmptyResponseException();
         }
 

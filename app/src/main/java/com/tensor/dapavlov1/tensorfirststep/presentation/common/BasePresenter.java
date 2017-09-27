@@ -52,8 +52,4 @@ public abstract class BasePresenter<ViewModel extends MvpViewModel>
     protected DisposableManager getDisposableManager() {
         return disposableManager;
     }
-//    @Override
-//    public void destroy() {
-//        //Каждый делает по своему
-//    }
 }

@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.android.databinding.library.baseAdapters.BR;
@@ -24,6 +25,8 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesM
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.view.adapter.FavoriteAdapter;
 import com.tensor.dapavlov1.tensorfirststep.interfaces.DelItemListener;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.viewmodel.FavoriteViewModel;
+
+import io.reactivex.disposables.CompositeDisposable;
 
 
 /**
@@ -52,10 +55,6 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
         setupRecyclerAdapter();
         setupRecyclerView();
         setupListeners();
-
-//        if (savedInstanceState == null) {
-////            startUpdateWeatherInfo();
-//        }
     }
 
     @Override
@@ -186,7 +185,11 @@ public class FavoriteActivity extends BaseActivity<FavoriteViewModelContract.Vie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        RecyclerAdapterStorage.getInstance().restoreAdapter(FAVORITE_CITY_ADAPTER_KEY);
+        if (!isChangingConfigurations()) {
+            getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
+//            Log.e("DisposKEY:", String.valueOf(DISPOSABLE_POOL_KEY));
+//            Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+        }
     }
 
     public void delCityFromAdapter(CityView deletedCity) {

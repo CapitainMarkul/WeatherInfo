@@ -100,7 +100,7 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(s -> updatePlaces(GsonFactory.getInstance().getPlacesName(s))));
         } else {
-
+// TODO: 27.09.2017 посмотри обработку ошибок
         }
     }
 
@@ -157,7 +157,6 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
 
     private void deleteFromFavorite(CityView city) {
         getWeatherService().getDbService().subscribe(this);
-//        DbClient.getInstance().subscribe(this);
         interactor.delCityFromDb(city);
     }
 
@@ -170,6 +169,5 @@ public class AddCityPresenter extends BasePresenter<AddCityViewModelContract.Vie
             showMessage(R.string.unknown_error);
         }
         getWeatherService().getDbService().unSubscribe(this);
-//        DbClient.getInstance().unSubscribe(this);
     }
 }

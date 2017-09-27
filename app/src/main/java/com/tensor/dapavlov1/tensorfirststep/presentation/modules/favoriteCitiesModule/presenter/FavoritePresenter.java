@@ -22,6 +22,9 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.exceptions.N
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.common.deleteobservable.DelObserver;
 
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +81,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
         getViewModel().setLoading(true);
 
         interactor.setListener(this);
-        App.getExecutorService().execute(() -> interactor.obtainCitiesWeather());
+        interactor.obtainCitiesWeather();
     }
 
     public void deleteCity(CityView city) {
@@ -111,6 +114,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
             getDisposableManager().addDisposable(
                     FavoriteActivity.DISPOSABLE_POOL_KEY,
                     flowable
+                            .switchIfEmpty(s -> showEmptyCard())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
@@ -129,11 +133,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteViewModelContract.V
                                             }
                                         }
                                     }));
-
-            //Только установили приложение (поставлено в конце метода, чтобы были показаны сообщения с ошибками)
-            if (flowable.isEmpty().blockingGet()) {
-                showEmptyCard();
-            }
         } else {
             if (exception instanceof EmptyDbException) {
                 showEmptyCard();

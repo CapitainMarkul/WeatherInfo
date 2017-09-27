@@ -9,6 +9,7 @@ import com.tensor.dapavlov1.tensorfirststep.data.daomodels.CityWeatherWrapper;
 import com.tensor.dapavlov1.tensorfirststep.data.mappers.facade.FacadeMap;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.CityView;
 import com.tensor.dapavlov1.tensorfirststep.data.viewmodels.WeatherView;
+import com.tensor.dapavlov1.tensorfirststep.domain.provider.GsonFactory;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.DelCityFromDbCommand;
@@ -31,6 +32,8 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 
 /**
@@ -46,6 +49,28 @@ public class DbClient extends DbCommandUtils implements DelObservable {
         this.daoSession = daoSession;
         observers = new ArrayList<>();
     }
+
+    private Observable<List<CityDb>> loadRxDB() {
+        return Observable.fromCallable(() -> {
+            try {
+                return loadListAllCities(daoSession);
+            } catch (EmptyDbException e) {
+                //возвращаем пустоту
+                return new ArrayList<CityDb>();
+            }
+        });
+    }
+
+    public Observable<CityView> loadRx() {
+        return loadRxDB()
+                .flatMap(new Function<List<CityDb>, ObservableSource<CityDb>>() {
+                    @Override
+                    public ObservableSource<CityDb> apply(@io.reactivex.annotations.NonNull List<CityDb> cityDbs) throws Exception {
+                        return Observable.fromIterable(cityDbs);
+                    }
+                }).map(cityDb -> FacadeMap.cityDbToCityVM(cityDb, true));
+    }
+
 
     public Flowable<List<CityDb>> loadAllCitiesDbRx() {
         return Flowable.fromCallable(() -> {

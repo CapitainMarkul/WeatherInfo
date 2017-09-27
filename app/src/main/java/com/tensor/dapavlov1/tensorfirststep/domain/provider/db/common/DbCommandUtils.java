@@ -24,7 +24,6 @@ public abstract class DbCommandUtils {
     }
 
     protected static List<CityDb> loadListAllCities(DaoSession daoSession) throws EmptyDbException {
-        // TODO: 21.09.2017 ForCurrentThread. Лечить здесь
         List<CityDb> resultList =
                 daoSession.getCityDbDao().queryBuilder().build().list();
         if (resultList.isEmpty()) {

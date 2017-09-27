@@ -113,7 +113,12 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DisposableManager.getInstance().disposeAll(DISPOSABLE_POOL_KEY);
+
+        if (!isChangingConfigurations()) {
+            getDisposableManager().disposeAll(DISPOSABLE_POOL_KEY);
+//            Log.e("DisposKEY:", String.valueOf(DISPOSABLE_POOL_KEY));
+//            Log.e("SIze:", String.valueOf(getDisposableManager().testSize(DISPOSABLE_POOL_KEY)));
+        }
     }
 
     @Override

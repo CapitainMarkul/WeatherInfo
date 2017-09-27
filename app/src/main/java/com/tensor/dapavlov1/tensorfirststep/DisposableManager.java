@@ -29,6 +29,7 @@ public class DisposableManager {
         if (mapCompositeDisposable.get(poolCompositeDisposableKey) == null) {
             CompositeDisposable compositeDisposable = new CompositeDisposable();
             compositeDisposable.add(disposable);
+
             mapCompositeDisposable.put(poolCompositeDisposableKey, compositeDisposable);
         } else {
             mapCompositeDisposable.get(poolCompositeDisposableKey).add(disposable);
