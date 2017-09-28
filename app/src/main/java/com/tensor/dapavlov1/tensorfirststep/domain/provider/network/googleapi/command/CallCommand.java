@@ -5,6 +5,7 @@ import com.tensor.dapavlov1.tensorfirststep.domain.provider.network.NetworkComma
 import java.io.IOException;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Cancellable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -15,7 +16,7 @@ import okhttp3.Response;
  * Created by da.pavlov1 on 25.09.2017.
  */
 
-public class CallCommand implements NetworkCommand<Observable<String>>{
+public class CallCommand implements NetworkCommand<Observable<String>> {
 
     private final OkHttpClient okHttpClient;
     private final Request request;
@@ -29,9 +30,13 @@ public class CallCommand implements NetworkCommand<Observable<String>>{
     public Observable<String> execute() {
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(request);
+
 //            //отменяем запрос, если произошла отписка
-//            source.setCancellable(call::cancel);
-            // FIXME: 12.09.2017 Здесь ошибка ранней отмены запроса (Когда начинаем стирать символы) (Ошибка, если приходит пустота?)
+            source.setCancellable(() -> {
+                if (!call.isCanceled()) {
+                    call.cancel();
+                }
+            });
 
             call.enqueue(new Callback() {
                 @Override

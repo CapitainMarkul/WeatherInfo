@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -81,7 +82,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         if (savedInstanceState == null) {
             //Не показываем карточку "Ваш город не найден"
             getViewModel().setFirstLaunch(true);
-            createStringAdapter();
+            createStringAdapter(new ArrayList<>());
         }
     }
 
@@ -121,7 +122,7 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         //иначе, после Terminate теряем состояние (действия: добавили город, сделали Terminate)
         CURRENT_STATE = savedInstanceState.getInt(GET_STATE);
 
-        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, getViewModel().getPlaces());
+        createStringAdapter(getViewModel().getPlaces());
         autoText.setAdapter(placesAutoCompleteAdapter);
 
         if (getViewModel().getCity() != null) {
@@ -153,8 +154,9 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
         autoText.setAdapter(placesAutoCompleteAdapter);
     }
 
-    private void createStringAdapter() {
-        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, new ArrayList<>());
+    private void createStringAdapter(List<String> items) {
+        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, items);
+        placesAutoCompleteAdapter.setNotifyOnChange(true);
     }
 
     private void setupRxListeners() {
@@ -204,7 +206,6 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                                 result -> getPresenter().getPlaces(result.toString()),
                                 throwable -> showMessage(R.string.unknown_error)));
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -260,19 +261,21 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     }
 
     private void updatePlacesInAdapter(List<String> places) {
-        placesAutoCompleteAdapter = new ArrayAdapter<>(this, R.layout.item_auto_complete, places);
-        autoText.setAdapter(placesAutoCompleteAdapter);
+//        placesAutoCompleteAdapter = new ArrayAdapter<>(this,R.layout.item_auto_complete, places);
+//        placesAutoCompleteAdapter.clear();
+//        placesAutoCompleteAdapter.addAll(places);
+//        autoText.setAdapter(placesAutoCompleteAdapter);
+//        autoText.showDropDown();
 
-        //NOT WORK
-//                                    placesAutoCompleteAdapter.clear();
-//                                    placesAutoCompleteAdapter.addAll(result);
-//                                    placesAutoCompleteAdapter.notifyDataSetChanged();
+        // TODO: 28.09.2017 Адаптер будем сетать только когда необходимо
 
         if (!IS_CONFIG_CHANGE) {
             if (IS_TEXT_CHANGED_USE_KEYBOARD) {
                 //Показываем
                 IS_TEXT_CHANGED_USE_NOT_KEYBOARD = false;
 
+                createStringAdapter(places);
+                autoText.setAdapter(placesAutoCompleteAdapter);
                 autoText.showDropDown();
             } else if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
                 autoText.dismissDropDown();
@@ -281,12 +284,15 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
                 IS_TEXT_CHANGED_USE_KEYBOARD = true;
             }
         } else {
+            autoText.clearFocus();
             if (IS_TEXT_CHANGED_USE_NOT_KEYBOARD) {
                 autoText.dismissDropDown();
                 //Возвращаемся к нормальной стратегии
                 IS_CONFIG_CHANGE = false;
                 IS_TEXT_CHANGED_USE_KEYBOARD = true;
             } else {
+                createStringAdapter(places);
+                autoText.setAdapter(placesAutoCompleteAdapter);
                 autoText.showDropDown();
             }
         }

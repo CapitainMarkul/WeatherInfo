@@ -59,7 +59,6 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
                             return city;
                         });
 
-                // TODO: 26.09.2017 loadAllCitiesViewRx()! Проверить обновление на главном экране
                 Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
 
                 Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);

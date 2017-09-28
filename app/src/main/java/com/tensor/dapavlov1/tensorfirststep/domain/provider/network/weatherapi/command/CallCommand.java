@@ -32,8 +32,12 @@ public class CallCommand extends NetworkUtils
         return Observable.create(source -> {
             Call call = okHttpClient.newCall(request);
 
-            //отменяем запрос, если произошла отписка
-//            source.setCancellable(call::cancel);
+//            //отменяем запрос, если произошла отписка
+            source.setCancellable(() -> {
+                if (!call.isCanceled()) {
+                    call.cancel();
+                }
+            });
 
             call.enqueue(new Callback() {
                 @Override

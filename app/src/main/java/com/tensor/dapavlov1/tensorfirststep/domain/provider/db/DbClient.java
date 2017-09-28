@@ -94,7 +94,7 @@ public class DbClient extends DbCommandUtils implements DelObservable {
         List<String> result = getCitiesNameCommand.execute(daoSession);
 
         if (result == null) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         return result;
     }

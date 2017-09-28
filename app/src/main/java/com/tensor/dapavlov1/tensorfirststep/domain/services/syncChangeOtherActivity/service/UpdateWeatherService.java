@@ -92,8 +92,8 @@ public class UpdateWeatherService extends IntentService {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(
                 AlarmManager.RTC_WAKEUP,
-//                System.currentTimeMillis() + 60 * 60 * 1000,    // 1 hour
-                System.currentTimeMillis() + 30 * 1000,    // 10 sec
+                System.currentTimeMillis() + 60 * 60 * 1000,    // 1 hour
+//                System.currentTimeMillis() + 10 * 1000,    // 10 sec
                 PendingIntent.getService(this, 0,
                         new Intent(this, UpdateWeatherService.class), 0));
     }
