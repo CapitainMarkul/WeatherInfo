@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -265,7 +266,9 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
 //        placesAutoCompleteAdapter.clear();
 //        placesAutoCompleteAdapter.addAll(places);
 //        autoText.setAdapter(placesAutoCompleteAdapter);
+////        new Handler().postDelayed(() -> autoText.showDropDown(), 700);
 //        autoText.showDropDown();
+
 
         // TODO: 28.09.2017 Адаптер будем сетать только когда необходимо
 

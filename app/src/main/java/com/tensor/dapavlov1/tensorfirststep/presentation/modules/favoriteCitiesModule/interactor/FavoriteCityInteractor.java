@@ -35,13 +35,13 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
 
     @Override
     public void obtainCitiesWeather(FavoriteActivity.WaysUpdatePriority waysUpdatePriority) {
-
-        // TODO: 27.09.2017 Доделать обновление
+        Observable<CityView> disk;
+        Observable<CityView> network;
+        ResultWrapper<Flowable<CityView>> result;
 
         switch (waysUpdatePriority) {
             case LOCAL: {
-                Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
-                ResultWrapper<Flowable<CityView>> result;
+                disk = weatherService.getDbService().loadAllCitiesViewRx();
                 result = new ResultWrapper<>(disk.toFlowable(BackpressureStrategy.BUFFER), null);
                 getListener().onObtainCitiesWeather(result);
                 break;
@@ -49,9 +49,10 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
             case NETWORK: {
                 List<String> cityNames = weatherService.getDbService().getCitiesName();
 
-                Observable<CityView> network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
-                        .map(json -> {
+                disk = weatherService.getDbService().loadAllCitiesViewRx();
 
+                network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
+                        .map(json -> {
                             CityView city = FacadeMap.jsonToVM(json);
 //                    set Update weather info in DB
                             App.getExecutorService().execute(() ->
@@ -59,11 +60,8 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
                             return city;
                         });
 
-                Observable<CityView> disk = weatherService.getDbService().loadAllCitiesViewRx();
 
                 Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);
-
-                ResultWrapper<Flowable<CityView>> result;
 
                 // TODO: 27.09.2017 Избавиться от Flowable?
                 if (observable == disk) {
