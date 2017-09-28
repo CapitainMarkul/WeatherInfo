@@ -1,9 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.domain.assembly;
 
 import com.tensor.dapavlov1.tensorfirststep.core.CoreComponent;
-import com.tensor.dapavlov1.tensorfirststep.domain.provider.db.command.AddCityInDbCommand;
 import com.tensor.dapavlov1.tensorfirststep.domain.provider.service.WeatherService;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
 
 import dagger.Component;
 

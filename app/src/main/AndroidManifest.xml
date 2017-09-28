@@ -37,7 +37,7 @@
         </activity>
 
         <service
-            android:name=".domain.services.syncChangeOtherActivity.service.UpdateWeatherService"
+            android:name=".domain.services.UpdateWeatherService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.INTERNET"/>

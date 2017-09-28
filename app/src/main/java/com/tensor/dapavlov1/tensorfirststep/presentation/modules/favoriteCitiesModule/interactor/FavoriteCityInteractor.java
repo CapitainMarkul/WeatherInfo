@@ -52,14 +52,9 @@ public class FavoriteCityInteractor extends CommonInteractor<FavoriteInteractorP
                 disk = weatherService.getDbService().loadAllCitiesViewRx();
 
                 network = weatherService.getWeatherService().getWeatherByCitiesRx(cityNames)
-                        .map(json -> {
-                            CityView city = FacadeMap.jsonToVM(json);
-//                    set Update weather info in DB
-                            App.getExecutorService().execute(() ->
-                                    weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews()));
-                            return city;
-                        });
-
+                        .map(FacadeMap::jsonToVM)
+                        .doOnNext(city -> App.getExecutorService().execute(() ->
+                                weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews())));
 
                 Observable<CityView> observable = RepositoryLogic.loadNetworkPriority(disk, network);
 

@@ -1,7 +1,6 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules;
 
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityDaggerModule;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteComponent;

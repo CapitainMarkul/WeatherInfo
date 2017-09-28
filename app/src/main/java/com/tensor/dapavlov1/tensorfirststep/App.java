@@ -11,7 +11,7 @@ import com.tensor.dapavlov1.tensorfirststep.core.DaggerCoreComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessModule;
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.DaggerBusinessComponent;
-import com.tensor.dapavlov1.tensorfirststep.domain.services.syncChangeOtherActivity.service.UpdateWeatherService;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.UpdateWeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.DaggerPresentationComponents;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.PresentationComponents;
 

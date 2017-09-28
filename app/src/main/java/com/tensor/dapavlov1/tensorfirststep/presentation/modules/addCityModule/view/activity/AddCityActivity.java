@@ -40,7 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
 
 /**
  * Created by da.pavlov1 on 03.08.2017.
@@ -211,6 +217,19 @@ public class AddCityActivity extends BaseActivity<AddCityViewModelContract.ViewM
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private Observable<List<String>> test1() {
+        List<String> test = new ArrayList<>();
+        test.add("One");
+        test.add("Two");
+        test.add("Three");
+        return Observable.create(e -> e.onNext(test));
+    }
+
+    private void test2() {
+        test1().flatMap(Observable::fromArray)
+                .subscribe(list -> Log.e("d", String.valueOf(list.size())));
     }
 
     @Override
