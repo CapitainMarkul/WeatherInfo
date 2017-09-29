@@ -1,6 +1,7 @@
 package com.tensor.dapavlov1.tensorfirststep.presentation.modules;
 
 import com.tensor.dapavlov1.tensorfirststep.domain.assembly.BusinessComponent;
+import com.tensor.dapavlov1.tensorfirststep.domain.services.UpdateWeatherService;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityComponent;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.addCityModule.assembly.AddCityDaggerModule;
 import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesModule.assembly.FavoriteComponent;
@@ -15,6 +16,8 @@ import dagger.Component;
 @PerPresentationScope
 @Component(dependencies = BusinessComponent.class)
 public interface PresentationComponents {
+    void inject(UpdateWeatherService service);
+
     AddCityComponent addCityComponent(AddCityDaggerModule addCityDaggerModule);
     FavoriteComponent favoriteComponent(FavoriteDaggerModule favoriteDaggerModule);
 }

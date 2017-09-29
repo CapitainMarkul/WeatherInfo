@@ -17,18 +17,26 @@ import com.tensor.dapavlov1.tensorfirststep.presentation.modules.favoriteCitiesM
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.Lazy;
+
 /**
  * Created by da.pavlov1 on 15.09.2017.
  */
 
 public class UpdateWeatherService extends IntentService {
     private static final String TAG = UpdateWeatherService.class.getSimpleName() + "_SERVICE";
-    private final WeatherService weatherService;
+    //    private final WeatherService weatherService;
     private static boolean isFirstLaunch = true;
+
+    @Inject
+    Lazy<WeatherService> weatherService;
 
     public UpdateWeatherService() {
         super(TAG);
-        weatherService = App.get().businessComponent().getWeatherService();
+        App.get().presentationComponents().inject(this);
+//        weatherService = App.get().businessComponent().getWeatherService();
     }
 
     @Override
@@ -57,12 +65,12 @@ public class UpdateWeatherService extends IntentService {
             return;
         }
         if (NetworkHelper.isOnline()) {
-            List<String> cities = weatherService.getDbService().getCitiesName();
+            List<String> cities = weatherService.get().getDbService().getCitiesName();
             if (cities != null && !cities.isEmpty()) {
-                weatherService.getWeatherService().getWeatherByCitiesRx(cities)
+                weatherService.get().getWeatherService().getWeatherByCitiesRx(cities)
                         .map(FacadeMap::jsonToVM)
                         .doOnNext(city -> App.getExecutorService().execute(() ->
-                                weatherService.getDbService().updateCity(city.getName(), city.getWeatherViews())))
+                                weatherService.get().getDbService().updateCity(city.getName(), city.getWeatherViews())))
                         .doOnComplete(() ->
                                 sendBroadcast(new Intent(FavoritePresenter.WEATHER_SYNC_ACTION).putExtra(FavoritePresenter.DB_IS_UPDATE, true)))
                         .subscribe();
