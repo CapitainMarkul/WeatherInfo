@@ -17,6 +17,5 @@ public interface AddCityComponent {
 
     AddCityViewModelContract.ViewModel getViewModel();
 
-    //    AddCityInteractorPresenterContract.Presenter getPresenter();
     AddCityInteractorPresenterContract.Interactor getInteractor();
 }

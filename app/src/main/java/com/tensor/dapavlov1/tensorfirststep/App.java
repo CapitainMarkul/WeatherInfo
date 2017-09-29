@@ -51,7 +51,7 @@ public class App extends Application {
 //        initSession();
         startService(new Intent(this, UpdateWeatherService.class));
 
-        injectDependencies();
+        createDaggerComponents();
 //        createAlarmManager();
     }
 
@@ -77,10 +77,11 @@ public class App extends Application {
         return coreComponent;
     }
 
-    private void injectDependencies() {
+    private void createDaggerComponents() {
         coreComponent = DaggerCoreComponent.builder()
                 .coreModule(new CoreModule(this))
                 .build();
+
         businessComponent = DaggerBusinessComponent.builder()
                 .coreComponent(coreComponent)
                 .businessModule(new BusinessModule())
