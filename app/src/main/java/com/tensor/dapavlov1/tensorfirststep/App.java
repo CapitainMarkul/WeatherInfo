@@ -22,6 +22,11 @@ import java.util.concurrent.Executors;
 /**
  * Created by da.pavlov1 on 04.08.2017.
  */
+/**
+ *
+ * Изменения из Development
+ * */
+
 //по умолчанию  в одном экземпляре
 public class App extends Application {
     static ExecutorService executorService = Executors.newFixedThreadPool(4);
